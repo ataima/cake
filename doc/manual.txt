@@ -1,0 +1,36 @@
+
+
+
+
+
+           CCCC        AAA         KKK  KK   EEEEEEE
+         CCC         AA   AA       KKK KK    EE
+       CCC           AA   AA       KKKKK     EE
+       CCC           AAAAAAA       KKKK      EEEEEEE
+       CCC           AA   AA       KKKKK     EE
+       CCC           AA   AA       KKK KK    EE
+         CCC         AA   AA       KKK  KK   EE
+           CCCC     AAA   AAA      KKK   KK  EEEEEEE
+
+
+
+
+
+
+         Manuale Utente
+
+
+
+ Coppi Angelo maKE build tools (cake).
+
+ Serve per generare immagini linux o più in generale come sistema di build . Dato un elenco
+ di regole attraverso i vari file xml che compongono cake , il sistema esegue la build in modo
+ automatico. TODO alla fine descrizione completa
+
+
+ Come già accennato cake funzione attraverso una serie di file xml di configurazione che
+ definiscone le variabili di sistema , la posizione delle varie directory di build,source,logs
+ etc e le azioni da intraprendere per generare l'immagine richiesta.
+
+ Il file di configurazione generale è cosi composto:
+
