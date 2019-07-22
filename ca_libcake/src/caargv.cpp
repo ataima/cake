@@ -146,7 +146,7 @@ IOptionArgv & argvManager::getOption(size_t offset)
 bool argvManager::saveAsXml(const _cbt * filename)
 {
     auto res = false;
-    miniXmlNode root("qxmlc", "");
+    CA::miniXmlNode root("qxmlc", "");
     IXmlNode *argv = root.add("argv", "");
     if (argv != nullptr)
     {

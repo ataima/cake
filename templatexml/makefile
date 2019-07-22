@@ -16,7 +16,6 @@ camainconf.cpp: camainconf.xml
 	@cp ./camainconf.cpp ../ca_libcake/src/.
 	@cp ./camainconf.h   ../ca_libcake/inc/.
 
-
 compile: camainconf.cpp 
 
 

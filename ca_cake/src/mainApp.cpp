@@ -44,7 +44,6 @@ int main ( int argc, const char * argv[])
     bool result=false;
     std::chrono::steady_clock::time_point t_start = std::chrono::steady_clock::now();
     CA::mainAppExecutor executor;
-
     try
     {
         result = executor.init(argv,argc);
