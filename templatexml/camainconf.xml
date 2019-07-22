@@ -81,6 +81,9 @@ nm
 <packages>
 $ROOT/packages/build_gcc
 </packages>
+<projects>
+./project_sted_id_0.xml
+</projects>
 <step_name>
 prepare new gcc from source
 </step_name>
@@ -150,6 +153,9 @@ nm
 <packages>
 $ROOT/packages/build_utils
 </packages>
+<projects>
+./project_sted_id_1.xml
+</projects>
 <step_name>
 build utility
 </step_name>
@@ -205,6 +211,9 @@ build_arm_cross_none
 <packages>
 $ROOT/packages/build_cross_none
 </packages>
+<projects>
+./project_sted_id_2.xml
+</projects>
 <step_name>
 build cross
 </step_name>
@@ -258,6 +267,9 @@ build_arm_cross_eabi
 <packages>
 $ROOT/packages/build_cross_eabi
 </packages>
+<projects>
+./project_sted_id_3.xml
+</projects>
 <step_name>
 egg_sysroot
 </step_name>
