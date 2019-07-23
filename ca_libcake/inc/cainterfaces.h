@@ -149,5 +149,17 @@ public:
 
 }
 
+typedef std::map<std::string ,std::string > envMap;
+
+
+class IGetConfEnv
+{
+public:
+    virtual ~IGetConfEnv()=default;
+    virtual bool add(const char *key,std::string value)=0;
+    virtual std::string * getValue(const char * key)=0;
+    virtual void dump(void)=0;
+};
+
 #endif // CAINTERFACES
 

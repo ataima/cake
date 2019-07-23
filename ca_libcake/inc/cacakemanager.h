@@ -22,6 +22,8 @@ class cakeManager
 {
 private :
     CAXml_Main conf;
+    IGetConfEnv  *env;
+    void prepareDefaultEnv(void);
 public:
     cakeManager();
     ~cakeManager();

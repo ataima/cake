@@ -218,6 +218,13 @@ void   argvManager::replaceRelative(stringList & ls,const char *abspath)
                 replace+=&((it)[1]);
                 it=replace;
             }
+            else if(it.at(0)!='/')
+            {
+                std::string replace=abspath;
+                replace+='/';
+                replace+=it;
+                it=replace;
+            }
         }
     }
 }

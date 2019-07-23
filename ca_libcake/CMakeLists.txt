@@ -15,7 +15,7 @@ file(GLOB SOURCES "./src/*.cpp")
 file(GLOB HEADERS "./inc/*.h")
 
 
-add_library (cake  STATIC ${SOURCES} inc/cacakemanager.h src/cacakemanager.cpp)
+add_library (cake  STATIC ${SOURCES} inc/cacakemanager.h src/cacakemanager.cpp src/caconfenv.cpp inc/caconfenv.h)
 
 install ( TARGETS cake DESTINATION ${CMAKE_INSTALL_PREFIX} )
 

@@ -25,6 +25,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "calogiface.h"
 #include "cacakemanager.h"
+#include <caconfenv.h>
+#include <cstdlib>
 
 
 namespace CA
@@ -32,12 +34,12 @@ namespace CA
 
 cakeManager::cakeManager()
 {
-
+    env= new caGetConfEnv(std::getenv("HOME"),std::getenv("PWD"),std::getenv("USER"));
 }
 
 cakeManager::~cakeManager()
 {
-
+    delete env;
 }
 
 
@@ -48,7 +50,6 @@ bool cakeManager::run(const std::string &conf_file)
     {
         if(conf.loadFromXml(conf_file))
         {
-            LogInfo("build $ROOT=%s ",conf.conf.root.c_str());
             if(conf.defaults.step.empty())
             {
                 LogError("No builds step available, please set cake.conf.default.step");
@@ -56,6 +57,7 @@ bool cakeManager::run(const std::string &conf_file)
             }
             else
             {
+                prepareDefaultEnv();
                 LogInfo("%d build steps",conf.defaults.step.size());
                 for (auto &it : conf.defaults.step)
                 {
@@ -72,6 +74,27 @@ bool cakeManager::reset ()
 {
     auto res=false;
     return res;
+}
+
+
+void cakeManager::prepareDefaultEnv(void)
+{
+    if(!conf.conf.root.empty())
+    {
+        env->add("ROOT",conf.conf.root);
+        env->add("REPO",conf.conf.repo);
+        env->add("STORE",conf.conf.store);
+        env->add("SOURCES",conf.conf.sources);
+        env->add("EDITOR",conf.conf.editor);
+        env->add("IMAGES",conf.conf.images);
+        env->add("LD_LIBRARY_PATH",conf.conf.ld_library_path);
+        env->add("PATH",conf.conf.path);
+        env->dump();
+    }
+    else
+    {
+        throw std::runtime_error("Invalid conf file: ROOT env must be set!");
+    }
 }
 
 }
