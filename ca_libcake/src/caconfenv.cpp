@@ -72,7 +72,11 @@ std::string * caGetConfEnv::getValue(const char * key)
     }
     else
     {
-        LogInfo("Warning undefined env %s ",key);
+        std::string system_env=std::getenv(key);
+        if(system_env.empty())
+            LogInfo("Warning undefined env %s ",key);
+        else
+            LogInfo("Warning load system env : %s",key);
     }
     return res;
 }

@@ -1,0 +1,28 @@
+<layers>
+    <group>
+        <include>binutils</include>
+        <include>linux-header</include>
+        <include>mpfr</include>
+        <include>isl</include>
+        <include>gmp</include>
+        <include>mpc</include>
+        <include>cloog</include>
+        <include>gcc</include>
+        <include>glibc</include>
+        <name>layers 1></name>
+        <task>serial</task>
+    </group>
+    <group>
+        <include>binutils</include>
+        <include>linux-header</include>
+        <include>mpfr</include>
+        <include>isl</include>
+        <include>gmp</include>
+        <include>mpc</include>
+        <include>cloog</include>
+        <include>gcc</include>
+        <include>glibc</include>
+        <name>layers 2></name>
+        <task>parallel</task>
+    </group>
+</layers>

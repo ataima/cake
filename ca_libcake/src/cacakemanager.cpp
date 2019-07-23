@@ -63,8 +63,13 @@ bool cakeManager::run(const std::string &conf_file)
                 {
                     CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step *>(it);
                     LogInfo("Step %s : %s",step->name.c_str(),step->info.c_str() );
+
                 }
             }
+        }
+        else
+        {
+            throw std::runtime_error("Cannot load xml file : %s"+conf_file);
         }
     }
     return res;
