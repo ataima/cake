@@ -12,13 +12,13 @@ endef
 all: compile 
 
 camainconf.cpp: camainconf.xml
-	ca_qxmlc --verbose 7  --addtest --out_path  ./mainconf   camainconf.xml
+	ca_qxmlc --verbose 7   --out_path  ./mainconf   camainconf.xml
 	@cp ./mainconf/camainconf.cpp ../ca_libcake/src/.
 	@cp ./mainconf/camainconf.h   ../ca_libcake/inc/.
 
 
 calayerconf.cpp: calayerconf.xml	
-	ca_qxmlc --verbose 7  --addtest --out_path  ./layerconf   calayerconf.xml
+	ca_qxmlc --verbose 7   --out_path  ./layerconf   calayerconf.xml
 	@cp ./layerconf/calayerconf.cpp ../ca_libcake/src/.
 	@cp ./layerconf/calayerconf.h   ../ca_libcake/inc/.
 
