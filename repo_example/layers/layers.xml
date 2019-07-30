@@ -1,7 +1,9 @@
 <layers>
 	<group>
+	<depend>none</depend>
+	<enable>true></enable>
+	<name>layer 1></name>
 	<task>serial</task>
-	<name>layers 1></name>
 	<include>binutils</include>
 	<include>linux-header</include>
 	<include>mpfr</include>
@@ -13,6 +15,8 @@
 	<include>glibc</include>>
 	</group>
 	<group>
+	<depend>layer_1</depend>
+	<enable>true></enable>
 	<task>parallel</task>
 	<name>layers 2></name>
 	<include>binutils</include>

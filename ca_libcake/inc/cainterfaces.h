@@ -161,5 +161,9 @@ public:
     virtual void dump(void)=0;
 };
 
+
+
+
+
 #endif // CAINTERFACES
 

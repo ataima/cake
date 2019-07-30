@@ -15,6 +15,9 @@ $ROOT/images/egg_sysroot/lib:$ROOT/images/egg_sysroot/lib64
 <path>
 $ROOT/images/egg_sysroot/bin:/bin:/usr/bin
 </path>
+<layers>
+$ROOT/layers
+</layers>
 <repo>
 $ROOT/repo
 </repo>
@@ -82,7 +85,7 @@ nm
 $ROOT/packages/build_gcc
 </packages>
 <projects>
-./project_sted_id_0.xml
+project_sted_id_0.xml
 </projects>
 <step_name>
 prepare new gcc from source
@@ -154,7 +157,7 @@ nm
 $ROOT/packages/build_utils
 </packages>
 <projects>
-./project_sted_id_1.xml
+project_sted_id_1.xml
 </projects>
 <step_name>
 build utility
@@ -212,7 +215,7 @@ build_arm_cross_none
 $ROOT/packages/build_cross_none
 </packages>
 <projects>
-./project_sted_id_2.xml
+project_sted_id_2.xml
 </projects>
 <step_name>
 build cross

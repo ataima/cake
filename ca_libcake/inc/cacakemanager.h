@@ -12,7 +12,7 @@
 #include "caminiXml.h"
 #include "calcfxml.h"
 #include "camainconf.h"
-
+#include "cajobstep.h"
 
 namespace CA
 {
@@ -23,6 +23,7 @@ class cakeManager
 private :
     CAXml_Main conf;
     IGetConfEnv  *env;
+    std::vector<ICAjob_step *> jobs;
     void prepareDefaultEnv(void);
 public:
     cakeManager();
