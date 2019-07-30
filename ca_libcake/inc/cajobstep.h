@@ -31,7 +31,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "calayerconf.h"
 
 
-namespace CA {
+namespace CA
+{
 
 
 class ICAjob_step
@@ -43,17 +44,17 @@ public:
 
 
 class caJobStep
- :public ICAjob_step
- {
-     protected:
+    :public ICAjob_step
+{
+protected:
     ICAXml_Main_Defaults_Step  *step_conf;
     ICAXml_Layers *layers_conf;
-    public:
+public:
     caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layers *_layers_conf)
-        :step_conf(_step_conf),layers_conf(_layers_conf){}
+        :step_conf(_step_conf),layers_conf(_layers_conf) {}
     inline ICAXml_Main_Defaults_Step  *getStepConf()final{return step_conf;}
     inline ICAXml_Layers  *getLayersConf()final{return layers_conf;}
- };
+};
 
 }
 

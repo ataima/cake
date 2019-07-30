@@ -64,19 +64,24 @@ bool cakeManager::run(const std::string &conf_file)
                 {
                     CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step *>(it);
                     LogInfo("Step %s : %s",step->name.c_str(),step->info.c_str() );
-                    if(step->projects.empty()){
+                    if(step->projects.empty())
+                    {
                         throw std::runtime_error("error : no project included!");
-                    }else{
-                     // crea associazione tra step e progetto dichiarato
-                     CAXml_Layers *slayer=new CAXml_Layers();
-                     if(slayer){
-                         std::string layer_name=conf.conf.layers+step->projects;
-                         if(slayer->loadFromXml(layer_name)){
-                             LogInfo ("Step %s : create environment variables");
-                             LogInfo("Step %s : create jobs by layer :5s",step->name.c_str(),layer_name.c_str() );                    
-                             jobs.push_back(new caJobStep(step,slayer));
-                         }
-                     }
+                    }
+                    else
+                    {
+                        // crea associazione tra step e progetto dichiarato
+                        CAXml_Layers *slayer=new CAXml_Layers();
+                        if(slayer)
+                        {
+                            std::string layer_name=conf.conf.layers+step->projects;
+                            if(slayer->loadFromXml(layer_name))
+                            {
+                                LogInfo ("Step %s : create environment variables");
+                                LogInfo("Step %s : create jobs by layer :5s",step->name.c_str(),layer_name.c_str() );
+                                jobs.push_back(new caJobStep(step,slayer));
+                            }
+                        }
                     }
                 }
             }
