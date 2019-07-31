@@ -32,7 +32,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 namespace CA
 {
 
-class caGetConfEnv
+class  caGetConfEnv
     :public IGetConfEnv
 {
 protected:
@@ -40,12 +40,13 @@ protected:
     void replaceValue(std::string & in, std::string & out);
 public:
     caGetConfEnv(const char *home,const char *pwd,const char *user);
+    caGetConfEnv( IGetConfEnv * b);
     virtual ~caGetConfEnv();
     virtual bool add(const char *key,std::string value) final;
     virtual std::string * getValue(const char * key) final;
     virtual void dump() final;
-    virtual void append(IGetConfEnv * root) final;
-    inline virtual envMap & getMap() final { return keyVal;}
+    virtual void append( IGetConfEnv * root) final;
+    virtual inline envMap & getMap() final { return keyVal;}
 };
 }
 

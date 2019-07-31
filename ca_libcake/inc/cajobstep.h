@@ -41,6 +41,7 @@ public:
     virtual ICAXml_Main_Defaults_Step  * getStepConf()=0;
     virtual ICAXml_Layers *getLayersConf()=0;
     virtual void reset()=0;
+    virtual void prepareDefaultEnv(IGetConfEnv  * _env)=0;
 };
 
 class ICAjob_step_manager
@@ -57,22 +58,25 @@ class caJobStep
 protected:
     ICAXml_Main_Defaults_Step  *step_conf;
     ICAXml_Layers *layers_conf;
+    IGetConfEnv  *env;
 public:
     caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layers *_layers_conf)
         :step_conf(_step_conf),layers_conf(_layers_conf) {}
     virtual inline ICAXml_Main_Defaults_Step  *getStepConf() final{return step_conf;}
     virtual inline ICAXml_Layers  *getLayersConf() final{return layers_conf;}
     virtual inline void reset() final {delete layers_conf; layers_conf=nullptr;}
+    virtual void prepareDefaultEnv(IGetConfEnv  * _env) final;
 };
 
 
 class caJobStepManager
-: public ICAjob_step_manager
-, public std::vector<ICAjob_step *>
+    : public ICAjob_step_manager
+    , public std::vector<ICAjob_step *>
 {
-    public:
-        virtual  void reset() final;
-        virtual   void prepareStep(IGetConfEnv  * _env) final;
+
+public:
+    virtual  void reset() final;
+    virtual   void prepareStep(IGetConfEnv  * _env) final;
 };
 
 

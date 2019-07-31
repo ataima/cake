@@ -18,7 +18,7 @@ camainconf.cpp: camainconf.xml
 
 
 calayerconf.cpp: calayerconf.xml	
-	ca_qxmlc --verbose 7   --out_path  ./layerconf   calayerconf.xml
+	ca_qxmlc --verbose 7  --out_path  ./layerconf   calayerconf.xml
 	@cp ./layerconf/calayerconf.cpp ../ca_libcake/src/.
 	@cp ./layerconf/calayerconf.h   ../ca_libcake/inc/.
 

@@ -98,8 +98,7 @@ bool cakeManager::run(const std::string &conf_file)
 void cakeManager::reset ()
 {
     delete env;
-    for(auto job : jobs)job->reset();
-    jobs.clear();
+    jobs.reset();
 }
 
 

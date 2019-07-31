@@ -159,7 +159,7 @@ public:
     virtual bool add(const char *key,std::string value)=0;
     virtual std::string * getValue(const char * key)=0;
     virtual void dump(void)=0;
-    virtual void append(IGetConfEnv * root)=0;
+    virtual void append( IGetConfEnv * root)=0;
     virtual envMap & getMap()=0;
 };
 

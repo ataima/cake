@@ -2,8 +2,8 @@
 // Created by angelo on 19/06/19.
 //
 
-#ifndef QXMLC_CACAKEMANAGER_H
-#define QXMLC_CACAKEMANAGER_H
+#ifndef CA_CAKE_MANAGER_H
+#define CA_CAKE_MANAGER_H
 
 
 
@@ -26,7 +26,7 @@ class cakeManager
 private :
     CAXml_Main conf;
     IGetConfEnv  *env;
-    std::vector<ICAjob_step *> jobs;
+    caJobStepManager jobs;
     void prepareDefaultEnv(void);
 public:
     cakeManager();
@@ -36,4 +36,4 @@ public:
 };
 
 }
-#endif //QXMLC_CACAKEMANAGER_H
+#endif //CA_CAKE_MANAGER_H

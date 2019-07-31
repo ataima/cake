@@ -37,6 +37,13 @@ caGetConfEnv::caGetConfEnv(const char *home,const char *pwd,const char *user)
     add("PWD",pwd);
 }
 
+caGetConfEnv::caGetConfEnv( IGetConfEnv * _env)
+{
+    if(_env!=nullptr)
+        append(_env);
+}
+
+
 caGetConfEnv::~caGetConfEnv()
 {
     keyVal.clear();
@@ -136,7 +143,7 @@ void caGetConfEnv::dump()
 }
 
 
-void caGetConfEnv::append(IGetConfEnv * root )
+void caGetConfEnv::append( IGetConfEnv * root )
 {
     if(root!=nullptr)
     {
