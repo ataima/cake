@@ -44,6 +44,8 @@ public:
     virtual bool add(const char *key,std::string value) final;
     virtual std::string * getValue(const char * key) final;
     virtual void dump() final;
+    virtual void append(IGetConfEnv * root) final;
+    inline virtual envMap & getMap() final { return keyVal;}
 };
 }
 

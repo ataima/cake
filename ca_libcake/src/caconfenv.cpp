@@ -135,4 +135,14 @@ void caGetConfEnv::dump()
     }
 }
 
+
+void caGetConfEnv::append(IGetConfEnv * root )
+{
+    if(root!=nullptr)
+    {
+        keyVal.insert(root->getMap().begin(),root->getMap().end());
+    }
+}
+
+
 }

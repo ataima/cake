@@ -17,6 +17,9 @@
 namespace CA
 {
 
+
+
+
 class cakeManager
     : public CA::ICake
 {
@@ -29,7 +32,7 @@ public:
     cakeManager();
     ~cakeManager();
     bool run (const std::string & conf_file ) final;
-    bool reset () final;
+    void reset () final;
 };
 
 }

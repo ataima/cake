@@ -134,7 +134,7 @@ class ICake
 {
 public:
     virtual bool run(const std::string & conf_file)=0;
-    virtual bool reset()=0;
+    virtual void reset()=0;
 };
 
 
@@ -159,6 +159,8 @@ public:
     virtual bool add(const char *key,std::string value)=0;
     virtual std::string * getValue(const char * key)=0;
     virtual void dump(void)=0;
+    virtual void append(IGetConfEnv * root)=0;
+    virtual envMap & getMap()=0;
 };
 
 

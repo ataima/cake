@@ -40,7 +40,7 @@ cakeManager::cakeManager()
 
 cakeManager::~cakeManager()
 {
-    delete env;
+    reset();
 }
 
 
@@ -78,8 +78,9 @@ bool cakeManager::run(const std::string &conf_file)
                             if(slayer->loadFromXml(layer_name))
                             {
                                 LogInfo ("Step %s : create environment variables");
-                                LogInfo("Step %s : create jobs by layer :5s",step->name.c_str(),layer_name.c_str() );
+                                LogInfo ("Step %s : create jobs by layer :%s",step->name.c_str(),layer_name.c_str() );
                                 jobs.push_back(new caJobStep(step,slayer));
+                                jobs.prepareStep(env);
                             }
                         }
                     }
@@ -94,10 +95,11 @@ bool cakeManager::run(const std::string &conf_file)
     return res;
 }
 
-bool cakeManager::reset ()
+void cakeManager::reset ()
 {
-    auto res=false;
-    return res;
+    delete env;
+    for(auto job : jobs)job->reset();
+    jobs.clear();
 }
 
 
