@@ -1,6 +1,3 @@
-#ifndef CA_JOB_STEP_HEADER
-#define CA_JOB_STEP_HEADER
-
 
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
@@ -26,56 +23,24 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
-
-#include "camainconf.h"
-#include "calayerconf.h"
+#include "calogiface.h"
+#include <caconfenv.h>
+#include <cajobstep.h>
+#include <cstdlib>
 
 
 namespace CA
 {
 
 
-class ICAjob_step
-{
-public:
-    virtual ICAXml_Main_Defaults_Step  * getStepConf()=0;
-    virtual ICAXml_Layers *getLayersConf()=0;
-    virtual void reset()=0;
-};
+            void caJobStepManager::reset() {
 
-class ICAjob_step_manager
-{
-public:
-    virtual void reset()=0;
-    virtual void prepareStep(IGetConfEnv  * _env)=0;
-};
+            }
 
 
-class caJobStep
-    :public ICAjob_step
-{
-protected:
-    ICAXml_Main_Defaults_Step  *step_conf;
-    ICAXml_Layers *layers_conf;
-public:
-    caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layers *_layers_conf)
-        :step_conf(_step_conf),layers_conf(_layers_conf) {}
-    virtual inline ICAXml_Main_Defaults_Step  *getStepConf() final{return step_conf;}
-    virtual inline ICAXml_Layers  *getLayersConf() final{return layers_conf;}
-    virtual inline void reset() final {delete layers_conf; layers_conf=nullptr;}
-};
 
+        void caJobStepManager::prepareStep(IGetConfEnv  * _env) {
 
-class caJobStepManager
-: public ICAjob_step_manager
-, public std::vector<ICAjob_step *>
-{
-    public:
-        virtual  void reset() final;
-        virtual   void prepareStep(IGetConfEnv  * _env) final;
-};
-
-
+        }
+        
 }
-
-#endif // CA_JOB_STEP_HEADER
