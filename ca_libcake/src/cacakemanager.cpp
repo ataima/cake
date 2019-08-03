@@ -82,6 +82,12 @@ bool cakeManager::run(const std::string &conf_file)
                                 jobs.push_back(new caJobStep(step,slayer));
                                 jobs.prepareStep(env);
                             }
+                            else
+                            {
+                                std::stringstream ss;
+                                ss<<"error cannot load layer xml file : "<<layer_name;
+                                throw std::runtime_error(ss.str().c_str());
+                            }
                         }
                     }
                 }
@@ -106,14 +112,10 @@ void cakeManager::prepareDefaultEnv(void)
 {
     if(!conf.conf.root.empty())
     {
-        env->add("ROOT",conf.conf.root);
-        env->add("REPO",conf.conf.repo);
-        env->add("STORE",conf.conf.store);
-        env->add("SOURCES",conf.conf.sources);
-        env->add("EDITOR",conf.conf.editor);
-        env->add("IMAGES",conf.conf.images);
-        env->add("LD_LIBRARY_PATH",conf.conf.ld_library_path);
-        env->add("PATH",conf.conf.path);
+        envMap tmp;
+        conf.conf.toMap(tmp,true);
+        if(!tmp.empty())
+            env->add(tmp);
         env->dump();
     }
     else

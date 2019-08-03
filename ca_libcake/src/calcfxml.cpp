@@ -1,6 +1,7 @@
 #include "caminiXml.h"
 #include "calogiface.h"
 #include "calcfxml.h"
+#include <algorithm>
 
 
 #define DEBUG_NODE_TYPE 0
@@ -219,7 +220,7 @@ void LCFXml::loadFromXml(CA::IXmlNode *node, IKeyValue *obj)
     for (auto it : *list)
     {
 #if  DEBUG_NODE_TYPE
-        std::cout<<it.type<<"   - "<<dbgaid[it.type]<<" :: "<<it.fullname<<std::endl;
+        std::cout<<it->type<<"   - "<<dbgaid[it->type]<<" :: "<<it->fullname<<std::endl;
 #endif
         switch (it.type)
         {
@@ -777,6 +778,51 @@ void LCFXml::toString(std::iostream &out, IKeyValue *obj, std::string &parent)
         std::cout<<out.str();
 #endif
         out << ss.str();
+    }
+}
+
+void LCFXml::toMap(std::map<std::string , std::string> & outmap,IKeyValue *obj,
+                   bool ucase=true)
+{
+    outmap.clear();
+    keyList *list = obj->getICAXml_Predef_List();
+    for (auto it : *list)
+    {
+        std::string key=it.name;
+        if(ucase)
+        {
+            std::transform(key.begin(),key.end(),key.begin(),::toupper);
+        }
+        std::pair<std::string, std::string > p;
+        p.first=key;
+        switch (it.type)
+        {
+        case CA::IXmlNode::xmlNodeType::inode_simple:
+            p.second=*it.D.S.simple;
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_simple_with_options:
+            p.second=*it.D.O.simple;
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_childs:
+            p.second=*it.D.C.value;
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_childs_with_options:
+            p.second=*it.D.F.value;
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_array:
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_array_with_options:
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_array_childs:
+            break;
+        case CA::IXmlNode::xmlNodeType::inode_array_childs_with_options:
+            break;
+        default:
+        {
+            setError(nullptr, "Unknow node type on object", it.name, it.fullname);
+        }
+        }
+        outmap.insert(p);
     }
 }
 

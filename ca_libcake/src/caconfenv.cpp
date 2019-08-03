@@ -69,6 +69,16 @@ bool caGetConfEnv::add(const char *key,std::string value)
     return res;
 }
 
+bool caGetConfEnv::add(envMap & tmap)
+{
+    bool res=false;
+    for(auto n: tmap)
+    {
+        res=add(n.first.c_str(),n.second);
+    }
+    return res;
+}
+
 std::string * caGetConfEnv::getValue(const char * key)
 {
     std::string *res= nullptr;

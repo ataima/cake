@@ -12,7 +12,7 @@ files(the "Software"), to deal in the Software without
 restriction, including without limitation the rights to use,
 copy, modify, merge, publish, distribute, sublicense, and / or sell
 copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
+Software is furnished to do so, subjectt to the following
 conditions :
 
 The above copyright notice and this permission notice shall be
@@ -280,6 +280,9 @@ public:
     static void toString(std::iostream &ss, CA::optionsList *optl);
 
     static void toString(std::iostream &ss, IKeyValue *obj, std::string &parent);
+
+    static void toMap(std::map<std::string , std::string> & outmap,IKeyValue *obj,
+                      bool ucase);
 
     static void deleteChildsArray(std::vector<IClonable *> *objs);
 

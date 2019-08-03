@@ -43,6 +43,7 @@ public:
     caGetConfEnv( IGetConfEnv * b);
     virtual ~caGetConfEnv();
     virtual bool add(const char *key,std::string value) final;
+    virtual bool add(envMap & map)final ;
     virtual std::string * getValue(const char * key) final;
     virtual void dump() final;
     virtual void append( IGetConfEnv * root) final;

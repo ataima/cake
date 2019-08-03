@@ -73,24 +73,12 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
     env=new caGetConfEnv(_env);
     if(step_conf)
     {
+        envMap tmp;
         CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step*>(step_conf);
-        env->add("AR",step->ar);
-        env->add("ARCH",step->arch);
-        env->add("AS",step->as);
-        env->add("ASFLAGS",step->asflags);
-        env->add("C_INCLUDE_PATH",step->c_include_path);
-        env->add("CC",step->cc);
-        env->add("CFLAGS",step->cflags);
-        env->add("CPATH",step->cpath);
-        env->add("CPLUS_INCLUDE_PATH",step->cplus_include_path);
-        env->add("CPPFLAGS",step->cppflags);
-        env->add("CROSS",step->cross);
-        env->add("CXX",step->cxx);
-        env->add("CXXFLAGS",step->cxxflags);
-        env->add("ID",step->id);
-        env->add("INFO",step->info);
-        env->add("LD",step->ld);
-        env->add("LDFLAGS",step->ldflags);
+        step->toMap(tmp,true);
+        if(!tmp.empty())
+            env->add(tmp);
+        env->dump();
     }
 }
 
