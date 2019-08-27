@@ -35,6 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <list>
 #include <chrono>
 #include <syslog.h>
+#include <set>
 
 
 #define _LOGGER_ 1
@@ -79,6 +80,9 @@ public :
 
 
 extern unsigned short currentLogLevel;
+typedef std::set<IPrinter *> PrinterSet ;
+
+
 
 class ILogger
 {
@@ -90,9 +94,11 @@ public:
     {
         return instance;
     }
-    virtual void setOutput(IPrinter *printer) = 0;
-    virtual IPrinter *output() = 0;
+    virtual void addOutput(IPrinter *printer) = 0;
+    virtual void removeOutput(IPrinter *printer) = 0;
+    virtual PrinterSet output() = 0;
     virtual void reset()=0;
+    virtual void sync()=0;
     virtual void setLogLevel(int level)
     {
         CA::currentLogLevel=level;

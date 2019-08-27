@@ -40,7 +40,7 @@ namespace CA
 mainAppExecutor::mainAppExecutor()
 {
     auto logger=new CA::Logger();
-    logger->setOutput(new CA::DefaultPrinter());
+    logger->addOutput(new CA::DefaultPrinter());
 }
 
 mainAppExecutor::~mainAppExecutor()

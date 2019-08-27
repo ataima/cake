@@ -56,8 +56,8 @@ void test_calogger_class::setUp(void)
     logger = new CA::Logger();
     CA_ASSERT(logger!=nullptr);
     printer = new CA::DefaultPrinter();
-    logger->setOutput(printer);
-    CA_ASSERT(printer==logger->output());
+    logger->addOutput(printer);
+    CA_ASSERT(printer==*logger->output().begin());
 }
 
 void test_calogger_class::tearDown(void)

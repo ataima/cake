@@ -63,7 +63,7 @@ class Logger
     bool notify;
     bool done;
     std::thread *th;
-    IPrinter *current_printer;
+    std::set<IPrinter *>current_printers;
 private:
     void print(ILogParam *p);
 
@@ -78,20 +78,35 @@ public:
 
     static void entry(ILogger *current);
 
-    void enqueue(void);
+    void enqueue();
 
-    inline void setOutput(IPrinter *printer)
+    inline void addOutput(IPrinter *printer) final
     {
-        current_printer = printer;
+        auto it=current_printers.find(printer);
+        if(it==current_printers.end())
+        {
+            current_printers.insert(printer);
+        }
     }
 
-    inline IPrinter *output(void)
+
+    inline  void removeOutput(IPrinter *printer) final
     {
-        return current_printer;
+        auto it=current_printers.find(printer);
+        if (it!=current_printers.end())
+        {
+            current_printers.erase(it);
+        }
     }
 
-    void reset();
 
+    inline PrinterSet output() final
+    {
+        return current_printers;
+    }
+
+    void reset() final;
+    void sync() final;
 };
 
 class DefaultPrinter
@@ -102,6 +117,16 @@ public:
 };
 
 
+class FilePrinter
+    : public IPrinter
+{
+private:
+    FILE *file;
+public:
+    FilePrinter(const char *name);
+    ~FilePrinter();
+    void   out( int level, std::string & msg) final;
+};
 
 #endif
 }

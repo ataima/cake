@@ -1,3 +1,4 @@
+
 #include "calogger.h"
 /**************************************************************
 Copyright(c) 2015 Angelo Coppi
@@ -29,6 +30,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <iomanip>
 #include <stdarg.h>
 #include <iostream>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
 
 namespace CA
 {
@@ -52,8 +56,7 @@ ILogger * ILogger::instance = nullptr;
 Logger::Logger() :
     notify(false),
     done(false),
-    th(nullptr),
-    current_printer(nullptr)
+    th(nullptr)
 {
     if (instance == nullptr)
         instance = this;
@@ -72,8 +75,10 @@ Logger::~Logger()
         delete th;
         th = nullptr;
     }
-    delete current_printer;
-    current_printer = nullptr;
+    for (auto printer : current_printers)
+        delete printer;
+    current_printers.clear();
+
     while (!io.empty())
     {
         delete io.front();
@@ -95,7 +100,7 @@ void Logger::log(int level,const char *fmt, ... )
     {
         if (!th)
         {
-            if (current_printer != nullptr)
+            if (!current_printers.empty())
             {
                 //only first time
                 th = new std::thread(Logger::entry, this);
@@ -116,7 +121,7 @@ void Logger::log(int level,const char *fmt, ... )
 
 void Logger::print(ILogParam *p)
 {
-    if (current_printer )
+    if (!current_printers.empty() )
     {
         if (p)
         {
@@ -125,7 +130,8 @@ void Logger::print(ILogParam *p)
             ts << "%s[" <<std::setw(12)<< (p->time - t_start).count() << " %sns%s ]%s "<<msginfo[p->level]<<" > %s"<<p->msg<<"%s%s";
             t_start = p->time;
             msg = ts.str();
-            current_printer->out(p->level,msg);
+            for(auto printer : current_printers)
+                printer->out(p->level,msg);
             msg.clear();
         }
     }
@@ -185,6 +191,13 @@ void Logger::entry(ILogger *current)
 }
 
 
+void Logger::sync()
+{
+    while (!io.empty())
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
 
 void Logger::reset()
 {
@@ -199,16 +212,13 @@ void Logger::reset()
         delete th;
         th = nullptr;
     }
-    if (current_printer != nullptr)
+    if (!current_printers.empty())
     {
-        delete current_printer;
-        current_printer = nullptr;
+        for(auto printer : current_printers)
+            delete printer;
+        current_printers.clear();
     }
 }
-
-
-
-
 
 
 void DefaultPrinter::out( int level, std::string & msg)
@@ -222,6 +232,30 @@ void DefaultPrinter::out( int level, std::string & msg)
     if(level<0)level=0;
     if(level>LOG_DEBUG)level=LOG_DEBUG+1;
     fprintf(stderr ,msg.c_str(),GREEN_LIGHT,YELLOW,GREEN_LIGHT,WHITE,colors[level],REPLACE,"\n");
+}
+FilePrinter::FilePrinter(const char *name)
+{
+    file=fopen(name,"w+");
+}
+
+FilePrinter::~FilePrinter()
+{
+    if(file)fclose(file);
+}
+void FilePrinter::out( int level, std::string & msg)
+{
+
+    const char * colors[]=
+    {
+        RED,RED,RED,
+        RED,BLUE_LIGHT,CYAN,WHITE,GRAY_DARK,nullptr
+    };
+    if(level<0)level=0;
+    if(level>LOG_DEBUG)level=LOG_DEBUG+1;
+    if(file)
+    {
+        fprintf(file, msg.c_str(), GREEN_LIGHT, YELLOW, GREEN_LIGHT, WHITE, colors[level], REPLACE, "\n");
+    }
 }
 
 

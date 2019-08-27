@@ -27,7 +27,9 @@ private :
     CAXml_Main conf;
     IGetConfEnv  *env;
     caJobStepManager jobs;
-    void prepareDefaultEnv(void);
+    void prepareDefaultEnv();
+    void prepareWorkDirs();
+    void logMainEnv(const char *logname);
 public:
     cakeManager();
     ~cakeManager();

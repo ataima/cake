@@ -41,13 +41,13 @@ protected:
 public:
     caGetConfEnv(const char *home,const char *pwd,const char *user);
     caGetConfEnv( IGetConfEnv * b);
-    virtual ~caGetConfEnv();
-    virtual bool add(const char *key,std::string value) final;
-    virtual bool add(envMap & map)final ;
-    virtual std::string * getValue(const char * key) final;
-    virtual void dump() final;
-    virtual void append( IGetConfEnv * root) final;
-    virtual inline envMap & getMap() final { return keyVal;}
+    ~caGetConfEnv() final;
+    bool add(const char *key,std::string value) final;
+    bool add(envMap & map)final ;
+    std::string * getValue(const char * key) final;
+    void dump(const char *envname) final;
+    void append( IGetConfEnv * root) final;
+    inline envMap & getMap() final { return keyVal;}
 };
 }
 

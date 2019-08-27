@@ -24,10 +24,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
 #include "calogiface.h"
+#include "calogger.h"
 #include "cacakemanager.h"
 #include "calayerconf.h"
 #include <caconfenv.h>
 #include <cstdlib>
+#include <sys/stat.h>
 
 
 namespace CA
@@ -59,6 +61,8 @@ bool cakeManager::run(const std::string &conf_file)
             else
             {
                 prepareDefaultEnv();
+                prepareWorkDirs();
+                logMainEnv("main_env_setup.log");
                 LogInfo("%d build steps",conf.defaults.step.size());
                 for (auto &it : conf.defaults.step)
                 {
@@ -74,13 +78,19 @@ bool cakeManager::run(const std::string &conf_file)
                         CAXml_Layers *slayer=new CAXml_Layers();
                         if(slayer)
                         {
-                            std::string layer_name=conf.conf.layers+step->projects;
+                            auto layers=env->getValue("LAYERS");
+                            if(layers->empty())
+                            {
+                                std::stringstream ss;
+                                ss<<"error undefined layers in configuration xml file : ";
+                                throw std::runtime_error(ss.str().c_str());
+                            }
+                            std::string layer_name=*layers+"/"+step->projects;
                             if(slayer->loadFromXml(layer_name))
                             {
-                                LogInfo ("Step %s : create environment variables");
+                                LogInfo ("Step %s : create environment variables",step->name.c_str());
                                 LogInfo ("Step %s : create jobs by layer :%s",step->name.c_str(),layer_name.c_str() );
                                 jobs.push_back(new caJobStep(step,slayer));
-                                jobs.prepareStep(env);
                             }
                             else
                             {
@@ -91,6 +101,7 @@ bool cakeManager::run(const std::string &conf_file)
                         }
                     }
                 }
+                jobs.prepareStep(env);
             }
         }
         else
@@ -114,14 +125,68 @@ void cakeManager::prepareDefaultEnv(void)
     {
         envMap tmp;
         conf.conf.toMap(tmp,true);
+        env->add("ROOT",conf.conf.root); // must be the root of all env var
         if(!tmp.empty())
+        {
+            auto it_repo=tmp.find("ROOT");
+            tmp.erase(it_repo);
             env->add(tmp);
-        env->dump();
+        }
     }
     else
     {
         throw std::runtime_error("Invalid conf file: ROOT env must be set!");
     }
+}
+
+inline static int check_dir_exist_or_create(const char *dir)
+{
+    struct stat sb;
+
+
+    if(! ((stat(dir, &sb) == 0 && S_ISDIR(sb.st_mode))))
+    {
+        LogInfo("Not exist , create working directory : %s",dir);
+        return mkdir(dir,0777);
+    }
+    else
+    {
+        LogInfo("Working directory : %s exist",dir);
+    }
+    return 0;
+}
+
+
+void cakeManager::prepareWorkDirs(void)
+{
+    const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","LOGS","SOURCES","STORE",nullptr};
+    const char * tmpdir=nullptr;
+    auto i=0;
+    while(1)
+    {
+        std::string * replaced;
+        tmpdir=workdirs[i];
+        if(tmpdir!= nullptr)
+        {
+            replaced=env->getValue(workdirs[i]);
+            if(replaced)
+                check_dir_exist_or_create(replaced->c_str());
+        }
+        else break;
+        i++;
+    }
+}
+
+
+void  cakeManager::logMainEnv(const char *logname)
+{
+    std::string *logdir=env->getValue("LOGS");
+    std::string logfile=*logdir+"/"+logname;
+    FilePrinter printer (logfile.c_str());
+    CA::ILogger::getInstance()->addOutput(&printer);
+    env->dump("Main configuration");
+    CA::ILogger::getInstance()->sync();
+    CA::ILogger::getInstance()->removeOutput(&printer);
 }
 
 }

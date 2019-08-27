@@ -64,7 +64,7 @@ bool caGetConfEnv::add(const char *key,std::string value)
     else
     {
         LogInfo("Warning env %s already defined with value %s",
-                it->first,it->second.c_str());
+                it->first.c_str(),it->second.c_str());
     }
     return res;
 }
@@ -144,11 +144,11 @@ void caGetConfEnv::replaceValue(std::string & in, std::string & out)
     }
 }
 
-void caGetConfEnv::dump()
+void caGetConfEnv::dump(const char *envname)
 {
     for (auto const it : keyVal)
     {
-        LogInfo("Main configuration : env %s=%s",it.first.c_str(),it.second.c_str());
+        LogInfo("%s : env %s=%s",envname,it.first.c_str(),it.second.c_str());
     }
 }
 

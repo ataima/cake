@@ -24,6 +24,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 #include "calogiface.h"
+#include "calogger.h"
 #include "cacakemanager.h"
 #include "calayerconf.h"
 #include "cajobstep.h"
@@ -78,7 +79,14 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
         step->toMap(tmp,true);
         if(!tmp.empty())
             env->add(tmp);
-        env->dump();
+        std::string *logdir=env->getValue("LOGS");
+        std::string logfile=*logdir+"/"+step->name+"_"+step->id+"_env.log";
+        FilePrinter printer (logfile.c_str());
+        CA::ILogger::getInstance()->addOutput(&printer);
+        std::string msg="Step "+step->name+" configuration";
+        env->dump(msg.c_str());
+        CA::ILogger::getInstance()->sync();
+        CA::ILogger::getInstance()->removeOutput(&printer);
     }
 }
 
