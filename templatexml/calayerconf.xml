@@ -1,9 +1,7 @@
-<layers>
-	<group>
-	<depend>none</depend>
-	<enable>true></enable>
-	<name>layer_1></name>
-	<task>serial</task>
+<layer>
+	<name>layer_gcc></name>
+	<info>layer for build gcc </info>
+	<task>1</task>
 	<include>binutils</include>
 	<include>linux-header</include>
 	<include>mpfr</include>
@@ -13,21 +11,5 @@
 	<include>cloog</include>
 	<include>gcc</include>
 	<include>glibc</include>
-	</group>
-	<group>
-	<depend>layer_1</depend>
-	<enable>true></enable>
-	<task>parallel</task>
-	<name>layers 2></name>
-	<include>binutils</include>
-	<include>linux-header</include>
-	<include>mpfr</include>
-	<include>isl</include>
-	<include>gmp</include>
-	<include>mpc</include>
-	<include>cloog</include>
-	<include>gcc</include>
-	<include>glibc</include>
-	</group>
-</layers>
+</layer>
 

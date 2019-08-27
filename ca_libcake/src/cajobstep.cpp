@@ -113,6 +113,12 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
     }
 }
 
+
+void caJobStep::dowork(void)
+{
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 void caJobStepManager::reset()
 {
@@ -135,5 +141,20 @@ void caJobStepManager::prepareStep(IGetConfEnv  * _env)
     }
 
 }
+
+
+void caJobStepManager::dowork(void)
+{
+    for(auto job: *this)
+    {
+        if(job)
+        {
+            job->dowork();
+        }
+    }
+}
+
+
+
 
 }

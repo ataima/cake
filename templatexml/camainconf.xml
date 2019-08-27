@@ -1,7 +1,6 @@
 <main>
     <conf>
         <build>$ROOT/build</build>
-        <editor>scite</editor>
         <images>$ROOT/images</images>
         <ld_library_path>$LD_LIBRARY_PATH:$ROOT/images/egg_sysroot/lib:$ROOT/images/egg_sysroot/lib64</ld_library_path>
         <path>$ROOT/images/egg_sysroot/bin:/bin:/usr/bin</path>
@@ -11,9 +10,11 @@
         <sources>$ROOT/sources</sources>
         <store>$ROOT/store</store>
         <logs>$ROOT/logs</logs>
+        <status>$ROOT/status</status>
     </conf>
     <defaults>
         <step>
+            <enable>true</enable>
             <ar>ar</ar>
             <arch>x86_64</arch>
             <as>as</as>
@@ -52,6 +53,7 @@
             </user_env>
         </step>
         <step>
+            <enable>true</enable>
             <ar>ar</ar>
             <arch>x86_64</arch>
             <as>as</as>
@@ -82,6 +84,7 @@
             </user_env>
         </step>
         <step>
+            <enable>false</enable>
             <ar/>
             <arch>x86_64</arch>
             <as/>
@@ -112,6 +115,7 @@
             </user_env>
         </step>
         <step>
+            <enable>true</enable>
             <ar/>
             <arch>x86_64</arch>
             <as/>

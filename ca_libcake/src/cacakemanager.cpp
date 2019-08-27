@@ -76,7 +76,7 @@ bool cakeManager::run(const std::string &conf_file)
                     else
                     {
                         // crea associazione tra step e progetto dichiarato
-                        CAXml_Layers *slayer=new CAXml_Layers();
+                        CAXml_Layer *slayer=new CAXml_Layer();
                         if(slayer)
                         {
                             std::string layers;
@@ -166,7 +166,7 @@ inline static int check_dir_exist_or_create(const char *dir)
 
 void cakeManager::prepareWorkDirs(void)
 {
-    const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","LOGS","SOURCES","STORE",nullptr};
+    const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","STATUS","LOGS","SOURCES","STORE",nullptr};
     const char * tmpdir=nullptr;
     auto i=0;
     while(1)

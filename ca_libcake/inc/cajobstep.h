@@ -40,6 +40,7 @@ class ICAjob_step
 public:
     virtual void reset()=0;
     virtual void prepareDefaultEnv(IGetConfEnv  * _env)=0;
+    virtual void dowork(void)=0;
 };
 
 class ICAjob_step_manager
@@ -47,6 +48,7 @@ class ICAjob_step_manager
 public:
     virtual void reset()=0;
     virtual void prepareStep(IGetConfEnv  * _env)=0;
+    virtual void dowork(void)=0;
 };
 
 
@@ -55,14 +57,15 @@ class caJobStep
 {
 protected:
     ICAXml_Main_Defaults_Step  *step_conf;
-    ICAXml_Layers *layers_conf;
+    ICAXml_Layer *layers_conf;
     IGetConfEnv  *env;
     void AddUserEnv(void);
 public:
-    caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layers *_layers_conf)
+    caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layer *_layers_conf)
         :step_conf(_step_conf),layers_conf(_layers_conf),env(nullptr) {}
     inline void reset() final {delete layers_conf; layers_conf=nullptr;}
     void prepareDefaultEnv(IGetConfEnv  * _env) final;
+    void dowork(void) final;
 };
 
 
@@ -74,6 +77,7 @@ class caJobStepManager
 public:
     void reset() final;
     void prepareStep(IGetConfEnv  * _env) final;
+    void dowork(void) final;
 };
 
 
