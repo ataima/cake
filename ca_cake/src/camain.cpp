@@ -73,7 +73,10 @@ bool mainAppExecutor::init(const char *argv[], size_t size)
         {
             // trow exception with --help in input pass exception...
             if(!argvObj->getOption(f_help).isSelect())
-                throw e;
+            {
+                std::string msg1=e.what();
+                sys_throw(msg1);
+            }
         }
         // manage --verbose level
         if(ILogger::getInstance()!=nullptr)

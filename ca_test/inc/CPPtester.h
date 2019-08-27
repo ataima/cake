@@ -56,7 +56,7 @@ using namespace std;
 #define BUFFLENGTH	512
 #endif
 //////////////////////////////
-// throw object
+// sys_throw object
 typedef struct exc_fail
 {
     const char *file;
@@ -83,7 +83,7 @@ typedef struct exc_fail
     if((b)==0)\
 {\
 	EXC_FAIL fail(__FILE__,__LINE__,msg);\
-	throw(fail);\
+	sys_throw(fail);\
 }\
 }
 
@@ -93,7 +93,7 @@ typedef struct exc_fail
     if((b)!=0)\
 {\
 	EXC_FAIL fail(__FILE__,__LINE__);\
-	throw(fail);\
+	sys_throw(fail);\
 }\
 }
 
@@ -104,7 +104,7 @@ typedef struct exc_fail
 	b;\
 {\
 	EXC_FAIL fail(__FILE__,__LINE__);\
-	throw(fail);\
+	sys_throw(fail);\
 }\
 }catch(...){/* OK!*/}\
 }

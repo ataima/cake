@@ -68,6 +68,22 @@ namespace CA
         </step>
      */
 
+void caJobStep::AddUserEnv(void)
+{
+    CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step*>(step_conf);
+    if(!step->user_env.empty())
+    {
+        for(auto tmp : step->user_env)
+        {
+            CAXml_Main_Defaults_Step_User_env *uenv= dynamic_cast<CAXml_Main_Defaults_Step_User_env*>(tmp);
+            if(uenv)
+            {
+                env->add(uenv->name.c_str(),uenv->value);
+            }
+        }
+    }
+}
+
 
 void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
 {
@@ -79,8 +95,15 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
         step->toMap(tmp,true);
         if(!tmp.empty())
             env->add(tmp);
-        std::string *logdir=env->getValue("LOGS");
-        std::string logfile=*logdir+"/"+step->name+"_"+step->id+"_env.log";
+        auto usr_env=env->getMap().find("USER_ENV");
+        if(usr_env!=env->getMap().end())
+        {
+            env->getMap().erase(usr_env);
+        }
+        AddUserEnv();
+        std::string logdir;
+        env->getValue("LOGS",logdir);
+        std::string logfile=logdir+"/"+step->name+"_"+step->id+"_env.log";
         FilePrinter printer (logfile.c_str());
         CA::ILogger::getInstance()->addOutput(&printer);
         std::string msg="Step "+step->name+" configuration";

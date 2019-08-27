@@ -44,6 +44,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////
 
 
+inline void sys_throw(std::string & msg)
+{
+    throw std::runtime_error(msg);
+}
+
 namespace CA
 {
 
@@ -80,7 +85,7 @@ public:
 public:
     virtual ~IOptionArgv()=default;
     virtual const _cbt * getName()=0;
-    virtual bool parse(const char * argv[],size_t size,size_t & index)=0;
+    virtual void parse(const char * argv[],size_t size,size_t & index)=0;
     virtual const _cbt * getStringValue()=0;
     virtual size_t getIntValue()=0;
     virtual bool  isSelect()=0;
@@ -158,7 +163,7 @@ public:
     virtual ~IGetConfEnv()=default;
     virtual bool add(const char *key,std::string value)=0;
     virtual bool add(envMap & map)=0;
-    virtual std::string * getValue(const char * key)=0;
+    virtual bool getValue(const char * key ,std::string & out )=0;
     virtual void dump(const char *envinfo)=0;
     virtual void append( IGetConfEnv * root)=0;
     virtual envMap & getMap()=0;

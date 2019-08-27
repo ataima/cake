@@ -52,13 +52,12 @@ bool IOptionArgv::isOption(const _cbt *opt)
 }
 
 
-bool optionArgvBoolParser::parse(const char * /* argv */ [],
+void optionArgvBoolParser::parse(const char * /* argv */ [],
                                  size_t  /* size */,
                                  size_t &index)
 {
     status = true;
     index++;
-    return true;
 }
 
 
@@ -70,7 +69,7 @@ const _cbt * optionArgvBoolParser::getStringValue()
 }
 
 
-bool optionArgvStringParser::parse(const char *argv[], size_t size,
+void optionArgvStringParser::parse(const char *argv[], size_t size,
                                    size_t &index)
 {
     status=true;
@@ -79,13 +78,13 @@ bool optionArgvStringParser::parse(const char *argv[], size_t size,
     {
         inputS = argv[index];
         index++;
-        return true;
     }
     else
     {
         std::stringstream ss;
         ss << "Error : option '" << this->optionName << "' missing string input value";
-        throw std::runtime_error(ss.str());
+        std::string msg=ss.str();
+        sys_throw(msg);
     }
 }
 
@@ -96,13 +95,14 @@ const _cbt * optionArgvStringParser::getStringValue()
     {
         std::stringstream ss;
         ss << "Error : option '" << this->optionName << "' empty value ";
-        throw std::runtime_error(ss.str());
+        std::string msg=ss.str();
+        sys_throw(msg);
     }
     return inputS.c_str();
 }
 
 
-bool optionArgvIntParser::parse(const char *argv[], size_t size,
+void optionArgvIntParser::parse(const char *argv[], size_t size,
                                 size_t &index)
 {
     status = true;
@@ -114,13 +114,15 @@ bool optionArgvIntParser::parse(const char *argv[], size_t size,
         {
             std::stringstream ss;
             ss << "Error : " << optionName << " min value = " << min_value << " input : " << inputI;
-            throw std::runtime_error(ss.str());
+            std::string msg=ss.str();
+            sys_throw(msg);
         }
         if (inputI > max_value)
         {
             std::stringstream ss;
             ss << "Error : " << optionName << " max value = " << max_value << " input : " << inputI;
-            throw std::runtime_error(ss.str());
+            std::string msg=ss.str();
+            sys_throw(msg);
         }
         index++;
     }
@@ -128,9 +130,9 @@ bool optionArgvIntParser::parse(const char *argv[], size_t size,
     {
         std::stringstream ss;
         ss << "Error : option '" << this->optionName << "' missing number input value";
-        throw std::runtime_error(ss.str());
+        std::string msg=ss.str();
+        sys_throw(msg);
     }
-    return true;
 }
 
 const _cbt * optionArgvIntParser::getStringValue()

@@ -44,7 +44,7 @@ public:
     ~caGetConfEnv() final;
     bool add(const char *key,std::string value) final;
     bool add(envMap & map)final ;
-    std::string * getValue(const char * key) final;
+    bool getValue(const char * key ,std::string & out ) final;
     void dump(const char *envname) final;
     void append( IGetConfEnv * root) final;
     inline envMap & getMap() final { return keyVal;}

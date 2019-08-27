@@ -49,7 +49,8 @@ argvManager::argvManager(size_t reqOptionNum)
     {
         std::stringstream ss;
         ss<<"Error : duplicate instance of argvManager ";
-        throw std::runtime_error(ss.str());
+        std::string msg=ss.str();
+        sys_throw(msg);
     }
     instance=this;
     optionsDir.insert(optionsDir.begin(),reqOptionNum,nullptr);
@@ -75,7 +76,8 @@ void argvManager::Parse(const char *argv[], size_t size)
     size_t index = 1;
     if(index==size)
     {
-        throw std::runtime_error("missing xml input file..");
+        std::string msg( "missing xml input file..");
+        sys_throw ( msg);
     }
     while (index < size)
     {
@@ -107,12 +109,14 @@ void argvManager::addOption(IOptionArgv *reqOpt)
         {
             std::stringstream ss;
             ss<<" the requested option "<<reqOpt->getName() <<" cannot place at  offset"<<offset<<" because the totak number of options declare is "<<optionsDir.size();
-            throw std::runtime_error(ss.str().c_str());
+            std::string msg=ss.str();
+            sys_throw(msg);
         }
     }
     else
     {
-        throw std::runtime_error("Invalid option name!");
+        std::string err("Invalid option name!");
+        sys_throw (err);
     }
 }
 
@@ -126,7 +130,8 @@ IOptionArgv & argvManager::getOption(const std::string & opt)
     }
     std::stringstream ss;
     ss<<"Unknow option parameter '"<< opt<<"'";
-    throw std::runtime_error(ss.str());
+    std::string msg=ss.str();
+    sys_throw(msg);
 }
 
 IOptionArgv & argvManager::getOption(size_t offset)
@@ -139,7 +144,8 @@ IOptionArgv & argvManager::getOption(size_t offset)
     {
         std::stringstream ss;
         ss<<"Try to access to outbound on array options";
-        throw std::runtime_error(ss.str().c_str());
+        std::string msg=ss.str();
+        sys_throw(msg);
     }
 }
 

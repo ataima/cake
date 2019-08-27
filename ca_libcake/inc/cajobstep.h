@@ -38,8 +38,6 @@ namespace CA
 class ICAjob_step
 {
 public:
-    virtual ICAXml_Main_Defaults_Step  * getStepConf()=0;
-    virtual ICAXml_Layers *getLayersConf()=0;
     virtual void reset()=0;
     virtual void prepareDefaultEnv(IGetConfEnv  * _env)=0;
 };
@@ -59,13 +57,12 @@ protected:
     ICAXml_Main_Defaults_Step  *step_conf;
     ICAXml_Layers *layers_conf;
     IGetConfEnv  *env;
+    void AddUserEnv(void);
 public:
     caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layers *_layers_conf)
-        :step_conf(_step_conf),layers_conf(_layers_conf) {}
-    virtual inline ICAXml_Main_Defaults_Step  *getStepConf() final{return step_conf;}
-    virtual inline ICAXml_Layers  *getLayersConf() final{return layers_conf;}
-    virtual inline void reset() final {delete layers_conf; layers_conf=nullptr;}
-    virtual void prepareDefaultEnv(IGetConfEnv  * _env) final;
+        :step_conf(_step_conf),layers_conf(_layers_conf),env(nullptr) {}
+    inline void reset() final {delete layers_conf; layers_conf=nullptr;}
+    void prepareDefaultEnv(IGetConfEnv  * _env) final;
 };
 
 
@@ -75,8 +72,8 @@ class caJobStepManager
 {
 
 public:
-    virtual  void reset() final;
-    virtual   void prepareStep(IGetConfEnv  * _env) final;
+    void reset() final;
+    void prepareStep(IGetConfEnv  * _env) final;
 };
 
 

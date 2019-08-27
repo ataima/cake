@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include "caminiXml.h"
 #include <iostream>
+#include "cainterfaces.h"
 
 
 #ifndef _MSC_VER
@@ -119,7 +120,8 @@ void miniXmlNode::addOption(optionPair & option)
                  "already present with value : "<< it.second<<std::endl<<
                  "Cannot assign new option : " <<option.first<< " with value : "<<
                  option.second<<std::endl;
-            throw std::runtime_error(error.str().c_str());
+            std::string msg=error.str();
+            sys_throw(msg);
         }
     }
     options.insert(option);
@@ -614,7 +616,8 @@ bool miniXmlNode::save( const std::string & fileout, miniXmlNode *root)
         {
             std::stringstream error;
             error<<"Cannot create output file "<<fileout<<std::endl;
-            throw std::runtime_error(error.str().c_str());
+            std::string msg=error.str();
+            sys_throw(msg);
         }
     }
     return res;
@@ -812,7 +815,8 @@ miniXmlParse::miniXmlParse(const std::string & _in, miniXmlNode *_root)
         {
             std::stringstream error;
             error<<"Unknow input file "<<_in<<std::endl;
-            throw std::runtime_error(error.str().c_str());
+            std::string msg=error.str();
+            sys_throw(msg);
         }
     }
     else
@@ -891,7 +895,8 @@ bool miniXmlParse::getTokens(miniXmlNode **node, bool *firstNode)
                         std::stringstream ss;
                         ss<<"Missing CDATA closure : "<<(size_t)(p_index-p_start)<<
                           " '"<<msg<<"' "<<std::endl;
-                        throw std::runtime_error ( ss.str().c_str());
+                        std::string msg1=ss.str();
+                        sys_throw(msg1);
                     }
                 }
                 else
@@ -987,7 +992,8 @@ bool miniXmlParse::getTokens(miniXmlNode **node, bool *firstNode)
                         std::stringstream ss;
                         ss<<"Missmatch node closure : </"<< token_value<<"> must be </"
                           <<(*node)->getName()<<"> ("<<(*node)->getFullName()<<")"<<std::endl;
-                        throw std::runtime_error(ss.str().c_str());
+                        std::string msg1=ss.str();
+                        sys_throw(msg1);
                     }
                 }
             }
@@ -1025,7 +1031,8 @@ void miniXmlParse::captureOption(   std::string & token,
         {
             std::stringstream ss;
             ss << "Token:" << token << "  option:" << _option_name << " ??";
-            throw std::runtime_error(ss.str().c_str());
+            std::string msg1=ss.str();
+            sys_throw(msg1);
         }
         p_index++;
         while (*p_index == ' ' && *p_index != '>' && p_index < p_end)p_index++;
@@ -1033,7 +1040,8 @@ void miniXmlParse::captureOption(   std::string & token,
         {
             std::stringstream ss;
             ss << "Token:" << token << "  option:" << _option_name << " = missing \"";
-            throw std::runtime_error(ss.str().c_str());
+            std::string msg1=ss.str();
+            sys_throw(msg1);
         }
         p_index++;
         while (*p_index != '"' && *p_index != '>' && p_index < p_end)
@@ -1089,9 +1097,8 @@ bool miniXmlParse::captureToken(std::string &token)
             while (*p_index == ' ' && *p_index != '>' && p_index < p_end)p_index++;
             if (*p_index != '>')
             {
-                std::stringstream ss;
-                ss<<"Bad xml format missing >"<<std::endl;
-                throw std::runtime_error(ss.str().c_str());
+                std::string msg1("Bad xml format missing >");
+                sys_throw(msg1);
             }
         }
         else
@@ -1159,7 +1166,7 @@ bool miniXmlParse::parse()
                 {
                     //TODO TEST on mbt
                     std::runtime_error e("bad multi byte file format");
-                    throw e;
+                    sys_throw e;
                 }
                 else if (p == 0xfeff)
                 {
@@ -1172,8 +1179,8 @@ bool miniXmlParse::parse()
                 if (*p_index != '<')
                 {
                     //bad format of xml
-
-                    throw std::runtime_error("Xml bad format error : missing <");
+                    std::string msg1("Xml bad format error : missing <");
+                    sys_throw(msg1);
                 }
 #endif
         }
@@ -1190,7 +1197,8 @@ bool miniXmlParse::parse()
             std::stringstream ss;
             ss<<"Parse error at index : "<<(size_t)(p_index-p_start)<<
               " '"<<msg<<"' "<<std::endl;
-            throw std::runtime_error ( ss.str().c_str());
+            std::string msg1=ss.str();
+            sys_throw(msg1);
         }
     }
 }

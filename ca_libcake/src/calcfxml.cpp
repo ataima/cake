@@ -1,6 +1,7 @@
 #include "caminiXml.h"
 #include "calogiface.h"
 #include "calcfxml.h"
+#include "cainterfaces.h"
 #include <algorithm>
 
 
@@ -56,7 +57,8 @@ void LCFXml::setError(CA::IXmlNode *node, std::string what, std::string &name, s
           parent.str() << " ' " << REPLACE << " : " << BLUE << what << REPLACE << " : " <<
           YELLOW << name << REPLACE << " ( " << PURPLE << fullname << REPLACE << " )" <<
           std::endl;
-    throw std::runtime_error(error.str().c_str());
+    std::string msg=error.str();
+    sys_throw(msg);
 }
 
 
@@ -189,9 +191,25 @@ bool LCFXml::checkOptions(CA::IXmlNode::xmlNodeType one, CA::IXmlNode::xmlNodeTy
         {
             return false;
         }
+        else if (two == CA::IXmlNode::xmlNodeType::inode_childs_with_options)
+        {
+            return false;
+        }
+        else if (two == CA::IXmlNode::xmlNodeType::inode_childs)
+        {
+            return false;
+        }
         break;
     case CA::IXmlNode::xmlNodeType::inode_array_childs_with_options:
         if (two == CA::IXmlNode::xmlNodeType::inode_array_childs)
+        {
+            return false;
+        }
+        else if (two == CA::IXmlNode::xmlNodeType::inode_childs_with_options)
+        {
+            return false;
+        }
+        else if (two == CA::IXmlNode::xmlNodeType::inode_childs)
         {
             return false;
         }

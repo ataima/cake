@@ -68,9 +68,10 @@ bool cakeManager::run(const std::string &conf_file)
                 {
                     CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step *>(it);
                     LogInfo("Step %s : %s",step->name.c_str(),step->info.c_str() );
-                    if(step->projects.empty())
+                    if(step->layer.empty())
                     {
-                        throw std::runtime_error("error : no project included!");
+                        std::string msg("error : no project included!");
+                        sys_throw(msg);
                     }
                     else
                     {
@@ -78,14 +79,16 @@ bool cakeManager::run(const std::string &conf_file)
                         CAXml_Layers *slayer=new CAXml_Layers();
                         if(slayer)
                         {
-                            auto layers=env->getValue("LAYERS");
-                            if(layers->empty())
+                            std::string layers;
+                            env->getValue("LAYERS",layers);
+                            if(layers.empty())
                             {
                                 std::stringstream ss;
                                 ss<<"error undefined layers in configuration xml file : ";
-                                throw std::runtime_error(ss.str().c_str());
+                                std::string msg=ss.str();
+                                sys_throw(msg);
                             }
-                            std::string layer_name=*layers+"/"+step->projects;
+                            std::string layer_name=layers+"/"+step->layer;
                             if(slayer->loadFromXml(layer_name))
                             {
                                 LogInfo ("Step %s : create environment variables",step->name.c_str());
@@ -96,7 +99,8 @@ bool cakeManager::run(const std::string &conf_file)
                             {
                                 std::stringstream ss;
                                 ss<<"error cannot load layer xml file : "<<layer_name;
-                                throw std::runtime_error(ss.str().c_str());
+                                std::string msg=ss.str();
+                                sys_throw(msg);
                             }
                         }
                     }
@@ -106,7 +110,9 @@ bool cakeManager::run(const std::string &conf_file)
         }
         else
         {
-            throw std::runtime_error("Cannot load xml file : %s"+conf_file);
+            std::string msg;
+            msg="Cannot load xml file : %s"+conf_file;
+            sys_throw(msg);
         }
     }
     return res;
@@ -135,7 +141,8 @@ void cakeManager::prepareDefaultEnv(void)
     }
     else
     {
-        throw std::runtime_error("Invalid conf file: ROOT env must be set!");
+        std::string msg("Invalid conf file: ROOT env must be set!");
+        sys_throw(msg);
     }
 }
 
@@ -168,9 +175,10 @@ void cakeManager::prepareWorkDirs(void)
         tmpdir=workdirs[i];
         if(tmpdir!= nullptr)
         {
-            replaced=env->getValue(workdirs[i]);
-            if(replaced)
-                check_dir_exist_or_create(replaced->c_str());
+            std::string replaced;
+            env->getValue(workdirs[i],replaced);
+            if(!replaced.empty())
+                check_dir_exist_or_create(replaced.c_str());
         }
         else break;
         i++;
@@ -180,8 +188,9 @@ void cakeManager::prepareWorkDirs(void)
 
 void  cakeManager::logMainEnv(const char *logname)
 {
-    std::string *logdir=env->getValue("LOGS");
-    std::string logfile=*logdir+"/"+logname;
+    std::string logdir;
+    env->getValue("LOGS",logdir);
+    std::string logfile=logdir+"/"+logname;
     FilePrinter printer (logfile.c_str());
     CA::ILogger::getInstance()->addOutput(&printer);
     env->dump("Main configuration");

@@ -79,23 +79,28 @@ bool caGetConfEnv::add(envMap & tmap)
     return res;
 }
 
-std::string * caGetConfEnv::getValue(const char * key)
+bool caGetConfEnv::getValue(const char * key,std::string & out)
 {
-    std::string *res= nullptr;
+    auto result=false;
+    out.clear();
     auto it=keyVal.find(key);
     if(it!=keyVal.end())
     {
-        res=&it->second;
+        out=it->second;
+        result=true;
     }
     else
     {
-        std::string system_env=std::getenv(key);
-        if(system_env.empty())
+        char * envres=std::getenv(key);
+        if(envres==nullptr)
             LogInfo("Warning undefined env %s ",key);
         else
-            LogInfo("Warning load system env : %s",key);
+        {
+            LogInfo("Warning load system env : %s=%s", key, envres);
+            out=envres;
+        }
     }
-    return res;
+    return result;
 }
 
 
@@ -125,14 +130,17 @@ void caGetConfEnv::replaceValue(std::string & in, std::string & out)
             }
             if(!key.empty())
             {
-                std::string *res=getValue(key.c_str());
-                if(res== nullptr)
+                std::string res;
+                getValue(key.c_str(),res);
+                if(!res.empty())
+                    /*{
+                        std::string msg;
+                        msg="Unknow env : " + key;
+                        sys_throw(msg);
+                    }
+                    else */
                 {
-                    throw std::runtime_error("Unknow env : " + key);
-                }
-                else
-                {
-                    out+=*res;
+                    out+=res;
                 }
             }
         }

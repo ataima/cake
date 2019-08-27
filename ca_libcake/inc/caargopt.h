@@ -97,7 +97,7 @@ public :
         type = optARGV_BOOL;
     }
 
-    bool parse(const char *argv[], size_t size, size_t &index) final;
+    void parse(const char *argv[], size_t size, size_t &index) final;
 
     const _cbt *  getStringValue() final;
 };
@@ -115,7 +115,7 @@ public :
         type = optARGV_STRING;
     }
 
-    bool parse(const char *argv[], size_t size, size_t &index) final;
+    void parse(const char *argv[], size_t size, size_t &index) final;
 
     const _cbt * getStringValue() final;
 };
@@ -141,7 +141,7 @@ public :
         inputI=_default_value;
     }
 
-    bool parse(const char *argv[], size_t size, size_t &index) final;
+    void parse(const char *argv[], size_t size, size_t &index) final;
 
     const _cbt * getStringValue() final;
 
