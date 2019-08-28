@@ -22,7 +22,13 @@ calayerconf.cpp: calayerconf.xml
 	@cp ./layerconf/calayerconf.cpp ../ca_libcake/src/.
 	@cp ./layerconf/calayerconf.h   ../ca_libcake/inc/.
 
-compile: camainconf.cpp calayerconf.cpp
+castatusconf.cpp: castatusconf.xml
+	ca_qxmlc --verbose 7  --out_path  ./statusconf   castatusconf.xml
+	@cp ./statusconf/castatusconf.cpp ../ca_libcake/src/.
+	@cp ./statusconf/castatusconf.h   ../ca_libcake/inc/.
+
+
+compile: camainconf.cpp calayerconf.cpp castatusconf.cpp
 
 
 
@@ -31,9 +37,11 @@ clean:
 	$(call remove_file , "../ca_libcake/src/camainconf.cpp")
 	$(call remove_file , "../ca_libcake/inc/camainconf.h")
 	$(call remove_file , "../ca_libcake/src/calayerconf.cpp")
-	$(call remove_file , "../ca_libcake/inc/calayerconf.h")
-	$(call remove_file , "./mainconf")
-	$(call remove_file , "./layerconf")
-
+    $(call remove_file , "../ca_libcake/inc/calayerconf.h")
+    $(call remove_file , "../ca_libcake/src/castatusconf.cpp")
+    $(call remove_file , "../ca_libcake/inc/castatusconf.h")
+    $(call remove_file , "./mainconf")
+    $(call remove_file , "./layerconf")
+    $(call remove_file , "./statusconf")
 
 
