@@ -29,13 +29,29 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "calayerconf.h"
 #include "cajobstep.h"
 #include "cajoblayer.h"
+#include "cautils.h"
 #include <caconfenv.h>
 #include <cstdlib>
 
 
 namespace CA
 {
-    int caJobLayer::getNumWork(jobsList &towork){
-        towork.clear();
-    }
+
+
+void caJobLayer::checkProjectsStatus()
+{
+    std::string replaced;
+    jobstep->getEnv()->getValue("STATUS",replaced);
+    if(!replaced.empty())
+        caUtils::check_dir_exist_or_create(replaced.c_str());
+}
+
+
+size_t caJobLayer::getNumWork(jobsList &towork)
+{
+    int result=0;
+    towork.clear();
+    checkProjectsStatus();
+    return towork.size();
+}
 }

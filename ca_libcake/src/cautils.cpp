@@ -1,6 +1,3 @@
-#ifndef CA_JOB_LAYER_HEADER
-#define CA_JOB_LAYER_HEADER
-
 
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
@@ -26,45 +23,29 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
-
-#include "camainconf.h"
-#include "calayerconf.h"
+#include "calogiface.h"
+#include "calogger.h"
+#include "cautils.h"
+#include <caconfenv.h>
+#include <cstdlib>
 
 
 namespace CA
 {
-
-typedef std::list<std::string> jobsList;
-
-class ICAjob_layer
+int caUtils::check_dir_exist_or_create(const char *dir)
 {
-public:
-    virtual size_t getNumWork(jobsList &towork)=0;
-
-};
-
-class ICAjob_step;
-
-
-class caJobLayer
-    :public ICAjob_layer
-{
-protected:
-    ICAjob_step *jobstep;
-    void checkProjectsStatus();
-public:
-    caJobLayer(ICAjob_step *js):jobstep(js) {}
-    ~caJobLayer()
+    struct stat sb;
+    if(! ((stat(dir, &sb) == 0 && S_ISDIR(sb.st_mode))))
     {
-        jobstep=nullptr;
+        LogInfo("Not exist , create working directory : %s",dir);
+        return mkdir(dir,0777);
     }
-    size_t getNumWork(jobsList &towork) final;
-};
-
-
-
+    else
+    {
+        LogInfo("Working directory : %s exist",dir);
+    }
+    return 0;
+}
 
 
 }
-
-#endif // CA_JOB_LAYER_HEADER

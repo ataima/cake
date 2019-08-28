@@ -28,6 +28,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cacakemanager.h"
 #include "calayerconf.h"
 #include "cajobstep.h"
+#include "cajoblayer.h"
 #include <caconfenv.h>
 #include <cstdlib>
 
@@ -53,6 +54,28 @@ void caJobStep::AddUserEnv(void)
     }
 }
 
+
+
+caJobStep::caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layer *_layers_conf)
+    :step_conf(_step_conf),layers_conf(_layers_conf),env(nullptr)
+{
+    layer= new caJobLayer(this);
+}
+
+caJobStep::~caJobStep()
+{
+    reset();
+}
+
+void  caJobStep::reset(void)
+{
+    delete layers_conf;
+    layers_conf=nullptr;
+    delete env;
+    env=nullptr;
+    delete layer;
+    layer=nullptr;
+}
 
 void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
 {

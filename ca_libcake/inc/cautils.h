@@ -1,5 +1,5 @@
-#ifndef CA_JOB_LAYER_HEADER
-#define CA_JOB_LAYER_HEADER
+#ifndef CA_UTILS_HEADER
+#define CA_UTILS_HEADER
 
 
 /**************************************************************
@@ -27,44 +27,16 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
-#include "camainconf.h"
-#include "calayerconf.h"
-
 
 namespace CA
 {
 
-typedef std::list<std::string> jobsList;
-
-class ICAjob_layer
+class caUtils
 {
 public:
-    virtual size_t getNumWork(jobsList &towork)=0;
-
+    static int check_dir_exist_or_create(const char *dir);
 };
-
-class ICAjob_step;
-
-
-class caJobLayer
-    :public ICAjob_layer
-{
-protected:
-    ICAjob_step *jobstep;
-    void checkProjectsStatus();
-public:
-    caJobLayer(ICAjob_step *js):jobstep(js) {}
-    ~caJobLayer()
-    {
-        jobstep=nullptr;
-    }
-    size_t getNumWork(jobsList &towork) final;
-};
-
-
-
-
 
 }
 
-#endif // CA_JOB_LAYER_HEADER
+#endif
