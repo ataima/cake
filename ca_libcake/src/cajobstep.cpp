@@ -29,6 +29,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "calayerconf.h"
 #include "cajobstep.h"
 #include "cajoblayer.h"
+#include "cautils.h"
 #include <caconfenv.h>
 #include <cstdlib>
 
@@ -95,7 +96,9 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
         AddUserEnv();
         std::string logdir;
         env->getValue("LOGS",logdir);
-        std::string logfile=logdir+"/"+step->name+"_"+step->id+"_env.log";
+        std::string logfile=logdir;
+        caUtils::appendPath(logfile,step->name);
+        logfile+="_"+step->id+"_env.log";
         FilePrinter printer (logfile.c_str());
         CA::ILogger::getInstance()->addOutput(&printer);
         std::string msg="Step "+step->name+" configuration";
@@ -108,7 +111,12 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
 
 void caJobStep::dowork(void)
 {
+    jobsList todowork;
+    layer->getNumWork(todowork);
+    if(!todowork.empty())
+    {
 
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////

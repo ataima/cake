@@ -87,7 +87,8 @@ bool cakeManager::run(const std::string &conf_file)
                             std::string msg=ss.str();
                             sys_throw(msg);
                         }
-                        std::string layer_name=layers+"/"+step->layer;
+                        std::string layer_name=layers;
+                        caUtils::appendPath(layer_name,step->layer);
                         if(slayer->loadFromXml(layer_name))
                         {
                             LogInfo ("Step %s : create environment variables",step->name.c_str());
@@ -104,6 +105,7 @@ bool cakeManager::run(const std::string &conf_file)
                     }
                 }
                 jobs.prepareStep(env);
+                jobs.dowork();
             }
         }
         else
@@ -157,7 +159,7 @@ void cakeManager::prepareWorkDirs()
             std::string replaced;
             env->getValue(workdirs[i],replaced);
             if(!replaced.empty())
-                caUtils::check_dir_exist_or_create(replaced.c_str());
+                caUtils::checkDirExistOrCreate(replaced);
         }
         else break;
         i++;
@@ -169,7 +171,9 @@ void  cakeManager::logMainEnv(const char *logname)
 {
     std::string logdir;
     env->getValue("LOGS",logdir);
-    std::string logfile=logdir+"/"+logname;
+    std::string logfile=logdir;
+    std::string lname(logname);
+    caUtils::appendPath(logfile,lname);
     FilePrinter printer (logfile.c_str());
     CA::ILogger::getInstance()->addOutput(&printer);
     env->dump("Main configuration");

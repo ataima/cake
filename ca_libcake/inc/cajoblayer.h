@@ -51,7 +51,8 @@ class caJobLayer
 {
 protected:
     ICAjob_step *jobstep;
-    void checkProjectsStatus();
+    void checkLayerStatus();
+    void checkProjectsStatus(std::string & path,std::string & layer_name);
 public:
     caJobLayer(ICAjob_step *js):jobstep(js) {}
     ~caJobLayer()

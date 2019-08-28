@@ -33,8 +33,13 @@ namespace CA
 
 class caUtils
 {
+    /* bool function return true for OK result */
 public:
-    static int check_dir_exist_or_create(const char *dir);
+    static bool checkDirExistOrCreate(std::string & dir);
+    static bool getFileName(std::string & file, std::string & name);
+    static bool getFileExt(std::string & file, std::string & ext);
+    static void appendPath(std::string & root,std::string & path);
+    static bool checkFileExist(std::string & file);
 };
 
 }

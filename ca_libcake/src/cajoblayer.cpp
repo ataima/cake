@@ -38,20 +38,45 @@ namespace CA
 {
 
 
-void caJobLayer::checkProjectsStatus()
+void caJobLayer::checkLayerStatus()
 {
     std::string replaced;
     jobstep->getEnv()->getValue("STATUS",replaced);
-    if(!replaced.empty())
-        caUtils::check_dir_exist_or_create(replaced.c_str());
+    caUtils::checkDirExistOrCreate(replaced);
+    std::string layer_name;
+    CAXml_Main_Defaults_Step * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
+    caUtils::getFileName(step->layer,layer_name);
+    caUtils::appendPath(replaced,layer_name);
+    caUtils::checkDirExistOrCreate(replaced);
+    checkProjectsStatus(replaced,layer_name);
 }
 
+void caJobLayer::checkProjectsStatus(std::string & path,std::string & layer_name)
+{
+    CAXml_Layer *layer = dynamic_cast<CAXml_Layer *>(jobstep->getLayer());
+    for(auto prj: layer->include)
+    {
+        std::string p_status_name = prj+".xml";
+        std::string p_status=path;
+        caUtils::appendPath(p_status,p_status_name);
+        if(caUtils::checkFileExist(p_status))
+        {
+
+        }
+        else
+        {
+            LogInfo("%s:Status file  for project %s not available ,create ",
+                    layer_name.c_str(),prj.c_str());
+        }
+    }
+
+}
 
 size_t caJobLayer::getNumWork(jobsList &towork)
 {
     int result=0;
     towork.clear();
-    checkProjectsStatus();
+    checkLayerStatus();
     return towork.size();
 }
 }
