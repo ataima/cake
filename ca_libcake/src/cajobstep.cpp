@@ -35,38 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 namespace CA
 {
 
-/*
-<step>
-            <ar>ar</ar>
-            <arch>x86_64</arch>
-            <as>as</as>
-            <asflags/>
-            <c_include_path/>
-            <cc>gcc</cc>
-            <cflags>-O3</cflags>
-            <cpath/>
-            <cplus_include_path/>
-            <cppflags>-O3</cppflags>
-            <cross>x86_64-pc-linux-gnu</cross>
-            <cxx>g++</cxx>
-            <cxxflags>-O3</cxxflags>
-            <id>0</id>
-            <info>First step to create a gcc native at last version to build all packets</info>
-            <ld>ld</ld>
-            <ldflags/>
-            <libs/>
-            <name>build_gcc</name>
-            <nm>nm</nm>
-            <packages>$ROOT/packages/build_gcc</packages>
-            <projects>./project_sted_id_0.xml</projects>
-            <step_name>prepare new gcc from source</step_name>
-            <strip>strip</strip>
-            <user_env id="0" >
-                <name>USER_PATH</name>
-                <value>$ROOT/images/egg_sysroot/bin:$ROOT/images/egg_sysroot/x86_64-pc-linux-gnu/bin:/bin:/usr/bin</value>
-            </user_env>
-        </step>
-     */
+
 
 void caJobStep::AddUserEnv(void)
 {
