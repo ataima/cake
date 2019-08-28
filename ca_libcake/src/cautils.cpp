@@ -28,7 +28,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cautils.h"
 #include <caconfenv.h>
 #include <cstdlib>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace CA
 {
