@@ -43,11 +43,28 @@ OTHER DEALINGS IN THE SOFTWARE.
 #endif
 //////////////////////////////////////////////////////
 
+#ifdef _DEBUG
 
-inline void sys_throw(std::string & msg)
+inline void int_sys_throw(std::string & msg,const char * file, int line )
 {
-    throw std::runtime_error(msg);
+    std::stringstream ss;
+    ss<<std::endl<<"At file : "<<file<<std::endl;
+    ss<<"At line : "<<line<<std::endl;
+    ss<<"Exception :" <<msg;
+    throw std::runtime_error(ss.str());
 }
+#else
+inline void int_sys_throw(std::string & msg,const char * file, int line )
+{
+    throw std::runtime_error(msg.str());
+}
+
+#endif
+
+
+#define sys_throw(msg) int_sys_throw(msg,__FILE__,__LINE__)
+
+
 
 namespace CA
 {
