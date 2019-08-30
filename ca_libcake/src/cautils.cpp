@@ -25,20 +25,17 @@ OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 #include <string>
 #include "cautils.h"
-#include <cstdlib>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 namespace CA
 {
 bool caUtils::checkDirExistOrCreate(std::string & dir)
 {
     auto res=false;
-    struct stat sb;
+    struct stat sb= {0};
     if(!dir.empty())
     {
-        if (!((stat(dir.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))))
+        if (!((stat(dir.c_str(), &sb) == 0 && (S_ISDIR(sb.st_mode)))))
         {
             if( mkdir(dir.c_str(), 0777)==0)
                 res=true;
@@ -96,7 +93,7 @@ void caUtils::appendPath(std::string & root,std::string & path)
 
 bool caUtils::checkFileExist(std::string & file)
 {
-    struct stat sb;
+    struct stat sb= {0};
     if(!file.empty())
     {
         if (stat(file.c_str(), &sb) == 0 )
@@ -107,6 +104,40 @@ bool caUtils::checkFileExist(std::string & file)
     return false;
 }
 
+/**
+ * compare two file :
+ * if file 1 is older than file2 return true : ex source.cpp older source.o
+ * @param file1 name
+ * @param file2 name
+ * @return bool
+ */
+bool caUtils::compareChangeDate(std::string & root, std::string & child)
+{
+    auto res=false;
+    struct stat root_stat= {0};
+    struct stat child_stat= {0};
+    if(!root.empty())
+    {
+        if (stat(root.c_str(), &root_stat) == 0 )
+        {
+            if(!S_ISREG(root_stat.st_mode))
+                return res;
+        }
+    }
+    if(!child.empty())
+    {
+        if (stat(child.c_str(), &child_stat) == 0 )
+        {
+            if(!S_ISREG(child_stat.st_mode))
+                return res;
+        }
+    }
+    if (root_stat.st_mtim.tv_sec == child_stat.st_mtim.tv_sec)
+        res= (root_stat.st_mtim.tv_nsec < child_stat.st_mtim.tv_nsec);
+    else
+        res= (root_stat.st_mtim.tv_sec < child_stat.st_mtim.tv_sec);
+    return res;
+}
 
 
 }

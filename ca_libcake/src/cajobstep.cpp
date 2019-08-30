@@ -130,6 +130,12 @@ void caJobStep::dowork(void)
                 caUtils::appendPath(prj_conf,s);
                 if(caUtils::checkFileExist(prj_conf))
                 {
+                    //file progetto : se ultima modifica è più recente
+                    // del file status associato invalido status
+                    if(caUtils::compareChangeDate(it->second->fullpath,prj_conf))
+                    {
+
+                    }
 
                 }
                 else

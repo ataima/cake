@@ -16,6 +16,7 @@ fi
 
 #mkdir Debug$2$1
 #cd Debug$2$1
-cmake -DCMAKE_INSTALL_PREFIX=Debug$2$1 -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_TOOLCHAIN_FILE=./$1_$2_i686.toolchain.cmake   .
+rm -rf build
+cmake -DCMAKE_INSTALL_PREFIX=Debug$2$1 -DCMAKE_TOOLCHAIN_FILE=./$1_$2_i686.toolchain.cmake  -DCMAKE_BUILD_TYPE:STRING=Debug -H$PWD -B$PWD/build "-GUnix Makefiles"
 make -j8 all install
 

@@ -40,6 +40,7 @@ public:
     static bool getFileExt(std::string & file, std::string & ext);
     static void appendPath(std::string & root,std::string & path);
     static bool checkFileExist(std::string & file);
+    static bool compareChangeDate(std::string & root, std::string & child);
 };
 
 }

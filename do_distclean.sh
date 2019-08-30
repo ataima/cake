@@ -3,6 +3,7 @@ rm -rf Release*
 rm -rf dist
 rm -rf CMakeFiles
 rm -rf .idea
+rm -rf build
 find . -name CMakeFiles -exec rm -rf {} +
 find . -name cmake_install.cmake -exec rm {} +
 find . -name CMakeCache.txt  -exec rm {} +
