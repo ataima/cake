@@ -24,12 +24,12 @@ set(CMAKE_CXX_FLAGS "--std=c++14 ${CMAKE_CXX_FLAGS}")
 add_custom_command (
     TARGET cake
     PRE_BUILD
-    COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/beauty.sh
+    COMMAND ${PROJECT_HOME}/beauty.sh ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
     generate_source_from_xml
-    COMMAND make -C ../templatexml all
+    COMMAND make -C ../../templatexml all
 )
 add_dependencies( cake  generate_source_from_xml )
 

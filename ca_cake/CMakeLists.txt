@@ -27,7 +27,7 @@ target_link_libraries (ca_cake pthread )
 add_custom_command (
     TARGET ca_cake
     PRE_BUILD
-    COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/beauty.sh ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${PROJECT_HOME}/beauty.sh ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 

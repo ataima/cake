@@ -18,5 +18,4 @@ fi
 #cd Release$2$1
 rm -rf build
 cmake -DCMAKE_INSTALL_PREFIX=Release$2$1  -DCMAKE_TOOLCHAIN_FILE=./$1_$2_i686.toolchain.cmake   .-DCMAKE_BUILD_TYPE:STRING=Release -H$PWD -B$PWD/build "-GUnix Makefiles"
-make -j8 all install
-
+make -C build -j8 all install
