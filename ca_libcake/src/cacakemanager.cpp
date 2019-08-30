@@ -68,40 +68,47 @@ bool cakeManager::run(const std::string &conf_file)
                 for (auto &it : conf.defaults.step)
                 {
                     auto step=dynamic_cast<CAXml_Main_Defaults_Step *>(it);
-                    LogInfo("Step %s : %s",step->name.c_str(),step->info.c_str() );
-                    if(step->layer.empty())
+                    if(step->enable=="true")
                     {
-                        std::string msg("error : no project included!");
-                        sys_throw(msg);
-                    }
-                    else
-                    {
-                        // crea associazione tra step e progetto dichiarato
-                        auto slayer=new CAXml_Layer();
-                        std::string layers;
-                        env->getValue("LAYERS",layers);
-                        if(layers.empty())
+                        LogInfo("Step %s : %s", step->name.c_str(), step->info.c_str());
+                        if (step->layer.empty())
                         {
-                            std::stringstream ss;
-                            ss<<"error undefined layers in configuration xml file : ";
-                            std::string msg=ss.str();
+                            std::string msg("error : no project included!");
                             sys_throw(msg);
-                        }
-                        std::string layer_name=layers;
-                        caUtils::appendPath(layer_name,step->layer);
-                        if(slayer->loadFromXml(layer_name))
-                        {
-                            LogInfo ("Step %s : create environment variables",step->name.c_str());
-                            LogInfo ("Step %s : create jobs by layer :%s",step->name.c_str(),layer_name.c_str() );
-                            jobs.push_back(new caJobStep(step,slayer));
                         }
                         else
                         {
-                            std::stringstream ss;
-                            ss<<"error cannot load layer xml file : "<<layer_name;
-                            std::string msg=ss.str();
-                            sys_throw(msg);
+                            // crea associazione tra step e progetto dichiarato
+                            auto slayer = new CAXml_Layer();
+                            std::string layers;
+                            env->getValue("LAYERS", layers);
+                            if (layers.empty())
+                            {
+                                std::stringstream ss;
+                                ss << "error undefined layers in configuration xml file : ";
+                                std::string msg = ss.str();
+                                sys_throw(msg);
+                            }
+                            std::string layer_name = layers;
+                            caUtils::appendPath(layer_name, step->layer);
+                            if (slayer->loadFromXml(layer_name))
+                            {
+                                LogInfo ("Step %s : create environment variables", step->name.c_str());
+                                LogInfo ("Step %s : create jobs by layer :%s", step->name.c_str(), layer_name.c_str());
+                                jobs.push_back(new caJobStep(step, slayer));
+                            }
+                            else
+                            {
+                                std::stringstream ss;
+                                ss << "error cannot load layer xml file : " << layer_name;
+                                std::string msg = ss.str();
+                                sys_throw(msg);
+                            }
                         }
+                    }
+                    else
+                    {
+                        LogInfo("Step %s : disabled", step->name.c_str());
                     }
                 }
                 jobs.prepareStep(env);
@@ -148,7 +155,7 @@ void cakeManager::prepareDefaultEnv()
 
 void cakeManager::prepareWorkDirs()
 {
-    const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","STATUS","LOGS","SOURCES","STORE",nullptr};
+    const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","STATUS","SCRIPTS","LOGS","SOURCES","STORE",nullptr};
     const char * tmpdir=nullptr;
     auto i=0;
     while(true)

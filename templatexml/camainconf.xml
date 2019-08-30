@@ -11,6 +11,7 @@
         <store>$ROOT/store</store>
         <logs>$ROOT/logs</logs>
         <status>$ROOT/status</status>
+        <scripts>$ROOT/scripts</scripts>
     </conf>
     <defaults>
         <step>

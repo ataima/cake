@@ -29,17 +29,40 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "camainconf.h"
 #include "calayerconf.h"
-
+#include "castatusconf.h"
 
 namespace CA
 {
 
-typedef std::list<std::string> jobsList;
+
+
+typedef enum tag_project_phase
+{
+    ST_NONE,
+    ST_SOURCE,
+    ST_BUILD,
+    ST_PACKAGE,
+    ST_DEPLOY,
+    ST_COMPLETE
+} prjPhase;
+
+typedef struct tag_pos_status
+{
+    std::string fullpath;
+    std::string name;
+    ICAXml_Status * st;
+    std::string next_exec;
+    prjPhase phase;
+} prjStatus;
+
+typedef std::map<std::string,prjStatus * > statusMap;
 
 class ICAjob_layer
 {
 public:
-    virtual size_t getNumWork(jobsList &towork)=0;
+    virtual size_t getNumWork(std::list<std::string > & order)=0;
+    virtual statusMap* getStatusMap()=0;
+    virtual std::string & getName()=0;
 
 };
 
@@ -51,15 +74,26 @@ class caJobLayer
 {
 protected:
     ICAjob_step *jobstep;
-    void checkLayerStatus();
-    void checkProjectsStatus(std::string & path,std::string & layer_name);
+    statusMap projects_status;
+    std::string layer_name;
+    size_t loadLayerStatus(std::list<std::string > & order);
+    size_t loadProjectsStatus(std::list<std::string > & order,std::string & path, std::string & layer_name);
+    void getNextExec(prjStatus *st);
 public:
     caJobLayer(ICAjob_step *js):jobstep(js) {}
-    ~caJobLayer()
+    ~caJobLayer();
+    inline size_t getNumWork(std::list<std::string > & order)
     {
-        jobstep=nullptr;
+        return loadLayerStatus(order);
     }
-    size_t getNumWork(jobsList &towork) final;
+    inline  statusMap* getStatusMap()
+    {
+        return &projects_status;
+    }
+    inline std::string & getName()
+    {
+        return layer_name;
+    };
 };
 
 

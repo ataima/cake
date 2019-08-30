@@ -27,6 +27,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "calogger.h"
 #include "cacakemanager.h"
 #include "calayerconf.h"
+#include "caprojectconf.h"
 #include "cajobstep.h"
 #include "cajoblayer.h"
 #include "cautils.h"
@@ -111,11 +112,35 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
 
 void caJobStep::dowork(void)
 {
-    jobsList todowork;
-    layer->getNumWork(todowork);
-    if(!todowork.empty())
+    std::list<std::string> order_prj;
+    auto towork=layer->getNumWork(order_prj);
+    if(towork>0)
     {
+        statusMap *st=layer->getStatusMap();
+        for(auto prj: order_prj)
+        {
+            auto it=st->find(prj);
+            if(it!=st->end())
+            {
+                std::string repodir;
+                env->getValue("REPO",repodir);
+                std::string prj_conf=repodir;
+                caUtils::appendPath(prj_conf,prj);
+                std::string s("conf.xml");
+                caUtils::appendPath(prj_conf,s);
+                if(caUtils::checkFileExist(prj_conf))
+                {
 
+                }
+                else
+                {
+                    std::stringstream ss;
+                    ss<<layer->getName()<<" : project : "<<prj<<" : Cannot load conf.xml"<<std::endl;
+                    std::string msg=ss.str();
+                    sys_throw(msg);
+                }
+            }
+        }
     }
 }
 
