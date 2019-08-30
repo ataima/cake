@@ -29,16 +29,28 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 namespace CA
 {
+
+
 bool caUtils::checkDirExistOrCreate(std::string & dir)
+{
+    auto res=caUtils::checkDirExist(dir);
+    if(!res)
+    {
+        res=(mkdir(dir.c_str(), 0777)==0);
+    }
+    return res;
+}
+
+
+bool caUtils::checkDirExist(std::string & dir)
 {
     auto res=false;
     struct stat sb= {0};
     if(!dir.empty())
     {
-        if (!((stat(dir.c_str(), &sb) == 0 && (S_ISDIR(sb.st_mode)))))
+        if (stat(dir.c_str(), &sb) == 0 )
         {
-            if( mkdir(dir.c_str(), 0777)==0)
-                res=true;
+            res=S_ISDIR(sb.st_mode);
         }
     }
     return res;

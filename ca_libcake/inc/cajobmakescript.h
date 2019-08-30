@@ -1,5 +1,5 @@
-#ifndef CA_UTILS_HEADER
-#define CA_UTILS_HEADER
+#ifndef CA_JOB_MAKE_SCRIPT
+#define CA_JOB_MAKE_SCRIPT
 
 
 /**************************************************************
@@ -27,22 +27,45 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
-
 namespace CA
 {
 
-class caUtils
+
+class ICAjob_make_script
 {
-    /* bool function return true for OK result */
 public:
-    static bool checkDirExistOrCreate(std::string & dir);
-    static bool checkDirExist(std::string & dir);
-    static bool getFileName(std::string & file, std::string & name);
-    static bool getFileExt(std::string & file, std::string & ext);
-    static void appendPath(std::string & root,std::string & path);
-    static bool checkFileExist(std::string & file);
-    static bool compareChangeDate(std::string & root, std::string & child);
+    virtual void exec(IGetConfEnv  * _env, prjStatus * pst)=0;
 };
+
+
+class caJobMakeSourceScript
+    :public ICAjob_make_script
+{
+public:
+    void exec(IGetConfEnv  * _env, prjStatus * pst) final;
+};
+
+class caJobMakeBuildScript
+    :public ICAjob_make_script
+{
+public:
+    void exec(IGetConfEnv  * _env, prjStatus * pst) final;
+};
+
+class caJobMakePackageScript
+    :public ICAjob_make_script
+{
+public:
+    void exec(IGetConfEnv  * _env, prjStatus * pst) final;
+};
+
+class caJobMakeDeployScript
+    :public ICAjob_make_script
+{
+public:
+    void exec(IGetConfEnv  * _env, prjStatus * pst) final;
+};
+
 
 }
 

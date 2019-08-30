@@ -1,7 +1,3 @@
-#ifndef CA_UTILS_HEADER
-#define CA_UTILS_HEADER
-
-
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
 
@@ -27,23 +23,41 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
+#include "calogiface.h"
+#include "cacakemanager.h"
+#include "calayerconf.h"
+#include "cajobmakescript.h"
+#include "cajobstep.h"
+#include "cajoblayer.h"
+#include "cautils.h"
+#include "castatusconf.h"
+#include <caconfenv.h>
+#include <cstdlib>
+
 
 namespace CA
 {
 
-class caUtils
+void caJobMakeSourceScript::exec(IGetConfEnv  * _env, prjStatus * pst)
 {
-    /* bool function return true for OK result */
-public:
-    static bool checkDirExistOrCreate(std::string & dir);
-    static bool checkDirExist(std::string & dir);
-    static bool getFileName(std::string & file, std::string & name);
-    static bool getFileExt(std::string & file, std::string & ext);
-    static void appendPath(std::string & root,std::string & path);
-    static bool checkFileExist(std::string & file);
-    static bool compareChangeDate(std::string & root, std::string & child);
-};
 
 }
 
-#endif
+void caJobMakeBuildScript::exec(IGetConfEnv  * _env, prjStatus * pst)
+{
+
+}
+
+void caJobMakePackageScript::exec(IGetConfEnv  * _env, prjStatus * pst)
+{
+
+}
+
+void caJobMakeDeployScript::exec(IGetConfEnv  * _env, prjStatus * pst)
+{
+
+}
+
+}
+
+

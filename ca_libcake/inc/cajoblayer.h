@@ -26,14 +26,13 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
-
+#include "cainterfaces.h"
 #include "camainconf.h"
 #include "calayerconf.h"
 #include "castatusconf.h"
 
 namespace CA
 {
-
 
 
 typedef enum tag_project_phase
@@ -49,11 +48,13 @@ typedef enum tag_project_phase
 typedef struct tag_pos_status
 {
     std::string fullpath;
+    std::string fullprojconf;
     std::string name;
     ICAXml_Status * st;
     std::string next_exec;
     prjPhase phase;
 } prjStatus;
+
 
 typedef std::map<std::string,prjStatus * > statusMap;
 
@@ -77,7 +78,8 @@ protected:
     statusMap projects_status;
     std::string layer_name;
     size_t loadLayerStatus(std::list<std::string > & order);
-    size_t loadProjectsStatus(std::list<std::string > & order,std::string & path, std::string & layer_name);
+    size_t loadProjectsStatus(std::list<std::string > & order,std::string & path,
+                              std::string & repo, std::string & layer_name);
     void getNextExec(prjStatus *st);
 public:
     caJobLayer(ICAjob_step *js):jobstep(js) {}

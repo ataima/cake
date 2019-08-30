@@ -122,7 +122,6 @@ void argvManager::addOption(IOptionArgv *reqOpt)
 
 IOptionArgv & argvManager::getOption(const std::string & opt)
 {
-
     auto it = options.find(opt);
     if (it != options.end())
     {

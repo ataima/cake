@@ -38,12 +38,15 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <fstream>
 #include <string>
 
+
 #ifndef _MSC_VER
 #pragma pack(0)
 #endif
 //////////////////////////////////////////////////////
 
-#ifdef _DEBUG
+#define _MORE_DEBUG 1
+
+#if _MORE_DEBUG
 
 inline void int_sys_throw(std::string & msg,const char * file, int line )
 {
@@ -53,16 +56,18 @@ inline void int_sys_throw(std::string & msg,const char * file, int line )
     ss<<"Exception :" <<msg;
     throw std::runtime_error(ss.str());
 }
+#define sys_throw(msg) int_sys_throw(msg,__FILE__,__LINE__)
+
 #else
 inline void int_sys_throw(std::string & msg,const char * file, int line )
 {
     throw std::runtime_error(msg);
 }
+#define sys_throw(msg) int_sys_throw(msg)
 
 #endif
 
 
-#define sys_throw(msg) int_sys_throw(msg,__FILE__,__LINE__)
 
 
 
@@ -81,6 +86,7 @@ typedef  char16_t     _cbt;
 typedef  char     _cbt;
 #endif
 #endif
+
 
 
 

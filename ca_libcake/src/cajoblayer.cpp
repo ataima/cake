@@ -52,16 +52,26 @@ caJobLayer::~caJobLayer()
 size_t caJobLayer::loadLayerStatus(std::list<std::string > & order)
 {
     std::string replaced;
+    std::string replaced_prj;
     jobstep->getEnv()->getValue("STATUS",replaced);
+    jobstep->getEnv()->getValue("REPO",replaced_prj);
     caUtils::checkDirExistOrCreate(replaced);
+    if(!caUtils::checkDirExist(replaced_prj))
+    {
+        std::stringstream ss;
+        ss<<"REPO dir "<<replaced_prj<<"not exit"<<std::endl;
+        std::string msg=ss.str();
+        sys_throw(msg);
+    }
     auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
     caUtils::getFileName(step->layer,layer_name);
     caUtils::appendPath(replaced,layer_name);
     caUtils::checkDirExistOrCreate(replaced);
-    return  loadProjectsStatus(order,replaced, layer_name);
+    return  loadProjectsStatus(order,replaced, replaced_prj,layer_name);
 }
 
-size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::string & path, std::string & layer_name)
+size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::string & path,
+                                      std::string & repo,std::string & layer_name)
 {
     auto result=0;
     order.clear();
@@ -70,7 +80,25 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
     {
         std::string p_status_name = prj+".xml";
         std::string p_status=path;
+        std::string projconf=repo;
+        caUtils::appendPath(projconf,prj);
+        std::string defaultconf("conf.xml");
+        caUtils::appendPath(projconf,defaultconf);
         caUtils::appendPath(p_status,p_status_name);
+        if(!caUtils::checkFileExist(projconf))
+        {
+            std::stringstream ss;
+            ss<<layer_name<<" : project : "<<prj<<" : Cannot load conf.xml"<<std::endl;
+            std::string msg=ss.str();
+            sys_throw(msg);
+        }
+        if(!caUtils::compareChangeDate(projconf,p_status))
+        {
+            // project conf file is newer than status file : remove status file
+            LogInfo("%s:project configuration %s was changed : invalidate status ",
+                    layer_name.c_str(),prj.c_str());
+            remove(p_status.c_str());
+        }
         if(caUtils::checkFileExist(p_status))
         {
             auto it=projects_status.find(prj);
@@ -87,6 +115,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
                 auto *ns=new prjStatus;
                 ns->name=prj;
                 ns->fullpath=p_status;
+                ns->fullprojconf=projconf;
                 ns->st=status;
                 std::pair<std::string,prjStatus *> pv(prj,ns);
                 projects_status.insert(pv);
@@ -105,6 +134,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             auto *ns=new prjStatus;
             ns->name=prj;
             ns->fullpath=p_status;
+            ns->fullprojconf=projconf;
             ns->st=status;
             std::pair<std::string,prjStatus *> ps(prj,ns);
             projects_status.insert(ps);

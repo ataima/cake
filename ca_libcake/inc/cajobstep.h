@@ -26,10 +26,11 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
-
+#include "cainterfaces.h"
 #include "camainconf.h"
 #include "calayerconf.h"
-
+#include "cajoblayer.h"
+#include "cajobmakescript.h"
 
 namespace CA
 {
@@ -57,6 +58,10 @@ public:
 };
 
 
+
+
+
+
 class caJobStep
     :public ICAjob_step
 {
@@ -65,6 +70,7 @@ protected:
     ICAXml_Layer *layers_conf;
     IGetConfEnv  *env;
     ICAjob_layer *layer;
+    ICAjob_make_script *generator;
     void AddUserEnv(void);
 public:
     caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layer *_layers_conf);

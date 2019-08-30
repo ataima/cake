@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include <caconfenv.h>
 #include <calogger.h>
+#include "caconfenv.h"
 
 
 namespace CA

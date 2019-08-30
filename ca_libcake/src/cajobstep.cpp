@@ -30,6 +30,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "caprojectconf.h"
 #include "cajobstep.h"
 #include "cajoblayer.h"
+#include "cajobmakescript.h"
 #include "cautils.h"
 #include <caconfenv.h>
 #include <cstdlib>
@@ -122,28 +123,35 @@ void caJobStep::dowork(void)
             auto it=st->find(prj);
             if(it!=st->end())
             {
-                std::string repodir;
-                env->getValue("REPO",repodir);
-                std::string prj_conf=repodir;
-                caUtils::appendPath(prj_conf,prj);
-                std::string s("conf.xml");
-                caUtils::appendPath(prj_conf,s);
-                if(caUtils::checkFileExist(prj_conf))
+                if(it->second->phase!=ST_COMPLETE)
                 {
-                    //file progetto : se ultima modifica è più recente
-                    // del file status associato invalido status
-                    if(caUtils::compareChangeDate(it->second->fullpath,prj_conf))
+                    switch(it->second->phase)
                     {
-
+                    case  ST_NONE:
+                        LogInfo("%s: starting project : %s",layer->getName() , it->second->name);
+                    case  ST_SOURCE:
+                        LogInfo("%s: project : %s : source phase",layer->getName() , it->second->name);
+                        generator=new caJobMakeSourceScript();
+                        break;
+                    case  ST_BUILD:
+                        LogInfo("%s: project : %s : build phase",layer->getName() , it->second->name);
+                        generator=new caJobMakeBuildScript();
+                        break;
+                    case  ST_PACKAGE:
+                        LogInfo("%s: project : %s : package phase",layer->getName() , it->second->name);
+                        generator=new caJobMakePackageScript();
+                        break;
+                    case  ST_DEPLOY:
+                        LogInfo("%s: project : %s : deplaoy phase",layer->getName() , it->second->name);
+                        generator=new caJobMakeDeployScript();
+                        break;
                     }
-
-                }
-                else
-                {
-                    std::stringstream ss;
-                    ss<<layer->getName()<<" : project : "<<prj<<" : Cannot load conf.xml"<<std::endl;
-                    std::string msg=ss.str();
-                    sys_throw(msg);
+                    if(generator)
+                    {
+                        generator->exec(env,it->second);
+                        delete generator;
+                        generator=nullptr;
+                    }
                 }
             }
         }
