@@ -56,7 +56,7 @@ inline void int_sys_throw(std::string & msg,const char * file, int line )
 #else
 inline void int_sys_throw(std::string & msg,const char * file, int line )
 {
-    throw std::runtime_error(msg.str());
+    throw std::runtime_error(msg);
 }
 
 #endif
