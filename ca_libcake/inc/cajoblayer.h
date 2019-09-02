@@ -45,6 +45,54 @@ typedef enum tag_project_phase
     ST_COMPLETE
 } prjPhase;
 
+typedef enum tag_project_phase_source
+{
+    ST_SOURCE_NONE,
+    ST_SOURCE_PRE_DOWNLOAD,
+    ST_SOURCE_DOWNLOAD,
+    ST_SOURCE_POST_DOWNLOAD,
+    ST_SOURCE_PRE_PATCH,
+    ST_SOURCE_PATCH,
+    ST_SOURCE_POST_PATCH,
+    ST_SOURCE_PRE_SAVE,
+    ST_SOURCE_SAVE,
+    ST_SOURCE_POST_SAVE,
+} prjPhaseSource;
+
+
+typedef enum tag_project_phase_build
+{
+    ST_BUILD_NONE,
+    ST_BUILD_PRE_CONFIGURE,
+    ST_BUILD_CONFIGURE,
+    ST_BUILD_POST_CONFIGURE,
+    ST_BUILD_PRE_BUILD,
+    ST_BUILD_BUILD,
+    ST_BUILD_POST_BUILD,
+    ST_BUILD_PRE_INSTALL,
+    ST_BUILD_INSTALL,
+    ST_BUILD_POST_INSTALL,
+} prjPhaseBuild;
+
+
+typedef enum tag_project_phase_package
+{
+    ST_PACKAGE_NONE,
+    ST_PACKAGE_PRE,
+    ST_PACKAGE_PACKAGE,
+    ST_PACKAGE_POST,
+} prjPhasePackage;
+
+
+typedef enum tag_project_phase_deploy
+{
+    ST_DEPLOY_NONE,
+    ST_DEPLOY_PRE,
+    ST_DEPLOY_IMAGE,
+    ST_DEPLOY_POST,
+} prjPhaseDeploy;
+
+
 typedef struct tag_pos_status
 {
     std::string fullpath;
@@ -53,6 +101,10 @@ typedef struct tag_pos_status
     ICAXml_Status * st;
     std::string next_exec;
     prjPhase phase;
+    prjPhaseSource pSource;
+    prjPhaseBuild pBuild;
+    prjPhasePackage pPackage;
+    prjPhaseDeploy  pDeploy;
 } prjStatus;
 
 

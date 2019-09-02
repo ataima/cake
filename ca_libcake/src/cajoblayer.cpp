@@ -91,7 +91,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
         if(!caUtils::checkFileExist(projconf))
         {
             std::stringstream ss;
-            ss<<layer_name<<" : project : "<<prj<<" : Cannot load conf.xml"<<std::endl;
+            ss<<layer_name<<" : project : "<<prj<<"("<<projconf<<") : Cannot load conf.xml"<<std::endl;
             std::string msg=ss.str();
             sys_throw(msg);
         }
@@ -179,6 +179,10 @@ void caJobLayer::getNextExec(prjStatus *st)
     {
         st->next_exec = "none";
         st->phase=ST_NONE;
+        st->pSource=ST_SOURCE_NONE;
+        st->pBuild=ST_BUILD_NONE;
+        st->pPackage=ST_PACKAGE_NONE;
+        st->pDeploy=ST_DEPLOY_NONE;
         CAXml_Status *cur = dynamic_cast<CAXml_Status *>(st->st);
         if(cur)
         {
@@ -186,121 +190,145 @@ void caJobLayer::getNextExec(prjStatus *st)
             {
                 st->next_exec="pre_download.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_PRE_DOWNLOAD;
             }
             else if(cur->download!="1")
             {
                 st->next_exec="download.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_DOWNLOAD;
             }
             else if(cur->post_download!="1")
             {
                 st->next_exec="post_download.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_POST_DOWNLOAD;
             }
             else if(cur->pre_patch!="1")
             {
                 st->next_exec="pre_patch.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_PRE_PATCH;
             }
             else if(cur->patch!="1")
             {
                 st->next_exec="patch.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_PATCH;
             }
             else if(cur->post_patch!="1")
             {
                 st->next_exec="post_patch.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_POST_PATCH;
             }
             else if(cur->pre_save_source!="1")
             {
                 st->next_exec="pre_save_source.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_PRE_SAVE;
             }
             else if(cur->save_source!="1")
             {
                 st->next_exec="save_source.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_SAVE;
             }
             else if(cur->post_save_source!="1")
             {
                 st->next_exec="post_save_source.sh";
                 st->phase=ST_SOURCE;
+                st->pSource=ST_SOURCE_POST_SAVE;
             }
             else if(cur->pre_configure!="1")
             {
                 st->next_exec="pre_configure.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_PRE_CONFIGURE;
             }
             else if(cur->configure!="1")
             {
                 st->next_exec="configure.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_CONFIGURE;
             }
             else if(cur->post_configure!="1")
             {
                 st->next_exec="post_configure.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_POST_CONFIGURE;
             }
             else if(cur->pre_build!="1")
             {
                 st->next_exec="pre_build.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_PRE_BUILD;
             }
             else if(cur->build!="1")
             {
                 st->next_exec="build.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_BUILD;
             }
             else if(cur->post_build!="1")
             {
                 st->next_exec="post_build.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_POST_BUILD;
             }
             else if(cur->pre_install!="1")
             {
                 st->next_exec="pre_install.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_PRE_INSTALL;
             }
             else if(cur->install!="1")
             {
                 st->next_exec="install.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_INSTALL;
             }
             else if(cur->post_install!="1")
             {
                 st->next_exec="post_install.sh";
                 st->phase=ST_BUILD;
+                st->pBuild=ST_BUILD_POST_INSTALL;
             }
             else if(cur->pre_package!="1")
             {
                 st->next_exec="pre_package.sh";
                 st->phase=ST_PACKAGE;
+                st->pPackage=ST_PACKAGE_PRE;
             }
             else if(cur->package!="1")
             {
                 st->next_exec="package.sh";
                 st->phase=ST_PACKAGE;
+                st->pPackage=ST_PACKAGE_PACKAGE;
             }
             else if(cur->post_package!="1")
             {
                 st->next_exec="post_package.sh";
                 st->phase=ST_PACKAGE;
+                st->pPackage=ST_PACKAGE_POST;
             }
             else if(cur->pre_deploy!="1")
             {
                 st->next_exec="pre_deploy.sh";
                 st->phase=ST_DEPLOY;
+                st->pDeploy=ST_DEPLOY_PRE;
             }
             else if(cur->deploy!="1")
             {
                 st->next_exec="deploy.sh";
                 st->phase=ST_DEPLOY;
+                st->pDeploy=ST_DEPLOY_IMAGE;
             }
             else if(cur->post_deploy!="1")
             {
                 st->next_exec="post_deploy.sh";
                 st->phase=ST_DEPLOY;
+                st->pDeploy=ST_DEPLOY_POST;
             }
             else
             {

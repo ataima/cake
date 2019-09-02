@@ -128,21 +128,21 @@ void caJobStep::dowork(void)
                     switch(it->second->phase)
                     {
                     case  ST_NONE:
-                        LogInfo("%s: starting project : %s",layer->getName() , it->second->name);
+                        LogInfo("%s: starting project : %s",layer->getName().c_str() , it->second->name.c_str());
                     case  ST_SOURCE:
-                        LogInfo("%s: project : %s : source phase",layer->getName() , it->second->name);
+                        LogInfo("%s: project : %s : source phase",layer->getName().c_str() , it->second->name.c_str());
                         generator=new caJobMakeSourceScript();
                         break;
                     case  ST_BUILD:
-                        LogInfo("%s: project : %s : build phase",layer->getName() , it->second->name);
+                        LogInfo("%s: project : %s : build phase",layer->getName().c_str() , it->second->name.c_str());
                         generator=new caJobMakeBuildScript();
                         break;
                     case  ST_PACKAGE:
-                        LogInfo("%s: project : %s : package phase",layer->getName() , it->second->name);
+                        LogInfo("%s: project : %s : package phase",layer->getName().c_str() , it->second->name.c_str());
                         generator=new caJobMakePackageScript();
                         break;
                     case  ST_DEPLOY:
-                        LogInfo("%s: project : %s : deplaoy phase",layer->getName() , it->second->name);
+                        LogInfo("%s: project : %s : deplaoy phase",layer->getName().c_str() , it->second->name.c_str());
                         generator=new caJobMakeDeployScript();
                         break;
                     }
