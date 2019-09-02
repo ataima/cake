@@ -148,7 +148,7 @@ void caJobStep::dowork(void)
                     }
                     if(generator)
                     {
-                        generator->exec(env,it->second);
+                        generator->create(layer,env,it->second);
                         delete generator;
                         generator=nullptr;
                     }

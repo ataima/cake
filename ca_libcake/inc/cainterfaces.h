@@ -39,6 +39,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <string>
 
 
+
 #ifndef _MSC_VER
 #pragma pack(0)
 #endif
@@ -88,7 +89,14 @@ typedef  char     _cbt;
 #endif
 
 
-
+typedef enum tag_flg_index
+{
+    f_help,
+    f_verbose,
+    f_debug,
+    f_force_generate,
+    f_last_flags
+} availOption;
 
 class IOptionArgvManager;
 
@@ -190,6 +198,7 @@ public:
     virtual void dump(const char *envinfo)=0;
     virtual void append( IGetConfEnv * root)=0;
     virtual envMap & getMap()=0;
+    virtual void addEnvToScript(std::ofstream & of)=0;
 };
 
 

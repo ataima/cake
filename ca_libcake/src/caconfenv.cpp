@@ -104,6 +104,13 @@ bool caGetConfEnv::getValue(const char * key,std::string & out)
     return result;
 }
 
+void caGetConfEnv::addEnvToScript(std::ofstream & of)
+{
+    for(auto n: keyVal)
+    {
+        of<<n.first<<"="<<n.second<<std::endl;
+    }
+}
 
 // data una string rimpiazza tutte le pseudo variabili bash ($XXXXX)
 // con il valore della mappa . USER HOME e PWD predefinite

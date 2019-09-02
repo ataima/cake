@@ -60,6 +60,8 @@ bool mainAppExecutor::init(const char *argv[], size_t size)
                            optionArgvIntParser(f_verbose,"--verbose",5,0,7,mainAppExecutor::Help_verbose));
         argvObj->addOption(new
                            optionArgvBoolParser(f_debug,"--debug",mainAppExecutor::Help_debug));
+        argvObj->addOption(new
+                           optionArgvBoolParser(f_force_generate,"--force-generate",mainAppExecutor::Help_force_generate));
         if(size==1)
         {
             argvObj->getOption(f_help).getHelpFunctor()(argvObj);
@@ -153,9 +155,18 @@ void mainAppExecutor::Help_verbose(IOptionArgvManager * /* manager */ )
 void mainAppExecutor::Help_debug(IOptionArgvManager * /* manager */ )
 {
     std::cout<<GREEN_LIGHT<<"--debug "<<REPLACE<<std::endl;
-    std::cout<<"If insert this option, qxmlc create a file <>.xml.debug "<<std::endl;
-    std::cout<<"this is a work file to generate code e xslt"<<REPLACE<<std::endl;
+    std::cout<<"If insert this option, all bash script generated "<<std::endl;
+    std::cout<<"are with debug active"<<REPLACE<<std::endl;
     exit(0);
 }
+
+void mainAppExecutor::Help_force_generate(IOptionArgvManager * /* manager */ )
+{
+    std::cout<<GREEN_LIGHT<<"--force-generate "<<REPLACE<<std::endl;
+    std::cout<<"If insert this option, force the new generation"<<std::endl;
+    std::cout<<"of bash script from layers/projects conf file"<<REPLACE<<std::endl;
+    exit(0);
+}
+
 
 }

@@ -34,13 +34,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 namespace CA
 {
 
-typedef enum tag_flg_index
-{
-    f_help,
-    f_verbose,
-    f_debug,
-    f_last_flags
-} availOption;
+
 
 
 
@@ -50,6 +44,7 @@ class mainAppExecutor
     static void Help(IOptionArgvManager *manager);
     static void Help_verbose(IOptionArgvManager *manager);
     static void Help_debug(IOptionArgvManager * manager );
+    static void Help_force_generate(IOptionArgvManager * manager );
 public:
     mainAppExecutor() ;
     ~mainAppExecutor() final;

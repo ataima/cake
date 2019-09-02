@@ -48,6 +48,7 @@ public:
     void dump(const char *envname) final;
     void append( IGetConfEnv * root) final;
     inline envMap & getMap() final { return keyVal;}
+    void addEnvToScript(std::ofstream & of) final;
 };
 }
 

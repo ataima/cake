@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Debuglinux64/ca_cake",
-            "args": ["--debug" "--verbose" "7" "/home/angelo/cake/mainconf.xml" ],
+            "args": ["--debug" "--force-generate" "--verbose" "7" "/home/angelo/cake/mainconf.xml" ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
