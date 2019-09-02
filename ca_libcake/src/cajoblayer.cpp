@@ -76,6 +76,9 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
     auto result=0;
     order.clear();
     auto *layer = dynamic_cast<CAXml_Layer *>(jobstep->getLayer());
+    LogInfo ("---------------------------------------");
+    LogInfo ("Verifyng working projetcs status ....");
+    LogInfo ("---------------------------------------");
     for(auto & prj: layer->include)
     {
         std::string p_status_name = prj+".xml";
