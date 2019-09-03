@@ -49,6 +49,109 @@ caJobLayer::~caJobLayer()
     projects_status.clear();
 }
 
+void caJobLayer::prepareScripts()
+{
+    std::string replaced;
+    jobstep->getEnv()->getValue("REPO",replaced);
+    if(!caUtils::checkDirExist(replaced))
+    {
+        std::stringstream ss;
+        ss<<"REPO dir "<<replaced<<"not exit"<<std::endl;
+        std::string msg=ss.str();
+        sys_throw(msg);
+    }
+    prepareProjectScripts(replaced);
+}
+
+
+void caJobLayer::prepareProjectScripts(std::string &repo)
+{
+    auto result=0;
+    auto *layer = dynamic_cast<CAXml_Layer *>(jobstep->getLayer());
+    LogInfo ("---------------------------------------");
+    LogInfo ("Check projetcs scripts files ....");
+    LogInfo ("---------------------------------------");
+    if(layer_name.empty())
+    {
+        auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
+        caUtils::getFileName(step->layer,layer_name);
+    }
+    for(auto & prj: layer->include)
+    {
+        std::string projconf=repo;
+        caUtils::appendPath(projconf,prj);
+        std::string defaultconf("conf.xml");
+        caUtils::appendPath(projconf,defaultconf);
+        if(!caUtils::checkFileExist(projconf))
+        {
+            std::stringstream ss;
+            ss<<layer_name<<" : project : "<<prj<<"("<<projconf<<") : Cannot load conf.xml"<<std::endl;
+            std::string msg=ss.str();
+            sys_throw(msg);
+        }
+        auto it=projects_status.find(prj);
+        if(it==projects_status.end())
+        {
+            auto *ns=new prjStatus;
+            ns->name=prj;
+            ns->fullprojconf=projconf;
+            ns->st=nullptr;
+            std::pair<std::string,prjStatus *> pv(prj,ns);
+            projects_status.insert(pv);
+            ICAjob_make_script *generator=nullptr;
+            ns->phase=ST_NONE;
+            while(ns->phase!=ST_COMPLETE)
+            {
+                setCurrentScript(ns);
+                switch(ns->phase)
+                {
+                case  ST_NONE:
+                    LogInfo("%s: starting generate scripts for project : %s",
+                            layer_name.c_str() , ns->name.c_str());
+                    break;
+                case  ST_SOURCE:
+                    if(ns->pSource!=ST_SOURCE_NONE)
+                    {
+                        generator=new caJobMakeSourceScript();
+                    }
+                    break;
+                case  ST_BUILD:
+                    if(ns->pBuild!=ST_BUILD_NONE)
+                    {
+                        generator=new caJobMakeBuildScript();
+                    }
+                    break;
+                case  ST_PACKAGE:
+                    if(ns->pPackage!=ST_PACKAGE_NONE)
+                    {
+                        generator=new caJobMakePackageScript();
+                    }
+                    break;
+                case  ST_DEPLOY:
+                    if(ns->pDeploy!=ST_DEPLOY_NONE)
+                    {
+                        generator=new caJobMakeDeployScript();
+                    }
+                    break;
+                }
+                if(generator)
+                {
+                    generator->create(this,jobstep->getEnv(),ns);
+                    delete generator;
+                    generator=nullptr;
+                }
+                setNextStep(ns);
+            }
+            ns->phase=ST_NONE;
+            ns->pSource=ST_SOURCE_NONE;
+            ns->pBuild=ST_BUILD_NONE;
+            ns->pPackage=ST_PACKAGE_NONE;
+            ns->pDeploy=ST_DEPLOY_NONE;
+            ns->next_exec="";
+        }
+    }
+}
+
 size_t caJobLayer::loadLayerStatus(std::list<std::string > & order)
 {
     std::string replaced;
@@ -63,8 +166,11 @@ size_t caJobLayer::loadLayerStatus(std::list<std::string > & order)
         std::string msg=ss.str();
         sys_throw(msg);
     }
-    auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
-    caUtils::getFileName(step->layer,layer_name);
+    if(layer_name.empty())
+    {
+        auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
+        caUtils::getFileName(step->layer,layer_name);
+    }
     caUtils::appendPath(replaced,layer_name);
     caUtils::checkDirExistOrCreate(replaced);
     return  loadProjectsStatus(order,replaced, replaced_prj,layer_name);
@@ -95,7 +201,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             std::string msg=ss.str();
             sys_throw(msg);
         }
-        if(!caUtils::compareChangeDate(projconf,p_status))
+        if(!caUtils::compareFileChangeDate(projconf,p_status))
         {
             // project conf file is newer than status file : remove status file
             LogInfo("%s:project configuration %s was changed : invalidate status ",
@@ -108,20 +214,19 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             if(it!=projects_status.end())
             {
                 LogInfo("%s:Loading  project %s status ",layer_name.c_str(),prj.c_str());
-                it->second->st->loadFromXml(p_status);
+                if(it->second->st==nullptr)
+                {
+                    it->second->st=new CAXml_Status();
+                    it->second->st->loadFromXml(p_status);
+                    it->second->fullpath=p_status;
+                }
             }
             else
             {
-                LogInfo("%s:Loading  project %s status ",layer_name.c_str(),prj.c_str());
-                ICAXml_Status *status =new CAXml_Status();
-                status->loadFromXml(p_status);
-                auto *ns=new prjStatus;
-                ns->name=prj;
-                ns->fullpath=p_status;
-                ns->fullprojconf=projconf;
-                ns->st=status;
-                std::pair<std::string,prjStatus *> pv(prj,ns);
-                projects_status.insert(pv);
+                std::stringstream ss;
+                ss<<layer_name<<" : project : "<< prj <<" Cannot find status objects";
+                std::string msg=ss.str();
+                sys_throw(msg);
             }
         }
         else
@@ -134,13 +239,20 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             status->toString(ss);
             f<<ss.str().c_str();
             f.close();
-            auto *ns=new prjStatus;
-            ns->name=prj;
-            ns->fullpath=p_status;
-            ns->fullprojconf=projconf;
-            ns->st=status;
-            std::pair<std::string,prjStatus *> ps(prj,ns);
-            projects_status.insert(ps);
+            auto nit=projects_status.find(prj);
+            if(nit!=projects_status.end())
+            {
+                LogInfo("%s:Loading  project %s status ",layer_name.c_str(),prj.c_str());
+                nit->second->st=status;
+                nit->second->fullpath=p_status;
+            }
+            else
+            {
+                std::stringstream ss;
+                ss<<layer_name<<" : project : "<< prj <<" Cannot find status objects";
+                std::string msg=ss.str();
+                sys_throw(msg);
+            }
         }
 
     }
@@ -177,7 +289,6 @@ void caJobLayer::getNextExec(prjStatus *st)
 {
     if (st)
     {
-        st->next_exec = "none";
         st->phase=ST_NONE;
         st->pSource=ST_SOURCE_NONE;
         st->pBuild=ST_BUILD_NONE;
@@ -188,158 +299,273 @@ void caJobLayer::getNextExec(prjStatus *st)
         {
             if(cur->pre_download!="1")
             {
-                st->next_exec="pre_download.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_PRE_DOWNLOAD;
             }
             else if(cur->download!="1")
             {
-                st->next_exec="download.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_DOWNLOAD;
             }
             else if(cur->post_download!="1")
             {
-                st->next_exec="post_download.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_POST_DOWNLOAD;
             }
             else if(cur->pre_patch!="1")
             {
-                st->next_exec="pre_patch.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_PRE_PATCH;
             }
             else if(cur->patch!="1")
             {
-                st->next_exec="patch.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_PATCH;
             }
             else if(cur->post_patch!="1")
             {
-                st->next_exec="post_patch.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_POST_PATCH;
             }
             else if(cur->pre_save_source!="1")
             {
-                st->next_exec="pre_save_source.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_PRE_SAVE;
             }
             else if(cur->save_source!="1")
             {
-                st->next_exec="save_source.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_SAVE;
             }
             else if(cur->post_save_source!="1")
             {
-                st->next_exec="post_save_source.sh";
                 st->phase=ST_SOURCE;
                 st->pSource=ST_SOURCE_POST_SAVE;
             }
             else if(cur->pre_configure!="1")
             {
-                st->next_exec="pre_configure.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_PRE_CONFIGURE;
             }
             else if(cur->configure!="1")
             {
-                st->next_exec="configure.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_CONFIGURE;
             }
             else if(cur->post_configure!="1")
             {
-                st->next_exec="post_configure.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_POST_CONFIGURE;
             }
             else if(cur->pre_build!="1")
             {
-                st->next_exec="pre_build.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_PRE_BUILD;
             }
             else if(cur->build!="1")
             {
-                st->next_exec="build.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_BUILD;
             }
             else if(cur->post_build!="1")
             {
-                st->next_exec="post_build.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_POST_BUILD;
             }
             else if(cur->pre_install!="1")
             {
-                st->next_exec="pre_install.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_PRE_INSTALL;
             }
             else if(cur->install!="1")
             {
-                st->next_exec="install.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_INSTALL;
             }
             else if(cur->post_install!="1")
             {
-                st->next_exec="post_install.sh";
                 st->phase=ST_BUILD;
                 st->pBuild=ST_BUILD_POST_INSTALL;
             }
             else if(cur->pre_package!="1")
             {
-                st->next_exec="pre_package.sh";
                 st->phase=ST_PACKAGE;
                 st->pPackage=ST_PACKAGE_PRE;
             }
             else if(cur->package!="1")
             {
-                st->next_exec="package.sh";
                 st->phase=ST_PACKAGE;
                 st->pPackage=ST_PACKAGE_PACKAGE;
             }
             else if(cur->post_package!="1")
             {
-                st->next_exec="post_package.sh";
                 st->phase=ST_PACKAGE;
                 st->pPackage=ST_PACKAGE_POST;
             }
             else if(cur->pre_deploy!="1")
             {
-                st->next_exec="pre_deploy.sh";
                 st->phase=ST_DEPLOY;
                 st->pDeploy=ST_DEPLOY_PRE;
             }
             else if(cur->deploy!="1")
             {
-                st->next_exec="deploy.sh";
                 st->phase=ST_DEPLOY;
                 st->pDeploy=ST_DEPLOY_IMAGE;
             }
             else if(cur->post_deploy!="1")
             {
-                st->next_exec="post_deploy.sh";
                 st->phase=ST_DEPLOY;
                 st->pDeploy=ST_DEPLOY_POST;
             }
             else
             {
-                st->next_exec="done";
                 st->phase=ST_COMPLETE;
             }
+            setCurrentScript(st);
         }
     }
 }
 
+void caJobLayer::setCurrentScript(prjStatus *st)
+{
+    const char * source_script_name[]=
+    {
+        "",
+        "pre_download.sh",
+        "download.sh",
+        "post_download.sh",
+        "pre_patch.sh",
+        "patch.sh",
+        "post_patch.sh",
+        "pre_save.sh",
+        "save.sh",
+        "post_save.sh",
+    };
+    const char * build_script_name[]=
+    {
+        "",
+        "pre_configure.sh",
+        "configure.sh",
+        "post_configure.sh",
+        "pre_build.sh",
+        "build.sh",
+        "post_build.sh",
+        "pre_install.sh",
+        "install.sh",
+        "post_install.sh",
+    };
+    const char * package_script_name[]=
+    {
+        "",
+        "pre_package.sh",
+        "package.sh",
+        "post_package.sh",
+    };
+    const char * deploy_script_name[]=
+    {
+        "",
+        "pre_deploy.sh",
+        "deploy.sh",
+        "post_deploy.sh",
+    };
+    if (st)
+    {
+        st->next_exec.clear();
+        switch(st->phase)
+        {
+        case ST_COMPLETE:
+        case ST_NONE:
+            break;
+        case ST_SOURCE:
+            st->next_exec=source_script_name[st->pSource];
+            break;
+        case ST_BUILD:
+            st->next_exec=build_script_name[st->pBuild];
+            break;
+        case ST_PACKAGE:
+            st->next_exec=package_script_name[st->pPackage];
+            break;
+        case ST_DEPLOY:
+            st->next_exec=deploy_script_name[st->pDeploy];
+            break;
+        }
+    }
+}
 
+void caJobLayer::setNextStep(prjStatus *st)
+{
+    if (st)
+    {
+        switch(st->phase)
+        {
+        case ST_COMPLETE:
+            break;
+        case ST_NONE:
+            st->phase=ST_SOURCE;
+            st->pSource=ST_SOURCE_NONE;
+            st->pBuild=ST_BUILD_NONE;
+            st->pPackage=ST_PACKAGE_NONE;
+            st->pDeploy=ST_DEPLOY_NONE;
+            break;
+        case ST_SOURCE:
+            if(st->pSource==ST_SOURCE_POST_SAVE)
+            {
+                st->phase=ST_BUILD;
+                st->pSource=ST_SOURCE_NONE;
+                st->pBuild=ST_BUILD_NONE;
+            }
+            else
+            {
+                unsigned int v=(unsigned int )st->pSource;
+                v++;
+                st->pSource=(prjPhaseSource)v;
+            }
+            break;
+        case ST_BUILD:
+            if(st->pBuild==ST_BUILD_POST_INSTALL)
+            {
+                st->phase=ST_PACKAGE;
+                st->pBuild=ST_BUILD_NONE;
+                st->pPackage=ST_PACKAGE_NONE;
+
+            }
+            else
+            {
+                unsigned int v=(unsigned int )st->pBuild;
+                v++;
+                st->pBuild=(prjPhaseBuild)v;
+            }
+            break;
+        case ST_PACKAGE:
+            if(st->pPackage==ST_PACKAGE_POST)
+            {
+                st->phase=ST_DEPLOY;
+                st->pPackage=ST_PACKAGE_NONE;
+                st->pDeploy=ST_DEPLOY_NONE;
+            }
+            else
+            {
+                unsigned int v=(unsigned int )st->pPackage;
+                v++;
+                st->pPackage=(prjPhasePackage)v;
+            }
+            break;
+        case ST_DEPLOY:
+            if(st->pDeploy==ST_DEPLOY_POST)
+            {
+                st->phase=ST_COMPLETE;
+                st->pDeploy=ST_DEPLOY_NONE;
+            }
+            else
+            {
+                unsigned int v=(unsigned int )st->pDeploy;
+                v++;
+                st->pDeploy=(prjPhaseDeploy)v;
+            }
+            break;
+        }
+    }
+}
 
 
 }

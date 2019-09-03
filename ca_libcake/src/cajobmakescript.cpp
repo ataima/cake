@@ -59,19 +59,23 @@ bool caJobMakeBase::checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, p
     if(caUtils::checkFileExist(scriptname))
     {
 
-        LogInfo("Layer : %s : Project : %s : scripts : %s exist",layer->getName().c_str(),pst->name.c_str(),pst->next_exec.c_str());
-        res=caUtils::compareChangeDate(pst->fullprojconf,scriptname);
+        res=caUtils::compareFileChangeDate(pst->fullprojconf,scriptname);
         if( !res)
         {
             LogInfo("Layer : %s : Project : %s : scripts : %s out of date remove",layer->getName().c_str(),pst->name.c_str(),pst->next_exec.c_str());
             remove(scriptname.c_str());
+        }
+        else
+        {
+            LogInfo("Layer : %s : Project : %s : scripts : %s syncronized",layer->getName().c_str(),pst->name.c_str(),pst->next_exec.c_str());
         }
     }
     return res;
     /// false to create script file
 }
 
-bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,const funcCreateScript funcs[])
+bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env,
+                                      prjStatus * pst,const funcCreateScript funcs[],size_t off)
 {
     auto res=false;
     std::string scriptToCreate;
@@ -83,18 +87,17 @@ bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, p
     res=caJobMakeBase::checkStatusScript(layer,env,pst,scriptToCreate);
     if(!res)
     {
-        size_t v=(size_t)pst->pSource;
-        funcCreateScript funcToCreate=funcs[v];
+        funcCreateScript funcToCreate=funcs[off];
         if(funcToCreate!=nullptr)
         {
             res=funcToCreate(env,pst,scriptToCreate);
-            LogInfo("Layer : %s : Project : %s : create script file %s",layer->getName().c_str(),pst->name.c_str(),scriptToCreate.c_str());
+            LogInfo("Layer : %s : Project : %s : \n\t\tcreate script file %s",layer->getName().c_str(),pst->name.c_str(),scriptToCreate.c_str());
         }
     }
     return res;
 }
 
-bool caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
+void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
 {
     of<<"#!/bin/sh  ";
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
@@ -123,7 +126,7 @@ void caJobMakeSourceScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, prjS
         caJobMakeSourceScript::createPostSource,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs);
+    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->pSource);
 }
 
 
@@ -252,69 +255,114 @@ void caJobMakeBuildScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, prjSt
         caJobMakeBuildScript::createPostInstall,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs);
+    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->pBuild);
 }
 
 bool caJobMakeBuildScript::createPreConfigure(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);;
 }
 
 
 bool caJobMakeBuildScript::createConfigure(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createPostConfigure(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createPreBuild(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createBuild(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createPostBuild(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createPreInstall(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createInstall(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeBuildScript::createPostInstall(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
@@ -333,29 +381,44 @@ void caJobMakePackageScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, prj
         caJobMakePackageScript::createPostPackage,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs);
+    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->pPackage);
 }
 
 
 
 bool        caJobMakePackageScript::createPrePackage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool        caJobMakePackageScript::createPackage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool        caJobMakePackageScript::createPostPackage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
@@ -372,27 +435,42 @@ void caJobMakeDeployScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, prjS
         caJobMakeDeployScript::createPostDeploy,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs);
+    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->pDeploy);
 }
 
 bool caJobMakeDeployScript::createPreDeploy(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeDeployScript::createImage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 
 bool caJobMakeDeployScript::createPostDeploy(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname)
 {
-    auto res=false;
-    return res;
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        caJobMakeBase::createScriptHeader(of,env);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
 }
 
 

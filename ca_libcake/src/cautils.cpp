@@ -26,6 +26,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <string>
 #include "cautils.h"
 #include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <cstring>
 
 namespace CA
 {
@@ -123,7 +126,7 @@ bool caUtils::checkFileExist(std::string & file)
  * @param file2 name
  * @return bool
  */
-bool caUtils::compareChangeDate(std::string & root, std::string & child)
+bool caUtils::compareFileChangeDate(std::string & root, std::string & child)
 {
     auto res=false;
     struct stat root_stat= {0};
@@ -149,6 +152,105 @@ bool caUtils::compareChangeDate(std::string & root, std::string & child)
     else
         res= (root_stat.st_mtim.tv_sec < child_stat.st_mtim.tv_sec);
     return res;
+}
+
+/**
+ * compare a  file  with dir :
+ * if file 1 is older than dir return true : ex source.cpp older source.o
+ * @param file1 name
+ * @param dir name
+ * @return bool
+ */
+bool caUtils::compareDirChangeDate(std::string & root, std::string & path)
+{
+    auto res=false;
+    struct stat root_stat= {0};
+    struct stat path_stat= {0};
+    if(!root.empty())
+    {
+        if (stat(root.c_str(), &root_stat) == 0 )
+        {
+            if(!S_ISREG(root_stat.st_mode))
+                return res;
+        }
+    }
+    if(!path.empty())
+    {
+        if (stat(path.c_str(), &path_stat) == 0 )
+        {
+            if(!S_ISDIR(path_stat.st_mode))
+                return res;
+        }
+    }
+    if (root_stat.st_mtim.tv_sec == path_stat.st_mtim.tv_sec)
+        res= (root_stat.st_mtim.tv_nsec < path_stat.st_mtim.tv_nsec);
+    else
+        res= (root_stat.st_mtim.tv_sec < path_stat.st_mtim.tv_sec);
+    return res;
+}
+
+
+bool caUtils::removeDir(std::string & path)
+{
+    size_t path_len;
+    char *full_path;
+    DIR *dir;
+    struct stat stat_path, stat_entry;
+    struct dirent *entry;
+    stat(path.c_str(), &stat_path);
+
+    if(S_ISREG(stat_path.st_mode))
+    {
+        unlink(path.c_str());
+        return true;
+    }
+    // if path does not exists
+    if (S_ISDIR(stat_path.st_mode) == 0)
+    {
+        return true;
+    }
+    else
+    {
+
+        // if not possible to read the directory for this user
+        if ((dir = opendir(path.c_str())) == NULL)
+        {
+            return false;
+        }
+
+
+        // iteration through entries in the directory
+        while ((entry = readdir(dir)) != NULL)
+        {
+
+            // skip entries "." and ".."
+            if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+                continue;
+
+            // determinate a full path of an entry
+            std::string full_path=path;
+            std::string relpath=entry->d_name;
+            caUtils::appendPath(full_path,relpath);
+            stat(full_path.c_str(), &stat_entry);
+            // recursively remove a nested directory
+            if (S_ISDIR(stat_entry.st_mode) != 0)
+            {
+                caUtils::removeDir(full_path);
+            }
+            else
+            {
+                // remove a file object
+                if (unlink(full_path.c_str()) != 0)
+                    return false;
+            }
+        }
+        // remove the devastated directory and close the object of it
+        if (rmdir(path.c_str()) != 0)
+            return false;
+        closedir(dir);
+        return true;
+    }
+    return false;
 }
 
 

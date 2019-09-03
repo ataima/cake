@@ -44,9 +44,11 @@ class caJobMakeBase
     :public ICAjob_make_script
 {
 public:
-    static bool checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,const funcCreateScript funcs[]);
-    static bool createScriptHeader(std::ofstream &of,IGetConfEnv  * env);
+    static bool checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,
+                                  std::string & scriptname);
+    static bool createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,
+                                  const funcCreateScript funcs[], size_t off);
+    static void createScriptHeader(std::ofstream &of,IGetConfEnv  * env);
 };
 
 

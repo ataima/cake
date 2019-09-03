@@ -24,11 +24,13 @@ class cakeManager
     : public CA::ICake
 {
 private :
+    std::string conf_file;
     CAXml_Main conf;
     IGetConfEnv  *env;
     caJobStepManager jobs;
     void prepareDefaultEnv();
     void prepareWorkDirs();
+    void verifyConfigChange();
     void logMainEnv(const char *logname);
 public:
     cakeManager();

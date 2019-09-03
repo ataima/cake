@@ -30,7 +30,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cautils.h"
 #include <caconfenv.h>
 #include <cstdlib>
-
+#include <unistd.h>
+#include <string.h>
 
 
 namespace CA
@@ -47,9 +48,10 @@ cakeManager::~cakeManager()
 }
 
 
-bool cakeManager::run(const std::string &conf_file)
+bool cakeManager::run(const std::string &_conf_file)
 {
     auto res=false;
+    conf_file=_conf_file;
     if(!conf_file.empty())
     {
         if(conf.loadFromXml(conf_file))
@@ -62,6 +64,7 @@ bool cakeManager::run(const std::string &conf_file)
             else
             {
                 prepareDefaultEnv();
+                verifyConfigChange();
                 prepareWorkDirs();
                 logMainEnv("main_env_setup.log");
                 LogInfo("%d build steps",conf.defaults.step.size());
@@ -112,7 +115,8 @@ bool cakeManager::run(const std::string &conf_file)
                     }
                 }
                 jobs.prepareStep(env);
-                jobs.dowork();
+                jobs.doPrepare();
+                jobs.doWork();
             }
         }
         else
@@ -156,7 +160,7 @@ void cakeManager::prepareDefaultEnv()
 void cakeManager::prepareWorkDirs()
 {
     const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","STATUS","SCRIPTS","LOGS","SOURCES","STORE",nullptr};
-    const char * tmpdir=nullptr;
+    const char * tmpdir;
     auto i=0;
     while(true)
     {
@@ -186,6 +190,33 @@ void  cakeManager::logMainEnv(const char *logname)
     env->dump("Main configuration");
     CA::ILogger::getInstance()->sync();
     CA::ILogger::getInstance()->removeOutput(&printer);
+}
+
+
+void  cakeManager::verifyConfigChange()
+{
+    // se mainconf.xml is newer of status-dir remove status dir and scripts
+    std::string status;
+    std::string script;
+    env->getValue("STATUS",status);
+    env->getValue("SCRIPTS",script);
+    if(!caUtils::compareDirChangeDate(conf_file,status))
+    {
+        LogInfo("Main configure files was changed : Invalidate and rebuild all");
+        if(!caUtils::removeDir(status))
+        {
+            std::string msg("Cannot remove dir : ");
+            msg+=status;
+            sys_throw(msg);
+
+        }
+        if(!caUtils::removeDir(script))
+        {
+            std::string msg("Cannot remove dir : ");
+            msg+=script;
+            sys_throw(msg);
+        }
+    }
 }
 
 }

@@ -111,7 +111,13 @@ void caJobStep::prepareDefaultEnv(IGetConfEnv  * _env)
 }
 
 
-void caJobStep::dowork(void)
+void caJobStep::doPrepare(void)
+{
+    layer->prepareScripts();
+}
+
+
+void caJobStep::doWork(void)
 {
     std::list<std::string> order_prj;
     auto towork=layer->getNumWork(order_prj);
@@ -125,38 +131,13 @@ void caJobStep::dowork(void)
             {
                 if(it->second->phase!=ST_COMPLETE)
                 {
-                    switch(it->second->phase)
-                    {
-                    case  ST_NONE:
-                        LogInfo("%s: starting project : %s",layer->getName().c_str() , it->second->name.c_str());
-                    case  ST_SOURCE:
-                        LogInfo("%s: project : %s : source phase",layer->getName().c_str() , it->second->name.c_str());
-                        generator=new caJobMakeSourceScript();
-                        break;
-                    case  ST_BUILD:
-                        LogInfo("%s: project : %s : build phase",layer->getName().c_str() , it->second->name.c_str());
-                        generator=new caJobMakeBuildScript();
-                        break;
-                    case  ST_PACKAGE:
-                        LogInfo("%s: project : %s : package phase",layer->getName().c_str() , it->second->name.c_str());
-                        generator=new caJobMakePackageScript();
-                        break;
-                    case  ST_DEPLOY:
-                        LogInfo("%s: project : %s : deplaoy phase",layer->getName().c_str() , it->second->name.c_str());
-                        generator=new caJobMakeDeployScript();
-                        break;
-                    }
-                    if(generator)
-                    {
-                        generator->create(layer,env,it->second);
-                        delete generator;
-                        generator=nullptr;
-                    }
                 }
             }
         }
     }
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////////////
 void caJobStepManager::reset()
@@ -182,18 +163,27 @@ void caJobStepManager::prepareStep(IGetConfEnv  * _env)
 }
 
 
-void caJobStepManager::dowork(void)
+void caJobStepManager::doWork(void)
 {
     for(auto job: *this)
     {
         if(job)
         {
-            job->dowork();
+            job->doWork();
         }
     }
 }
 
-
+void caJobStepManager::doPrepare(void)
+{
+    for(auto job: *this)
+    {
+        if(job)
+        {
+            job->doPrepare();
+        }
+    }
+}
 
 
 }
