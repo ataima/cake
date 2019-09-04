@@ -94,7 +94,9 @@ bool caGetConfEnv::getValue(const char * key,std::string & out)
     {
         char * envres=std::getenv(key);
         if(envres==nullptr)
+        {
             LogInfo("Warning undefined env %s ",key);
+        }
         else
         {
             LogInfo("Warning load system env : %s=%s", key, envres);

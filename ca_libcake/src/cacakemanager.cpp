@@ -143,10 +143,21 @@ void cakeManager::prepareDefaultEnv()
         envMap tmp;
         conf.conf.toMap(tmp,true);
         env->add("ROOT",conf.conf.root); // must be the root of all env var
+        std::string base;
+        caUtils::dirName(conf_file,base);
+        env->add("BASE",base);
+        std::string repo=base;
+        std::string cr("repo");
+        caUtils::appendPath(repo,cr);
+        env->add("REPO",repo);
+        std::string layers=base;
+        std::string lr("layers");
+        caUtils::appendPath(layers,lr);
+        env->add("LAYERS",layers);
         if(!tmp.empty())
         {
-            auto it_repo=tmp.find("ROOT");
-            tmp.erase(it_repo);
+            auto it=tmp.find("ROOT");
+            tmp.erase(it);
             env->add(tmp);
         }
     }
@@ -159,15 +170,18 @@ void cakeManager::prepareDefaultEnv()
 
 void cakeManager::prepareWorkDirs()
 {
-    const char * workdirs[]= {"BUILD","IMAGES","LAYERS","REPO","STATUS","SCRIPTS","LOGS","SOURCES","STORE",nullptr};
-    const char * tmpdir;
+    const char * workdirs[]= {"BUILD","IMAGES","STATUS","SCRIPTS","LOGS","SOURCES","STORE",nullptr};
+    std::string replaced;
+    env->getValue("ROOT",replaced);
+    if(!replaced.empty())
+        caUtils::checkDirExistOrCreate(replaced);
     auto i=0;
     while(true)
     {
-        tmpdir=workdirs[i];
+        replaced.clear();
+        auto tmpdir=workdirs[i];
         if(tmpdir!= nullptr)
         {
-            std::string replaced;
             env->getValue(workdirs[i],replaced);
             if(!replaced.empty())
                 caUtils::checkDirExistOrCreate(replaced);

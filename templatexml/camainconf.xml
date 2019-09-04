@@ -4,8 +4,6 @@
         <images>$ROOT/images</images>
         <ld_library_path>$LD_LIBRARY_PATH:$ROOT/images/egg_sysroot/lib:$ROOT/images/egg_sysroot/lib64</ld_library_path>
         <path>$ROOT/images/egg_sysroot/bin:/bin:/usr/bin</path>
-        <layers>$ROOT/layers</layers>
-        <repo>$ROOT/repo</repo>
         <root>$HOME/cake</root>
         <sources>$ROOT/sources</sources>
         <store>$ROOT/store</store>

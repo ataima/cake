@@ -37,13 +37,16 @@ class caUtils
 public:
     static bool checkDirExistOrCreate(std::string & dir);
     static bool checkDirExist(std::string & dir);
-    static bool getFileName(std::string & file, std::string & name);
-    static bool getFileExt(std::string & file, std::string & ext);
     static void appendPath(std::string & root,std::string & path);
     static bool checkFileExist(std::string & file);
     static bool compareFileChangeDate(std::string & root, std::string & child);
     static bool compareDirChangeDate(std::string & root, std::string & child);
     static bool removeDir(std::string & path);
+    static bool baseName(std::string & path, std::string & filename);
+    static bool baseNameNoExt(std::string & path, std::string & filename);
+    static bool dirName(std::string & path, std::string & dirname);
+    static bool baseExt(std::string & file, std::string & ext);
+
 };
 
 }

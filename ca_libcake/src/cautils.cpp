@@ -59,41 +59,7 @@ bool caUtils::checkDirExist(std::string & dir)
     return res;
 }
 
-bool caUtils::getFileName(std::string & file, std::string & name)
-{
-    name.clear();
-    if(!file.empty())
-    {
-        std::string::size_type  s=file.find('.');
-        if(s!=std::string::npos)
-        {
-            std::string::size_type p=0;
-            while(p<s)
-            {
-                name+=file[p++];
-            }
-        }
-    }
-    return !name.empty();
-}
 
-bool caUtils::getFileExt(std::string & file, std::string & ext)
-{
-    ext.clear();
-    if(!file.empty())
-    {
-        std::string::size_type  s=file.find('.');
-        if(s!=std::string::npos)
-        {
-            s++;
-            while(s<file.size())
-            {
-                ext+=file[s++];
-            }
-        }
-    }
-    return !ext.empty();
-}
 
 void caUtils::appendPath(std::string & root,std::string & path)
 {
@@ -251,6 +217,84 @@ bool caUtils::removeDir(std::string & path)
         return true;
     }
     return false;
+}
+
+
+bool caUtils::baseName(std::string & path, std::string & filename)
+{
+    filename.clear();
+    if(!path.empty())
+    {
+        std::string::size_type s=path.rfind('/');
+        if(s!=std::string::npos)
+        {
+            s++;
+            while(s<path.size())
+            {
+                filename+=path[s++];
+            }
+        }
+        else
+        {
+            filename=path;
+        }
+    }
+    return (!filename.empty());
+}
+
+bool caUtils::baseNameNoExt(std::string & path, std::string & filename)
+{
+    filename.clear();
+    caUtils::baseName(path,filename);
+    if(!filename.empty())
+    {
+        std::string::size_type s=filename.rfind('.');
+        if(s!=std::string::npos)
+        {
+            filename.erase(s,filename.size());
+        }
+    }
+    return (!filename.empty());
+}
+
+bool caUtils::dirName(std::string & path, std::string & dirname)
+{
+    dirname.clear();
+    if(!path.empty())
+    {
+        std::string::size_type s=path.rfind('/');
+        if(s!=std::string::npos)
+        {
+            std::string::size_type p=0;
+            while(p<s)
+            {
+                dirname+=path[p++];
+            }
+        }
+        else
+        {
+            dirname="/";
+        }
+    }
+    return (!dirname.empty());
+}
+
+bool caUtils::baseExt(std::string & file, std::string & ext)
+{
+    ext.clear();
+    if(!file.empty())
+    {
+        std::string::size_type  s=file.find('.');
+        if(s!=std::string::npos)
+        {
+            s++;
+            while(s<file.size())
+            {
+                ext+=file[s++];
+            }
+        }
+    }
+    return !ext.empty();
 }
 
 

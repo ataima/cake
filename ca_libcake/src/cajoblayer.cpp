@@ -74,7 +74,7 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
     if(layer_name.empty())
     {
         auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
-        caUtils::getFileName(step->layer,layer_name);
+        caUtils::baseNameNoExt(step->layer,layer_name);
     }
     for(auto & prj: layer->include)
     {
@@ -169,7 +169,7 @@ size_t caJobLayer::loadLayerStatus(std::list<std::string > & order)
     if(layer_name.empty())
     {
         auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
-        caUtils::getFileName(step->layer,layer_name);
+        caUtils::baseNameNoExt(step->layer,layer_name);
     }
     caUtils::appendPath(replaced,layer_name);
     caUtils::checkDirExistOrCreate(replaced);

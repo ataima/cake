@@ -116,14 +116,14 @@ public:
 }
 
 
-#define LogEmergency(...) if(CA::currentLogLevel>=0)CA::ILogger::getInstance()->log(0,__VA_ARGS__)
-#define LogAlert(...)   if(CA::currentLogLevel>1)CA::ILogger::getInstance()->log(1,__VA_ARGS__)
-#define LogCritical(...)   if(CA::currentLogLevel>2)CA::ILogger::getInstance()->log(2,__VA_ARGS__)
-#define LogError(...)   if(CA::currentLogLevel>3)CA::ILogger::getInstance()->log(3,__VA_ARGS__)
-#define LogWarning(...)   if(CA::currentLogLevel>4)CA::ILogger::getInstance()->log(4,__VA_ARGS__)
-#define LogNotice(...)   if(CA::currentLogLevel>5)CA::ILogger::getInstance()->log(5,__VA_ARGS__)
-#define LogInfo(...)   if(CA::currentLogLevel>6)CA::ILogger::getInstance()->log(6,__VA_ARGS__)
-#define LogDebug(...)   if(CA::currentLogLevel>7)CA::ILogger::getInstance()->log(7,__VA_ARGS__)
+#define LogEmergency(...)       { if(CA::currentLogLevel>=0)CA::ILogger::getInstance()->log(0,__VA_ARGS__);}
+#define LogAlert(...)           { if(CA::currentLogLevel>1)CA::ILogger::getInstance()->log(1,__VA_ARGS__);}
+#define LogCritical(...)        { if(CA::currentLogLevel>2)CA::ILogger::getInstance()->log(2,__VA_ARGS__);}
+#define LogError(...)           { if(CA::currentLogLevel>3)CA::ILogger::getInstance()->log(3,__VA_ARGS__);}
+#define LogWarning(...)         { if(CA::currentLogLevel>4)CA::ILogger::getInstance()->log(4,__VA_ARGS__);}
+#define LogNotice(...)          { if(CA::currentLogLevel>5)CA::ILogger::getInstance()->log(5,__VA_ARGS__);}
+#define LogInfo(...)            { if(CA::currentLogLevel>6)CA::ILogger::getInstance()->log(6,__VA_ARGS__);}
+#define LogDebug(...)           { if(CA::currentLogLevel>7)CA::ILogger::getInstance()->log(7,__VA_ARGS__);}
 
 
 #else
