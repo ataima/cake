@@ -51,7 +51,7 @@ bool caJobMakeBase::checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, p
     caUtils::appendPath(replaced,pst->next_exec);
     scriptname=replaced;
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
-    if (argvObj && argvObj->getOption(f_force_generate).isSelect())
+    if (argvObj && argvObj->getOption(f_force_generate)->isSelect())
     {
         LogInfo("Layer : %s : Project : %s : scripts : %s  force generation",layer->getName().c_str(),pst->name.c_str(),pst->next_exec.c_str());
         remove(scriptname.c_str());
@@ -101,7 +101,7 @@ void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
 {
     of<<"#!/bin/sh  ";
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
-    if (argvObj && argvObj->getOption(f_debug).isSelect())
+    if (argvObj && argvObj->getOption(f_debug)->isSelect())
     {
         of<<" -x";
     }

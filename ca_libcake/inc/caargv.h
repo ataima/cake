@@ -57,8 +57,8 @@ public:
     {
         return optionsDir;
     }
-    IOptionArgv & getOption(const std::string & opt) final;
-    IOptionArgv & getOption(size_t offset) final ;
+    IOptionArgv * getOption(const std::string & opt) final;
+    IOptionArgv * getOption(size_t offset) final ;
     inline const stringList & getArgs() final
     {
         return args;

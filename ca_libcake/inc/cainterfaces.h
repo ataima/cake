@@ -160,8 +160,8 @@ public:
     virtual const optionMap & getOptionsMap()=0;
     virtual const optionDir & getOptionsArray()=0;
     virtual const stringList & getArgs()=0;
-    virtual IOptionArgv & getOption(size_t)=0;
-    virtual IOptionArgv & getOption(const std::string & opt)=0;
+    virtual IOptionArgv * getOption(size_t)=0;
+    virtual IOptionArgv * getOption(const std::string & opt)=0;
 };
 
 

@@ -64,7 +64,7 @@ bool mainAppExecutor::init(const char *argv[], size_t size)
                            optionArgvBoolParser(f_force_generate,"--force-generate",mainAppExecutor::Help_force_generate));
         if(size==1)
         {
-            argvObj->getOption(f_help).getHelpFunctor()(argvObj);
+            argvObj->getOption(f_help)->getHelpFunctor()(argvObj);
             exit(0);
         }
         try
@@ -74,7 +74,7 @@ bool mainAppExecutor::init(const char *argv[], size_t size)
         catch (std::runtime_error & e)
         {
             // trow exception with --help in input pass exception...
-            if(!argvObj->getOption(f_help).isSelect())
+            if(!argvObj->getOption(f_help)->isSelect())
             {
                 std::string msg1=e.what();
                 sys_throw(msg1);
@@ -82,20 +82,20 @@ bool mainAppExecutor::init(const char *argv[], size_t size)
         }
         // manage --verbose level
         if(ILogger::getInstance()!=nullptr)
-            ILogger::getInstance()->setLogLevel(argvObj->getOption(f_verbose).getIntValue());
+            ILogger::getInstance()->setLogLevel(argvObj->getOption(f_verbose)->getIntValue());
         // managin help
-        if(argvObj->getOption(f_help).isSelect())
+        if(argvObj->getOption(f_help)->isSelect())
         {
-            if(argvObj->getOption(f_verbose).isSelect())
+            if(argvObj->getOption(f_verbose)->isSelect())
             {
-                argvObj->getOption(f_verbose).getHelpFunctor()(argvObj);
+                argvObj->getOption(f_verbose)->getHelpFunctor()(argvObj);
             }
-            else if(argvObj->getOption(f_debug).isSelect())
+            else if(argvObj->getOption(f_debug)->isSelect())
             {
-                argvObj->getOption(f_debug).getHelpFunctor()(argvObj);
+                argvObj->getOption(f_debug)->getHelpFunctor()(argvObj);
             }
             else
-                argvObj->getOption(f_help).getHelpFunctor()(argvObj);
+                argvObj->getOption(f_help)->getHelpFunctor()(argvObj);
             exit(0);
         }
     }

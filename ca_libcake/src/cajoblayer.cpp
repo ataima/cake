@@ -133,6 +133,10 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
                         generator=new caJobMakeDeployScript();
                     }
                     break;
+                case ST_COMPLETE:
+                    LogInfo("%s: generate scripts for project : %s coplete",
+                            layer_name.c_str() , ns->name.c_str());
+                    break;
                 }
                 if(generator)
                 {

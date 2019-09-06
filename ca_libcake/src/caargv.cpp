@@ -83,7 +83,7 @@ void argvManager::Parse(const char *argv[], size_t size)
     {
         if (IOptionArgv::isOption(argv[index]))
         {
-            getOption(argv[index]).parse(argv, size, index);
+            getOption(argv[index])->parse(argv, size, index);
         }
         else
         {
@@ -120,24 +120,25 @@ void argvManager::addOption(IOptionArgv *reqOpt)
     }
 }
 
-IOptionArgv & argvManager::getOption(const std::string & opt)
+IOptionArgv * argvManager::getOption(const std::string & opt)
 {
     auto it = options.find(opt);
     if (it != options.end())
     {
-        return  *it->second;
+        return  it->second;
     }
     std::stringstream ss;
     ss<<"Unknow option parameter '"<< opt<<"'";
     std::string msg=ss.str();
     sys_throw(msg);
+    return nullptr;
 }
 
-IOptionArgv & argvManager::getOption(size_t offset)
+IOptionArgv * argvManager::getOption(size_t offset)
 {
     if(offset<optionsDir.size())
     {
-        return *optionsDir.at(offset);
+        return optionsDir.at(offset);
     }
     else
     {
@@ -146,6 +147,7 @@ IOptionArgv & argvManager::getOption(size_t offset)
         std::string msg=ss.str();
         sys_throw(msg);
     }
+    return nullptr;
 }
 
 bool argvManager::saveAsXml(const _cbt * filename)
