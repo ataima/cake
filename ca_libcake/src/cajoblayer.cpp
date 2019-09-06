@@ -24,6 +24,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 #include "calogiface.h"
+#include "calogger.h"
 #include "cacakemanager.h"
 #include "calayerconf.h"
 #include "cajobstep.h"
@@ -60,7 +61,22 @@ void caJobLayer::prepareScripts()
         std::string msg=ss.str();
         sys_throw(msg);
     }
+    if(layer_name.empty())
+    {
+        auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
+        caUtils::baseNameNoExt(step->layer,layer_name);
+    }
+    std::string logdir;
+    jobstep->getEnv()->getValue("LOGS",logdir);
+    std::string logfile=logdir;
+    std::string lname(layer_name);
+    lname+="_scripts.log";
+    caUtils::appendPath(logfile,lname);
+    FilePrinter printer (logfile.c_str());
+    CA::ILogger::getInstance()->addOutput(&printer);
     prepareProjectScripts(replaced);
+    CA::ILogger::getInstance()->sync();
+    CA::ILogger::getInstance()->removeOutput(&printer);
 }
 
 
@@ -71,11 +87,6 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
     LogInfo ("---------------------------------------");
     LogInfo ("Check projetcs scripts files ....");
     LogInfo ("---------------------------------------");
-    if(layer_name.empty())
-    {
-        auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
-        caUtils::baseNameNoExt(step->layer,layer_name);
-    }
     for(auto & prj: layer->include)
     {
         std::string projconf=repo;
@@ -170,11 +181,6 @@ size_t caJobLayer::loadLayerStatus(std::list<std::string > & order)
         std::string msg=ss.str();
         sys_throw(msg);
     }
-    if(layer_name.empty())
-    {
-        auto * step= dynamic_cast<CAXml_Main_Defaults_Step *>(jobstep->getStep());
-        caUtils::baseNameNoExt(step->layer,layer_name);
-    }
     caUtils::appendPath(replaced,layer_name);
     caUtils::checkDirExistOrCreate(replaced);
     return  loadProjectsStatus(order,replaced, replaced_prj,layer_name);
@@ -217,7 +223,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             auto it=projects_status.find(prj);
             if(it!=projects_status.end())
             {
-                LogInfo("%s:Loading  project %s status ",layer_name.c_str(),prj.c_str());
+                LogInfo("%s : Loading  project %s status ",layer_name.c_str(),prj.c_str());
                 if(it->second->st==nullptr)
                 {
                     it->second->st=new CAXml_Status();
@@ -246,7 +252,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             auto nit=projects_status.find(prj);
             if(nit!=projects_status.end())
             {
-                LogInfo("%s:Loading  project %s status ",layer_name.c_str(),prj.c_str());
+                LogInfo("%s : Loading  project %s status ",layer_name.c_str(),prj.c_str());
                 nit->second->st=status;
                 nit->second->fullpath=p_status;
             }

@@ -1,5 +1,3 @@
-
-#include "calogger.h"
 /**************************************************************
 Copyright(c) 2015 Angelo Coppi
 
@@ -24,6 +22,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
+
+
+#include <calogger.h>
 #include <ctime>
 #include <thread>
 #include <chrono>
@@ -47,11 +48,7 @@ static const char *msginfo[]=
     "HUH!","HUH!","HUH!","HUH!"
 };
 
-
-
 ILogger * ILogger::instance = nullptr;
-
-
 
 Logger::Logger() :
     notify(false),
@@ -118,7 +115,6 @@ void Logger::log(int level,const char *fmt, ... )
     }
 }
 
-
 void Logger::print(ILogParam *p)
 {
     if (!current_printers.empty() )
@@ -155,7 +151,6 @@ ILogParam * Logger::remove()
     return param;
 }
 
-
 void Logger::enqueue()
 {
 
@@ -190,12 +185,11 @@ void Logger::entry(ILogger *current)
     }
 }
 
-
 void Logger::sync()
 {
     while (!io.empty())
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
@@ -220,10 +214,8 @@ void Logger::reset()
     }
 }
 
-
 void DefaultPrinter::out( int level, std::string & msg)
 {
-
     const char * colors[]=
     {
         RED,RED,RED,
@@ -233,6 +225,7 @@ void DefaultPrinter::out( int level, std::string & msg)
     if(level>LOG_DEBUG)level=LOG_DEBUG+1;
     fprintf(stderr ,msg.c_str(),GREEN_LIGHT,YELLOW,GREEN_LIGHT,WHITE,colors[level],REPLACE,"\n");
 }
+
 FilePrinter::FilePrinter(const char *name)
 {
     file=fopen(name,"w+");
@@ -242,6 +235,7 @@ FilePrinter::~FilePrinter()
 {
     if(file)fclose(file);
 }
+
 void FilePrinter::out( int level, std::string & msg)
 {
 
