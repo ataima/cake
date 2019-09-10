@@ -33,17 +33,22 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 namespace CA
 {
+
+
+
+
 class caScheduler
     :public IScheduler
 {
-    std::stack<std::string> works;
+    std::stack<IPrjStatus *> works;
+    std::set<std::string> works_set;
     size_t max_thread;
     prjPhase phase;
 public:
     caScheduler (size_t _max_thread,prjPhase _phase):
         max_thread(_max_thread),phase(_phase) {}
-    void addExec( std::string work) final;
-    bool doExec()final;
+    virtual void addExec( IPrjStatus * status) final;
+    virtual int doExec() final;
 };
 
 
@@ -51,26 +56,17 @@ class caSchedulerManager
     : public ISchedulerManager
 {
     std::vector<IScheduler * > workers;
-    std::vector<size_t > max_thread;
 public:
-    inline void addExec(prjPhase phase, std::string work) final
+    caSchedulerManager(size_t max_thread);
+    inline void addExec(IPrjStatus *status) final
     {
-        IScheduler *exec=workers.at(phase);
+        IScheduler *exec=workers.at(status->getMainPhase());
         if(exec!=nullptr)
         {
-            exec->addExec(work);
+            exec->addExec(status);
         }
     }
-    inline bool doExec(prjPhase phase)final
-    {
-        auto res=false;
-        IScheduler *exec=workers.at(phase);
-        if(exec!=nullptr)
-        {
-            res=exec->doExec(work);
-        }
-        return res;
-    }
+    bool doExec()final;
 };
 
 }

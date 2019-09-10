@@ -49,7 +49,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #if _MORE_DEBUG
 
-inline void int_sys_throw(std::string & msg,const char * file, int line )
+inline void  int_sys_throw(std::string & msg,const char * file, int line )
 {
     std::stringstream ss;
     ss<<std::endl<<"At file : "<<file<<std::endl;
@@ -260,19 +260,62 @@ public:
 };
 
 
+
+class IPrjStatus
+{
+public:
+    virtual std::string & getFullPath()=0;
+    virtual void setFullPath(std::string & p)=0;
+    virtual std::string & getFullProjConf()=0;
+    virtual std::string & getName()=0;
+    virtual void * getXmlStatus()=0;
+    virtual void setXmlStatus(void *stnew)=0;
+    virtual std::string & getNextExec()=0;
+    virtual void setNextExec(std::string v)=0;
+    virtual prjPhase getMainPhase()=0;
+    virtual void setMainPhase(prjPhase _n)=0;
+    virtual prjPhaseSource getPhaseSource()=0;
+    virtual void setPhaseSource(prjPhaseSource _v)=0;
+    virtual void incPhaseSource()=0;
+    virtual prjPhaseBuild getPhaseBuild()=0;
+    virtual void setPhaseBuild(prjPhaseBuild _v)=0;
+    virtual void incPhaseBuild()=0;
+    virtual prjPhasePackage getPhasePackage()=0;
+    virtual void setPhasePackage(prjPhasePackage _v)=0;
+    virtual void incPhasePackage()=0;
+    virtual prjPhaseDeploy  getPhaseDeploy()=0;
+    virtual void setPhaseDeploy(prjPhaseDeploy _v)=0;
+    virtual void incPhaseDeploy()=0;
+    virtual void clearAllStatus()=0;
+};
+
+
 class IScheduler
 {
 public:
-    virtual void addExec(std::string work)=0;
-    virtual bool doExec()=0;
+    virtual void addExec(IPrjStatus  *status )=0;
+    virtual int doExec()=0;
 };
 
 
 class ISchedulerManager
 {
+private:
+    static ISchedulerManager *instance;
 public:
-    virtual void addExec(prjPhase phase, std::string work)=0;
-    virtual bool doExec(prjPhase phase)=0;
+    virtual ~ISchedulerManager()
+    {
+        if(instance!=nullptr)
+        {
+            delete instance;
+        }
+        instance =nullptr;
+    }
+    static ISchedulerManager * getInstance();
+    static void  setInstance(ISchedulerManager *_mng);
+    virtual void addExec(IPrjStatus *status)=0;
+    virtual bool doExec()=0;
+
 };
 
 

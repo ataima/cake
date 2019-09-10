@@ -36,22 +36,104 @@ namespace CA
 
 
 
-typedef struct tag_pos_status
+class caPrjStatus
+    : public IPrjStatus
 {
+private:
     std::string fullpath;
     std::string fullprojconf;
     std::string name;
-    ICAXml_Status * st;
+    void * st;
     std::string next_exec;
     prjPhase phase;
     prjPhaseSource pSource;
     prjPhaseBuild pBuild;
     prjPhasePackage pPackage;
     prjPhaseDeploy  pDeploy;
-} prjStatus;
+public:
+    caPrjStatus(std::string & _name, std::string & _proj):
+        name(_name),fullprojconf(_proj),st(nullptr),phase(ST_NONE),pSource(ST_SOURCE_NONE),
+        pBuild(ST_BUILD_NONE),pPackage(ST_PACKAGE_NONE),pDeploy(ST_DEPLOY_NONE) {}
+    virtual inline std::string & getFullPath() final {return fullpath;}
+    virtual inline std::string & getFullProjConf() final {return fullprojconf;}
+    virtual inline std::string & getName() final { return name; }
+    virtual inline void * getXmlStatus() final {return st;}
+    virtual inline std::string & getNextExec() final {return next_exec;}
+    virtual inline void setNextExec(std::string v) final { next_exec=v;};
+    virtual inline prjPhase getMainPhase() final {return phase;}
+    virtual inline void setMainPhase(prjPhase _n)
+    {
+        phase=_n;
+    }
+    virtual inline prjPhaseSource getPhaseSource()final {return pSource; }
+    virtual inline void setPhaseSource(prjPhaseSource _v)
+    {
+        phase=ST_SOURCE;
+        pSource=_v;
+    }
+    virtual inline void incPhaseSource() final
+    {
+        unsigned int v=(unsigned int )pSource;
+        v++;
+        pSource=(prjPhaseSource)v;
+    }
+    virtual inline prjPhaseBuild getPhaseBuild()final {return pBuild;}
+    virtual inline void setPhaseBuild(prjPhaseBuild _v)
+    {
+        phase=ST_BUILD;
+        pBuild=_v;
+    }
+    virtual inline void incPhaseBuild() final
+    {
+        unsigned int v=(unsigned int )pBuild;
+        v++;
+        pBuild=(prjPhaseBuild)v;
+    }
+    virtual inline prjPhasePackage getPhasePackage()final {return pPackage;}
+    virtual inline void setPhasePackage(prjPhasePackage _v)
+    {
+        phase=ST_PACKAGE;
+        pPackage=_v;
+    }
+    virtual inline void incPhasePackage() final
+    {
+        unsigned int v=(unsigned int )pPackage;
+        v++;
+        pPackage=(prjPhasePackage)v;
+    }
+    virtual inline prjPhaseDeploy  getPhaseDeploy()final {return pDeploy;}
+    virtual inline void setPhaseDeploy(prjPhaseDeploy _v)
+    {
+        phase=ST_DEPLOY;
+        pDeploy=_v;
+    }
+    virtual inline void incPhaseDeploy() final
+    {
+        unsigned int v=(unsigned int )pDeploy;
+        v++;
+        pDeploy=(prjPhaseDeploy)v;
+    }
+    virtual inline void setXmlStatus(void *stnew)
+    {
+        st=stnew;
+    }
+    virtual inline void setFullPath(std::string & p)
+    {
+        fullpath=p;
+    }
+    virtual void clearAllStatus() final
+    {
+        phase=ST_NONE;
+        pSource=ST_SOURCE_NONE;
+        pBuild=ST_BUILD_NONE;
+        pPackage=ST_PACKAGE_NONE;
+        pDeploy=ST_DEPLOY_NONE;
+    }
+
+};
 
 
-typedef std::map<std::string,prjStatus * > statusMap;
+typedef std::map<std::string,IPrjStatus *> statusMap;
 
 class ICAjob_layer
 {
@@ -77,9 +159,9 @@ protected:
     size_t loadProjectsStatus(std::list<std::string > & order,std::string & path,
                               std::string & repo, std::string & layer_name);
     void prepareProjectScripts(std::string &repo);
-    void getNextExec(prjStatus *st);
-    void setCurrentScript(prjStatus *st);
-    void setNextStep(prjStatus *st);
+    void getNextExec(IPrjStatus *st);
+    void setCurrentScript(IPrjStatus *st);
+    void setNextStep(IPrjStatus *st);
 public:
     caJobLayer(ICAjob_step *js):jobstep(js) {}
     ~caJobLayer();

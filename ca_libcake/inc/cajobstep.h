@@ -47,6 +47,7 @@ public:
     virtual ICAXml_Main_Defaults_Step  *getStep()=0;
     virtual ICAXml_Layer *getLayer()=0;
     virtual IGetConfEnv* getEnv()=0;
+    virtual void prepareScheduler()=0;
 
 };
 
@@ -93,6 +94,7 @@ public:
     {
         return env;
     }
+    void prepareScheduler() final;
 };
 
 

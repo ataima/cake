@@ -23,6 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
+#include "cainterfaces.h"
 #include "calogiface.h"
 #include "calogger.h"
 #include "cacakemanager.h"
@@ -43,7 +44,7 @@ caJobLayer::~caJobLayer()
     jobstep=nullptr;
     for (auto & st: projects_status )
     {
-        auto * status = dynamic_cast<CAXml_Status*>(st.second->st);
+        auto * status = static_cast<CAXml_Status*>(st.second->getXmlStatus());
         delete status;
         delete st.second;
     }
@@ -103,50 +104,46 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
         auto it=projects_status.find(prj);
         if(it==projects_status.end())
         {
-            auto *ns=new prjStatus;
-            ns->name=prj;
-            ns->fullprojconf=projconf;
-            ns->st=nullptr;
-            std::pair<std::string,prjStatus *> pv(prj,ns);
+            auto *ns=new caPrjStatus(prj,projconf);
+            std::pair<std::string,IPrjStatus *> pv(prj,ns);
             projects_status.insert(pv);
             ICAjob_make_script *generator=nullptr;
-            ns->phase=ST_NONE;
-            while(ns->phase!=ST_COMPLETE)
+            while(ns->getMainPhase()!=ST_COMPLETE)
             {
                 setCurrentScript(ns);
-                switch(ns->phase)
+                switch(ns->getMainPhase())
                 {
                 case  ST_NONE:
                     LogInfo("%s: starting generate scripts for project : %s",
-                            layer_name.c_str() , ns->name.c_str());
+                            layer_name.c_str() , ns->getName().c_str());
                     break;
                 case  ST_SOURCE:
-                    if(ns->pSource!=ST_SOURCE_NONE)
+                    if(ns->getPhaseSource()!=ST_SOURCE_NONE)
                     {
                         generator=new caJobMakeSourceScript();
                     }
                     break;
                 case  ST_BUILD:
-                    if(ns->pBuild!=ST_BUILD_NONE)
+                    if(ns->getPhaseBuild()!=ST_BUILD_NONE)
                     {
                         generator=new caJobMakeBuildScript();
                     }
                     break;
                 case  ST_PACKAGE:
-                    if(ns->pPackage!=ST_PACKAGE_NONE)
+                    if(ns->getPhasePackage()!=ST_PACKAGE_NONE)
                     {
                         generator=new caJobMakePackageScript();
                     }
                     break;
                 case  ST_DEPLOY:
-                    if(ns->pDeploy!=ST_DEPLOY_NONE)
+                    if(ns->getPhaseDeploy()!=ST_DEPLOY_NONE)
                     {
                         generator=new caJobMakeDeployScript();
                     }
                     break;
                 case ST_COMPLETE:
                     LogInfo("%s: generate scripts for project : %s coplete",
-                            layer_name.c_str() , ns->name.c_str());
+                            layer_name.c_str() , ns->getName().c_str());
                     break;
                 }
                 if(generator)
@@ -157,12 +154,6 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
                 }
                 setNextStep(ns);
             }
-            ns->phase=ST_NONE;
-            ns->pSource=ST_SOURCE_NONE;
-            ns->pBuild=ST_BUILD_NONE;
-            ns->pPackage=ST_PACKAGE_NONE;
-            ns->pDeploy=ST_DEPLOY_NONE;
-            ns->next_exec="";
         }
     }
 }
@@ -224,11 +215,12 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             if(it!=projects_status.end())
             {
                 LogInfo("%s : Loading  project %s status ",layer_name.c_str(),prj.c_str());
-                if(it->second->st==nullptr)
+                if(it->second->getXmlStatus()==nullptr)
                 {
-                    it->second->st=new CAXml_Status();
-                    it->second->st->loadFromXml(p_status);
-                    it->second->fullpath=p_status;
+                    CAXml_Status *xml=new CAXml_Status();
+                    it->second->setXmlStatus(xml);
+                    xml->loadFromXml(p_status);
+                    it->second->setFullPath(p_status);
                 }
             }
             else
@@ -253,8 +245,8 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             if(nit!=projects_status.end())
             {
                 LogInfo("%s : Loading  project %s status ",layer_name.c_str(),prj.c_str());
-                nit->second->st=status;
-                nit->second->fullpath=p_status;
+                nit->second->setXmlStatus(status);
+                nit->second->setFullPath(p_status);
             }
             else
             {
@@ -272,10 +264,10 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
         if(it!=projects_status.end())
         {
             getNextExec(it->second);
-            if(it->second->phase!=ST_COMPLETE)
+            if(it->second->getMainPhase()!=ST_COMPLETE)
             {
                 LogInfo("%s : project : %s : next exec : %s",
-                        layer_name.c_str(), prj.c_str(), it->second->next_exec.c_str());
+                        layer_name.c_str(), prj.c_str(), it->second->getNextExec().c_str());
                 result++;
                 order.push_back(prj);
             }
@@ -295,148 +287,120 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
     return result;
 }
 
-void caJobLayer::getNextExec(prjStatus *st)
+void caJobLayer::getNextExec(IPrjStatus *st)
 {
     if (st)
     {
-        st->phase=ST_NONE;
-        st->pSource=ST_SOURCE_NONE;
-        st->pBuild=ST_BUILD_NONE;
-        st->pPackage=ST_PACKAGE_NONE;
-        st->pDeploy=ST_DEPLOY_NONE;
-        CAXml_Status *cur = dynamic_cast<CAXml_Status *>(st->st);
+        st->clearAllStatus();
+        CAXml_Status *cur = static_cast<CAXml_Status *>(st->getXmlStatus());
         if(cur)
         {
             if(cur->pre_download!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_PRE_DOWNLOAD;
+                st->setPhaseSource(ST_SOURCE_PRE_DOWNLOAD);
             }
             else if(cur->download!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_DOWNLOAD;
+                st->setPhaseSource(ST_SOURCE_DOWNLOAD);
             }
             else if(cur->post_download!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_POST_DOWNLOAD;
+                st->setPhaseSource(ST_SOURCE_POST_DOWNLOAD);
             }
             else if(cur->pre_patch!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_PRE_PATCH;
+                st->setPhaseSource(ST_SOURCE_PRE_PATCH);
             }
             else if(cur->patch!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_PATCH;
+                st->setPhaseSource(ST_SOURCE_PATCH);
             }
             else if(cur->post_patch!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_POST_PATCH;
+                st->setPhaseSource(ST_SOURCE_POST_PATCH);
             }
             else if(cur->pre_save_source!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_PRE_SAVE;
+                st->setPhaseSource(ST_SOURCE_PRE_SAVE);
             }
             else if(cur->save_source!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_SAVE;
+                st->setPhaseSource(ST_SOURCE_SAVE);
             }
             else if(cur->post_save_source!="1")
             {
-                st->phase=ST_SOURCE;
-                st->pSource=ST_SOURCE_POST_SAVE;
+                st->setPhaseSource(ST_SOURCE_POST_SAVE);
             }
             else if(cur->pre_configure!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_PRE_CONFIGURE;
+                st->setPhaseBuild(ST_BUILD_PRE_CONFIGURE);
             }
             else if(cur->configure!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_CONFIGURE;
+                st->setPhaseBuild(ST_BUILD_CONFIGURE);
             }
             else if(cur->post_configure!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_POST_CONFIGURE;
+                st->setPhaseBuild(ST_BUILD_POST_CONFIGURE);
             }
             else if(cur->pre_build!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_PRE_BUILD;
+                st->setPhaseBuild(ST_BUILD_PRE_BUILD);
             }
             else if(cur->build!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_BUILD;
+                st->setPhaseBuild(ST_BUILD_BUILD);
             }
             else if(cur->post_build!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_POST_BUILD;
+                st->setPhaseBuild(ST_BUILD_POST_BUILD);
             }
             else if(cur->pre_install!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_PRE_INSTALL;
+                st->setPhaseBuild(ST_BUILD_PRE_INSTALL);
             }
             else if(cur->install!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_INSTALL;
+                st->setPhaseBuild(ST_BUILD_INSTALL);
             }
             else if(cur->post_install!="1")
             {
-                st->phase=ST_BUILD;
-                st->pBuild=ST_BUILD_POST_INSTALL;
+                st->setPhaseBuild(ST_BUILD_POST_INSTALL);
             }
             else if(cur->pre_package!="1")
             {
-                st->phase=ST_PACKAGE;
-                st->pPackage=ST_PACKAGE_PRE;
+                st->setPhasePackage(ST_PACKAGE_PRE);
             }
             else if(cur->package!="1")
             {
-                st->phase=ST_PACKAGE;
-                st->pPackage=ST_PACKAGE_PACKAGE;
+                st->setPhasePackage(ST_PACKAGE_PACKAGE);
             }
             else if(cur->post_package!="1")
             {
-                st->phase=ST_PACKAGE;
-                st->pPackage=ST_PACKAGE_POST;
+                st->setPhasePackage(ST_PACKAGE_POST);
             }
             else if(cur->pre_deploy!="1")
             {
-                st->phase=ST_DEPLOY;
-                st->pDeploy=ST_DEPLOY_PRE;
+                st->setPhaseDeploy(ST_DEPLOY_PRE);
             }
             else if(cur->deploy!="1")
             {
-                st->phase=ST_DEPLOY;
-                st->pDeploy=ST_DEPLOY_IMAGE;
+                st->setPhaseDeploy(ST_DEPLOY_IMAGE);
             }
             else if(cur->post_deploy!="1")
             {
-                st->phase=ST_DEPLOY;
-                st->pDeploy=ST_DEPLOY_POST;
+                st->setPhaseDeploy(ST_DEPLOY_POST);
             }
             else
             {
-                st->phase=ST_COMPLETE;
+                st->setMainPhase(ST_COMPLETE);
             }
             setCurrentScript(st);
         }
     }
 }
 
-void caJobLayer::setCurrentScript(prjStatus *st)
+void caJobLayer::setCurrentScript(IPrjStatus *st)
 {
     const char * source_script_name[]=
     {
@@ -480,97 +444,78 @@ void caJobLayer::setCurrentScript(prjStatus *st)
     };
     if (st)
     {
-        st->next_exec.clear();
-        switch(st->phase)
+        st->setNextExec("");
+        switch(st->getMainPhase())
         {
         case ST_COMPLETE:
         case ST_NONE:
             break;
         case ST_SOURCE:
-            st->next_exec=source_script_name[st->pSource];
+            st->setNextExec(source_script_name[st->getPhaseSource()]);
             break;
         case ST_BUILD:
-            st->next_exec=build_script_name[st->pBuild];
+            st->setNextExec(build_script_name[st->getPhaseBuild()]);
             break;
         case ST_PACKAGE:
-            st->next_exec=package_script_name[st->pPackage];
+            st->setNextExec(package_script_name[st->getPhasePackage()]);
             break;
         case ST_DEPLOY:
-            st->next_exec=deploy_script_name[st->pDeploy];
+            st->setNextExec(deploy_script_name[st->getPhaseDeploy()]);
             break;
         }
     }
 }
 
-void caJobLayer::setNextStep(prjStatus *st)
+void caJobLayer::setNextStep(IPrjStatus *st)
 {
     if (st)
     {
-        switch(st->phase)
+        switch(st->getMainPhase())
         {
         case ST_COMPLETE:
             break;
         case ST_NONE:
-            st->phase=ST_SOURCE;
-            st->pSource=ST_SOURCE_NONE;
-            st->pBuild=ST_BUILD_NONE;
-            st->pPackage=ST_PACKAGE_NONE;
-            st->pDeploy=ST_DEPLOY_NONE;
+            st->clearAllStatus();
+            st->setMainPhase(ST_SOURCE);
             break;
         case ST_SOURCE:
-            if(st->pSource==ST_SOURCE_POST_SAVE)
+            if(st->getPhaseSource()==ST_SOURCE_POST_SAVE)
             {
-                st->phase=ST_BUILD;
-                st->pSource=ST_SOURCE_NONE;
-                st->pBuild=ST_BUILD_NONE;
+                st->setMainPhase(ST_BUILD);
             }
             else
             {
-                unsigned int v=(unsigned int )st->pSource;
-                v++;
-                st->pSource=(prjPhaseSource)v;
+                st->incPhaseSource();
             }
             break;
         case ST_BUILD:
-            if(st->pBuild==ST_BUILD_POST_INSTALL)
+            if(st->getPhaseBuild()==ST_BUILD_POST_INSTALL)
             {
-                st->phase=ST_PACKAGE;
-                st->pBuild=ST_BUILD_NONE;
-                st->pPackage=ST_PACKAGE_NONE;
-
+                st->setMainPhase(ST_PACKAGE);
             }
             else
             {
-                unsigned int v=(unsigned int )st->pBuild;
-                v++;
-                st->pBuild=(prjPhaseBuild)v;
+                st->incPhaseBuild();
             }
             break;
         case ST_PACKAGE:
-            if(st->pPackage==ST_PACKAGE_POST)
+            if(st->getPhasePackage()==ST_PACKAGE_POST)
             {
-                st->phase=ST_DEPLOY;
-                st->pPackage=ST_PACKAGE_NONE;
-                st->pDeploy=ST_DEPLOY_NONE;
+                st->setMainPhase(ST_DEPLOY);
             }
             else
             {
-                unsigned int v=(unsigned int )st->pPackage;
-                v++;
-                st->pPackage=(prjPhasePackage)v;
+                st->incPhasePackage();
             }
             break;
         case ST_DEPLOY:
-            if(st->pDeploy==ST_DEPLOY_POST)
+            if(st->getPhaseDeploy()==ST_DEPLOY_POST)
             {
-                st->phase=ST_COMPLETE;
-                st->pDeploy=ST_DEPLOY_NONE;
+                st->setMainPhase(ST_COMPLETE);
             }
             else
             {
-                unsigned int v=(unsigned int )st->pDeploy;
-                v++;
-                st->pDeploy=(prjPhaseDeploy)v;
+                st->incPhaseDeploy();
             }
             break;
         }

@@ -34,6 +34,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cautils.h"
 #include <caconfenv.h>
 #include <cstdlib>
+#include "cascheduler.h"
 
 
 namespace CA
@@ -124,15 +125,25 @@ void caJobStep::doWork(void)
     if(towork>0)
     {
         statusMap *st=layer->getStatusMap();
-        for(auto prj: order_prj)
+        if(!st->empty())
         {
-            auto it=st->find(prj);
-            if(it!=st->end())
+            prepareScheduler();
+            ISchedulerManager * msched=ISchedulerManager::getInstance();
+            for(auto prj: order_prj)
             {
-                if(it->second->phase!=ST_COMPLETE)
+                auto it=st->find(prj);
+                if(it!=st->end())
                 {
+                    if(it->second->getMainPhase()!=ST_COMPLETE)
+                    {
+                        if(msched!=nullptr)
+                        {
+                            msched->addExec(it->second);
+                        }
+                    }
                 }
             }
+            msched->doExec();
         }
     }
     else
@@ -142,6 +153,13 @@ void caJobStep::doWork(void)
     }
 }
 
+void caJobStep::prepareScheduler()
+{
+// to do add policy scheduler and instantiate a specific scheduler ...
+    CAXml_Layer * ll=dynamic_cast<CAXml_Layer*>(layers_conf);
+    size_t max_task=::atol(ll->task.c_str());
+    caSchedulerManager *manager= new caSchedulerManager(max_task);
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////

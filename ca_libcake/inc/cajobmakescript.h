@@ -34,19 +34,19 @@ namespace CA
 class ICAjob_make_script
 {
 public:
-    virtual void create(ICAjob_layer *layer ,IGetConfEnv  * _env, prjStatus * pst)=0;
+    virtual void create(ICAjob_layer *layer ,IGetConfEnv  * _env, IPrjStatus *pst)=0;
 };
 
-typedef bool (*funcCreateScript)(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname) ;
+typedef bool (*funcCreateScript)(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname) ;
 
 
 class caJobMakeBase
     :public ICAjob_make_script
 {
 public:
-    static bool checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,
+    static bool checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst,
                                   std::string & scriptname);
-    static bool createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, prjStatus * pst,
+    static bool createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst,
                                   const funcCreateScript funcs[], size_t off);
     static void createScriptHeader(std::ofstream &of,IGetConfEnv  * env);
 };
@@ -56,52 +56,52 @@ class caJobMakeSourceScript
     :public caJobMakeBase
 {
 public:
-    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, prjStatus * pst) final;
-    static bool createPreDownload(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createDownload(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostDownload(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPrePatch(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPatch(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostPatch(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPreSource(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createSource(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostSource(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
+    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, IPrjStatus *pst) final;
+    static bool createPreDownload(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createDownload(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostDownload(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPrePatch(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPatch(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostPatch(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPreSource(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createSource(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostSource(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
 };
 
 class caJobMakeBuildScript
     :public caJobMakeBase
 {
 public:
-    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, prjStatus * pst) final;
-    static bool createPreConfigure(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createConfigure(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostConfigure(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPreBuild(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createBuild(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostBuild(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPreInstall(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createInstall(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostInstall(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
+    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, IPrjStatus *pst) final;
+    static bool createPreConfigure(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createConfigure(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostConfigure(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPreBuild(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createBuild(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostBuild(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPreInstall(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createInstall(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostInstall(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
 };
 
 class caJobMakePackageScript
     :public caJobMakeBase
 {
 public:
-    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, prjStatus * pst) final;
-    static bool createPrePackage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPackage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostPackage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
+    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, IPrjStatus *pst) final;
+    static bool createPrePackage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPackage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostPackage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
 };
 
 class caJobMakeDeployScript
     :public caJobMakeBase
 {
 public:
-    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, prjStatus * pst) final;
-    static bool createPreDeploy(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createImage(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
-    static bool createPostDeploy(IGetConfEnv  * env, prjStatus * pst,std::string & scriptname);
+    void create(ICAjob_layer *layer ,IGetConfEnv  * _env, IPrjStatus *pst) final;
+    static bool createPreDeploy(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createImage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
+    static bool createPostDeploy(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname);
 };
 
 
