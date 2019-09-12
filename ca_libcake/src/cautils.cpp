@@ -23,7 +23,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
-#include <string>
+
+
+
 #include "cautils.h"
 #include <sys/stat.h>
 #include <dirent.h>
@@ -296,6 +298,8 @@ bool caUtils::baseExt(std::string & file, std::string & ext)
     }
     return !ext.empty();
 }
+
+
 
 
 }

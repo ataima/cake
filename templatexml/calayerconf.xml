@@ -1,7 +1,12 @@
 <layer>
 	<name>layer_gcc></name>
 	<info>layer for build gcc </info>
-	<task>1</task>
+	<maxtask>
+		<source>16</source>
+		<build>4</build>
+		<package>4</package>
+		<deploy>1</deploy>
+	</maxtask>
 	<include>binutils</include>
 	<include>linux-header</include>
 	<include>mpfr</include>

@@ -45,8 +45,7 @@ class caScheduler
     size_t max_thread;
     prjPhase phase;
 public:
-    caScheduler (size_t _max_thread,prjPhase _phase):
-        max_thread(_max_thread),phase(_phase) {}
+    caScheduler (phaseMaxTask & _max_thread,prjPhase _phase);
     virtual void addExec( IPrjStatus * status) final;
     virtual int doExec() final;
 };
@@ -55,9 +54,10 @@ public:
 class caSchedulerManager
     : public ISchedulerManager
 {
+    phaseMaxTask max_task;
     std::vector<IScheduler * > workers;
 public:
-    caSchedulerManager(size_t max_thread);
+    caSchedulerManager(phaseMaxTask & max_thread);
     inline void addExec(IPrjStatus *status) final
     {
         IScheduler *exec=workers.at(status->getMainPhase());

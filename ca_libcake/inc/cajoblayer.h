@@ -42,6 +42,7 @@ class caPrjStatus
 private:
     std::string fullpath;
     std::string fullprojconf;
+    std::string layer;
     std::string name;
     void * st;
     std::string next_exec;
@@ -51,11 +52,13 @@ private:
     prjPhasePackage pPackage;
     prjPhaseDeploy  pDeploy;
 public:
-    caPrjStatus(std::string & _name, std::string & _proj):
-        name(_name),fullprojconf(_proj),st(nullptr),phase(ST_NONE),pSource(ST_SOURCE_NONE),
+    caPrjStatus(std::string & _name, std::string & _proj,std::string &_layer):
+        name(_name),fullprojconf(_proj),layer(_layer),
+        st(nullptr),phase(ST_NONE),pSource(ST_SOURCE_NONE),
         pBuild(ST_BUILD_NONE),pPackage(ST_PACKAGE_NONE),pDeploy(ST_DEPLOY_NONE) {}
     virtual inline std::string & getFullPath() final {return fullpath;}
     virtual inline std::string & getFullProjConf() final {return fullprojconf;}
+    virtual inline std::string & getLayer() final {return layer;}
     virtual inline std::string & getName() final { return name; }
     virtual inline void * getXmlStatus() final {return st;}
     virtual inline std::string & getNextExec() final {return next_exec;}

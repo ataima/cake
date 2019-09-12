@@ -1,5 +1,5 @@
-#ifndef CA_UTILS_HEADER
-#define CA_UTILS_HEADER
+#ifndef CA_PHASE_UTILS_FILE_HEADER
+#define CA_PHASE_UTILS_FILE_HEADER
 
 
 /**************************************************************
@@ -26,29 +26,26 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
-#include <string>
+
+#include "cainterfaces.h"
+
 
 namespace CA
 {
 
-class caUtils
+
+
+
+
+class caPhaseUtils
 {
-    /* bool function return true for OK result */
 public:
-    static bool checkDirExistOrCreate(std::string & dir);
-    static bool checkDirExist(std::string & dir);
-    static void appendPath(std::string & root,std::string & path);
-    static bool checkFileExist(std::string & file);
-    static bool compareFileChangeDate(std::string & root, std::string & child);
-    static bool compareDirChangeDate(std::string & root, std::string & child);
-    static bool removeDir(std::string & path);
-    static bool baseName(std::string & path, std::string & filename);
-    static bool baseNameNoExt(std::string & path, std::string & filename);
-    static bool dirName(std::string & path, std::string & dirname);
-    static bool baseExt(std::string & file, std::string & ext);
-
-
+    static const char * mainPhaseToCStr(prjPhase phase);
+    static bool setMaxTask(void *ptr,phaseMaxTask & mt);
+    static int getPhaseMaxThread(prjPhase phase,phaseMaxTask & max_thread);
 };
+
+
 
 }
 

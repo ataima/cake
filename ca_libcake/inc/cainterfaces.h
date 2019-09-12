@@ -156,6 +156,16 @@ typedef enum tag_project_phase_deploy
     ST_DEPLOY_POST,
 } prjPhaseDeploy;
 
+typedef struct tag_phase_max_task
+{
+    int max_source_task;
+    int max_build_task;
+    int max_package_task;
+    int max_deploy_task;
+} phaseMaxTask;
+
+
+
 
 class IOptionArgvManager;
 
@@ -267,6 +277,7 @@ public:
     virtual std::string & getFullPath()=0;
     virtual void setFullPath(std::string & p)=0;
     virtual std::string & getFullProjConf()=0;
+    virtual std::string & getLayer()=0;
     virtual std::string & getName()=0;
     virtual void * getXmlStatus()=0;
     virtual void setXmlStatus(void *stnew)=0;

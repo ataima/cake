@@ -35,7 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <caconfenv.h>
 #include <cstdlib>
 #include "cascheduler.h"
-
+#include "caphaseutils.h"
 
 namespace CA
 {
@@ -156,9 +156,9 @@ void caJobStep::doWork(void)
 void caJobStep::prepareScheduler()
 {
 // to do add policy scheduler and instantiate a specific scheduler ...
-    CAXml_Layer * ll=dynamic_cast<CAXml_Layer*>(layers_conf);
-    size_t max_task=::atol(ll->task.c_str());
-    caSchedulerManager *manager= new caSchedulerManager(max_task);
+    phaseMaxTask maxtask;
+    caPhaseUtils::setMaxTask(layers_conf,maxtask);
+    caSchedulerManager *manager= new caSchedulerManager(maxtask);
 }
 
 

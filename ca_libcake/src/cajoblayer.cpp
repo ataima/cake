@@ -104,7 +104,7 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
         auto it=projects_status.find(prj);
         if(it==projects_status.end())
         {
-            auto *ns=new caPrjStatus(prj,projconf);
+            auto *ns=new caPrjStatus(prj,projconf,layer_name);
             std::pair<std::string,IPrjStatus *> pv(prj,ns);
             projects_status.insert(pv);
             ICAjob_make_script *generator=nullptr;

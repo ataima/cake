@@ -34,6 +34,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <caconfenv.h>
 #include <cstdlib>
 #include "cascheduler.h"
+#include "caphaseutils.h"
 
 
 namespace CA
@@ -52,12 +53,18 @@ void  ISchedulerManager::setInstance(ISchedulerManager *_mng)
 }
 
 
+caScheduler::caScheduler(phaseMaxTask & _max_thread,prjPhase _phase):phase(_phase)
+{
+    max_thread=caPhaseUtils::getPhaseMaxThread(phase,_max_thread);
+}
+
 void caScheduler::addExec(IPrjStatus *work)
 {
     auto test=works_set.find(work->getName());
     if(test==works_set.end())
     {
         works.push(work);
+        works_set.insert(work->getName());
         LogInfo("%s : add work n. %d",work->getName().c_str(),works.size());
     }
     else
@@ -68,12 +75,14 @@ void caScheduler::addExec(IPrjStatus *work)
 
 int caScheduler::doExec()
 {
+    LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d : %d",caPhaseUtils::mainPhaseToCStr(phase),works_set.size(),max_thread);
     return 0;
 }
 
-caSchedulerManager::caSchedulerManager(size_t max_task)
+caSchedulerManager::caSchedulerManager(phaseMaxTask &  max_thread)
 {
     auto v=ST_NONE;
+    memcpy(&max_task,&max_thread,sizeof(phaseMaxTask));
     workers.insert(workers.begin(),ST_COMPLETE,nullptr);
     for(v=ST_NONE; v<=ST_COMPLETE;)
     {
