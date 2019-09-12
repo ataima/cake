@@ -33,7 +33,8 @@ const CA::_cbt *ICAXml_Main_Defaults_Step_User_env::caKEY_VALUE = "value";
 const CA::_cbt *ICAXml_Main_Defaults_Step_User_env::mName="user_env";
 
 
-CAXml_Main_Defaults_Step_User_env::CAXml_Main_Defaults_Step_User_env(){
+CAXml_Main_Defaults_Step_User_env::CAXml_Main_Defaults_Step_User_env()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_NAME,"main.defaults.step.user_env.name",&name));
     predef.push_back(CA::xmlNodeSpec( caKEY_VALUE,"main.defaults.step.user_env.value",&value));
 }
@@ -67,7 +68,8 @@ const CA::_cbt *ICAXml_Main_Defaults_Step::caKEY_USER_ENV = "user_env";
 const CA::_cbt *ICAXml_Main_Defaults_Step::mName="step";
 
 
-CAXml_Main_Defaults_Step::CAXml_Main_Defaults_Step(){
+CAXml_Main_Defaults_Step::CAXml_Main_Defaults_Step()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_AR,"main.defaults.step.ar",&ar));
     predef.push_back(CA::xmlNodeSpec( caKEY_ARCH,"main.defaults.step.arch",&arch));
     predef.push_back(CA::xmlNodeSpec( caKEY_AS,"main.defaults.step.as",&as));
@@ -100,7 +102,8 @@ const CA::_cbt *ICAXml_Main_Defaults::caKEY_STEP = "step";
 const CA::_cbt *ICAXml_Main_Defaults::mName="defaults";
 
 
-CAXml_Main_Defaults::CAXml_Main_Defaults(){
+CAXml_Main_Defaults::CAXml_Main_Defaults()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_STEP,"main.defaults.step",&step,&step_ref_clonable));
 }
 
@@ -118,7 +121,8 @@ const CA::_cbt *ICAXml_Main_Conf::caKEY_STORE = "store";
 const CA::_cbt *ICAXml_Main_Conf::mName="conf";
 
 
-CAXml_Main_Conf::CAXml_Main_Conf(){
+CAXml_Main_Conf::CAXml_Main_Conf()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_BUILD,"main.conf.build",&build));
     predef.push_back(CA::xmlNodeSpec( caKEY_IMAGES,"main.conf.images",&images));
     predef.push_back(CA::xmlNodeSpec( caKEY_LD_LIBRARY_PATH,"main.conf.ld_library_path",&ld_library_path));
@@ -137,20 +141,23 @@ const CA::_cbt *ICAXml_Main::caKEY_DEFAULTS = "defaults";
 const CA::_cbt *ICAXml_Main::mName="main";
 
 
-CAXml_Main::CAXml_Main(){
+CAXml_Main::CAXml_Main()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_CONF,"main.conf",&conf.node_internal_value,&conf));
     predef.push_back(CA::xmlNodeSpec( caKEY_DEFAULTS,"main.defaults",&defaults.node_internal_value,&defaults));
 }
 
 
-bool CAXml_Main::loadFromXml(std::string filename){
-bool res=false;
-CA::IXmlNode *root=CA::IXmlNode::getNewNode();
-if(root->load(filename)){
-    loadFromXml(root);
-    res=true;
-   }
-delete root;
-return res;
+bool CAXml_Main::loadFromXml(std::string filename)
+{
+    bool res=false;
+    CA::IXmlNode *root=CA::IXmlNode::getNewNode();
+    if(root->load(filename))
+    {
+        loadFromXml(root);
+        res=true;
+    }
+    delete root;
+    return res;
 }
 

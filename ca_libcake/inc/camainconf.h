@@ -30,9 +30,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 class ICAXml_Main_Defaults_Step_User_env
 {
 protected:
-   static const CA::_cbt *  caKEY_NAME;
-   static const CA::_cbt *  caKEY_VALUE;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_NAME;
+    static const CA::_cbt *  caKEY_VALUE;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Main_Defaults_Step_User_env()=default;
@@ -43,32 +43,32 @@ public:
 class ICAXml_Main_Defaults_Step
 {
 protected:
-   static const CA::_cbt *  caKEY_AR;
-   static const CA::_cbt *  caKEY_ARCH;
-   static const CA::_cbt *  caKEY_AS;
-   static const CA::_cbt *  caKEY_ASFLAGS;
-   static const CA::_cbt *  caKEY_C_INCLUDE_PATH;
-   static const CA::_cbt *  caKEY_CC;
-   static const CA::_cbt *  caKEY_CFLAGS;
-   static const CA::_cbt *  caKEY_CPATH;
-   static const CA::_cbt *  caKEY_CPLUS_INCLUDE_PATH;
-   static const CA::_cbt *  caKEY_CPPFLAGS;
-   static const CA::_cbt *  caKEY_CROSS;
-   static const CA::_cbt *  caKEY_CXX;
-   static const CA::_cbt *  caKEY_CXXFLAGS;
-   static const CA::_cbt *  caKEY_ENABLE;
-   static const CA::_cbt *  caKEY_ID;
-   static const CA::_cbt *  caKEY_INFO;
-   static const CA::_cbt *  caKEY_LAYER;
-   static const CA::_cbt *  caKEY_LD;
-   static const CA::_cbt *  caKEY_LDFLAGS;
-   static const CA::_cbt *  caKEY_LIBS;
-   static const CA::_cbt *  caKEY_NAME;
-   static const CA::_cbt *  caKEY_NM;
-   static const CA::_cbt *  caKEY_PACKAGES;
-   static const CA::_cbt *  caKEY_STRIP;
-   static const CA::_cbt *  caKEY_USER_ENV;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_AR;
+    static const CA::_cbt *  caKEY_ARCH;
+    static const CA::_cbt *  caKEY_AS;
+    static const CA::_cbt *  caKEY_ASFLAGS;
+    static const CA::_cbt *  caKEY_C_INCLUDE_PATH;
+    static const CA::_cbt *  caKEY_CC;
+    static const CA::_cbt *  caKEY_CFLAGS;
+    static const CA::_cbt *  caKEY_CPATH;
+    static const CA::_cbt *  caKEY_CPLUS_INCLUDE_PATH;
+    static const CA::_cbt *  caKEY_CPPFLAGS;
+    static const CA::_cbt *  caKEY_CROSS;
+    static const CA::_cbt *  caKEY_CXX;
+    static const CA::_cbt *  caKEY_CXXFLAGS;
+    static const CA::_cbt *  caKEY_ENABLE;
+    static const CA::_cbt *  caKEY_ID;
+    static const CA::_cbt *  caKEY_INFO;
+    static const CA::_cbt *  caKEY_LAYER;
+    static const CA::_cbt *  caKEY_LD;
+    static const CA::_cbt *  caKEY_LDFLAGS;
+    static const CA::_cbt *  caKEY_LIBS;
+    static const CA::_cbt *  caKEY_NAME;
+    static const CA::_cbt *  caKEY_NM;
+    static const CA::_cbt *  caKEY_PACKAGES;
+    static const CA::_cbt *  caKEY_STRIP;
+    static const CA::_cbt *  caKEY_USER_ENV;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Main_Defaults_Step()=default;
@@ -79,8 +79,8 @@ public:
 class ICAXml_Main_Defaults
 {
 protected:
-   static const CA::_cbt *  caKEY_STEP;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_STEP;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Main_Defaults()=default;
@@ -91,17 +91,17 @@ public:
 class ICAXml_Main_Conf
 {
 protected:
-   static const CA::_cbt *  caKEY_BUILD;
-   static const CA::_cbt *  caKEY_IMAGES;
-   static const CA::_cbt *  caKEY_LD_LIBRARY_PATH;
-   static const CA::_cbt *  caKEY_LOGS;
-   static const CA::_cbt *  caKEY_PATH;
-   static const CA::_cbt *  caKEY_ROOT;
-   static const CA::_cbt *  caKEY_SCRIPTS;
-   static const CA::_cbt *  caKEY_SOURCES;
-   static const CA::_cbt *  caKEY_STATUS;
-   static const CA::_cbt *  caKEY_STORE;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_BUILD;
+    static const CA::_cbt *  caKEY_IMAGES;
+    static const CA::_cbt *  caKEY_LD_LIBRARY_PATH;
+    static const CA::_cbt *  caKEY_LOGS;
+    static const CA::_cbt *  caKEY_PATH;
+    static const CA::_cbt *  caKEY_ROOT;
+    static const CA::_cbt *  caKEY_SCRIPTS;
+    static const CA::_cbt *  caKEY_SOURCES;
+    static const CA::_cbt *  caKEY_STATUS;
+    static const CA::_cbt *  caKEY_STORE;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Main_Conf()=default;
@@ -112,9 +112,9 @@ public:
 class ICAXml_Main
 {
 protected:
-   static const CA::_cbt *  caKEY_CONF;
-   static const CA::_cbt *  caKEY_DEFAULTS;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_CONF;
+    static const CA::_cbt *  caKEY_DEFAULTS;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Main()=default;
@@ -134,14 +134,14 @@ protected:
 public:
 /// ctor
     CAXml_Main_Defaults_Step_User_env();
-/// value of this node : 
-   std::string node_internal_value;
-/// options of this node : 
-   CA::optionsList node_internal_options;
+/// value of this node :
+    std::string node_internal_value;
+/// options of this node :
+    CA::optionsList node_internal_options;
 /// value of node : main.defaults.step.user_env.name
-   std::string name;
+    std::string name;
 /// value of node : main.defaults.step.user_env.value
-   std::string value;
+    std::string value;
 public:
 /// getters
 /// return this node name
@@ -189,15 +189,17 @@ public:
 /// set the  option list  of complex child node
     inline void setOptionList(CA::optionsList & optl)  final
     {
-      if(!optl.empty()){
-          auto it=optl.begin();
-          auto _end=optl.end();
-          while(it!=_end) {
-              CA::optionPair p(it->first,it->second);
-              node_internal_options.insert(p);
-              it++;
-          }
-       }
+        if(!optl.empty())
+        {
+            auto it=optl.begin();
+            auto _end=optl.end();
+            while(it!=_end)
+            {
+                CA::optionPair p(it->first,it->second);
+                node_internal_options.insert(p);
+                it++;
+            }
+        }
     }
 };
 
@@ -213,59 +215,59 @@ protected:
 public:
 /// ctor
     CAXml_Main_Defaults_Step();
-/// value of this node : 
-   std::string node_internal_value;
+/// value of this node :
+    std::string node_internal_value;
 /// value of node : main.defaults.step.ar
-   std::string ar;
+    std::string ar;
 /// value of node : main.defaults.step.arch
-   std::string arch;
+    std::string arch;
 /// value of node : main.defaults.step.as
-   std::string as;
+    std::string as;
 /// value of node : main.defaults.step.asflags
-   std::string asflags;
+    std::string asflags;
 /// value of node : main.defaults.step.c_include_path
-   std::string c_include_path;
+    std::string c_include_path;
 /// value of node : main.defaults.step.cc
-   std::string cc;
+    std::string cc;
 /// value of node : main.defaults.step.cflags
-   std::string cflags;
+    std::string cflags;
 /// value of node : main.defaults.step.cpath
-   std::string cpath;
+    std::string cpath;
 /// value of node : main.defaults.step.cplus_include_path
-   std::string cplus_include_path;
+    std::string cplus_include_path;
 /// value of node : main.defaults.step.cppflags
-   std::string cppflags;
+    std::string cppflags;
 /// value of node : main.defaults.step.cross
-   std::string cross;
+    std::string cross;
 /// value of node : main.defaults.step.cxx
-   std::string cxx;
+    std::string cxx;
 /// value of node : main.defaults.step.cxxflags
-   std::string cxxflags;
+    std::string cxxflags;
 /// value of node : main.defaults.step.enable
-   std::string enable;
+    std::string enable;
 /// value of node : main.defaults.step.id
-   std::string id;
+    std::string id;
 /// value of node : main.defaults.step.info
-   std::string info;
+    std::string info;
 /// value of node : main.defaults.step.layer
-   std::string layer;
+    std::string layer;
 /// value of node : main.defaults.step.ld
-   std::string ld;
+    std::string ld;
 /// value of node : main.defaults.step.ldflags
-   std::string ldflags;
+    std::string ldflags;
 /// value of node : main.defaults.step.libs
-   std::string libs;
+    std::string libs;
 /// value of node : main.defaults.step.name
-   std::string name;
+    std::string name;
 /// value of node : main.defaults.step.nm
-   std::string nm;
+    std::string nm;
 /// value of node : main.defaults.step.packages
-   std::string packages;
+    std::string packages;
 /// value of node : main.defaults.step.strip
-   std::string strip;
+    std::string strip;
 /// object for nodes[] : main.defaults.step.user_env
-   std::vector<CA::IClonableOption *> user_env;
-   CAXml_Main_Defaults_Step_User_env  user_env_ref_clonable_option;
+    std::vector<CA::IClonableOption *> user_env;
+    CAXml_Main_Defaults_Step_User_env  user_env_ref_clonable_option;
 public:
 /// getters
 /// return this node name
@@ -319,11 +321,11 @@ protected:
 public:
 /// ctor
     CAXml_Main_Defaults();
-/// value of this node : 
-   std::string node_internal_value;
+/// value of this node :
+    std::string node_internal_value;
 /// object for nodes[] : main.defaults.step
-   std::vector<CA::IClonable *> step;
-   CAXml_Main_Defaults_Step  step_ref_clonable;
+    std::vector<CA::IClonable *> step;
+    CAXml_Main_Defaults_Step  step_ref_clonable;
 public:
 /// getters
 /// return this node name
@@ -362,28 +364,28 @@ protected:
 public:
 /// ctor
     CAXml_Main_Conf();
-/// value of this node : 
-   std::string node_internal_value;
+/// value of this node :
+    std::string node_internal_value;
 /// value of node : main.conf.build
-   std::string build;
+    std::string build;
 /// value of node : main.conf.images
-   std::string images;
+    std::string images;
 /// value of node : main.conf.ld_library_path
-   std::string ld_library_path;
+    std::string ld_library_path;
 /// value of node : main.conf.logs
-   std::string logs;
+    std::string logs;
 /// value of node : main.conf.path
-   std::string path;
+    std::string path;
 /// value of node : main.conf.root
-   std::string root;
+    std::string root;
 /// value of node : main.conf.scripts
-   std::string scripts;
+    std::string scripts;
 /// value of node : main.conf.sources
-   std::string sources;
+    std::string sources;
 /// value of node : main.conf.status
-   std::string status;
+    std::string status;
 /// value of node : main.conf.store
-   std::string store;
+    std::string store;
 public:
 /// getters
 /// return this node name
@@ -422,12 +424,12 @@ protected:
 public:
 /// ctor
     CAXml_Main();
-/// value of this node : 
-   std::string node_internal_value;
+/// value of this node :
+    std::string node_internal_value;
 /// object for node : main.conf
-   CAXml_Main_Conf conf;
+    CAXml_Main_Conf conf;
 /// object for node : main.defaults
-   CAXml_Main_Defaults defaults;
+    CAXml_Main_Defaults defaults;
 public:
 /// getters
 /// return this node name
@@ -462,7 +464,7 @@ public:
         ss<<"</"<<getICAXml_Name_Value()<<">"<<std::endl;
     }
 /// entry point from file xml to variable class members
-   bool loadFromXml(std::string filename) final;
+    bool loadFromXml(std::string filename) final;
 };
 
 

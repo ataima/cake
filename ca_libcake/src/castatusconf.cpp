@@ -55,7 +55,8 @@ const CA::_cbt *ICAXml_Status::caKEY_SAVE_SOURCE = "save_source";
 const CA::_cbt *ICAXml_Status::mName="status";
 
 
-CAXml_Status::CAXml_Status(){
+CAXml_Status::CAXml_Status()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_BUILD,"status.build",&build));
     predef.push_back(CA::xmlNodeSpec( caKEY_CONFIGURE,"status.configure",&configure));
     predef.push_back(CA::xmlNodeSpec( caKEY_DEPLOY,"status.deploy",&deploy));
@@ -83,14 +84,16 @@ CAXml_Status::CAXml_Status(){
 }
 
 
-bool CAXml_Status::loadFromXml(std::string filename){
-bool res=false;
-CA::IXmlNode *root=CA::IXmlNode::getNewNode();
-if(root->load(filename)){
-    loadFromXml(root);
-    res=true;
-   }
-delete root;
-return res;
+bool CAXml_Status::loadFromXml(std::string filename)
+{
+    bool res=false;
+    CA::IXmlNode *root=CA::IXmlNode::getNewNode();
+    if(root->load(filename))
+    {
+        loadFromXml(root);
+        res=true;
+    }
+    delete root;
+    return res;
 }
 

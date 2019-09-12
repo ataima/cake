@@ -27,9 +27,9 @@ add_custom_command (
     COMMAND ${PROJECT_HOME}/beauty.sh ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_custom_target(
-    generate_source_from_xml
-    COMMAND make -C ../../templatexml all
-)
-add_dependencies( cake  generate_source_from_xml )
+#add_custom_target(
+#    generate_source_from_xml
+#    COMMAND make -C ../../templatexml all
+#)
+#add_dependencies( cake  generate_source_from_xml )
 

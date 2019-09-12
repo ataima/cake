@@ -35,7 +35,8 @@ const CA::_cbt *ICAXml_Layer_Maxtask::caKEY_SOURCE = "source";
 const CA::_cbt *ICAXml_Layer_Maxtask::mName="maxtask";
 
 
-CAXml_Layer_Maxtask::CAXml_Layer_Maxtask(){
+CAXml_Layer_Maxtask::CAXml_Layer_Maxtask()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_BUILD,"layer.maxtask.build",&build));
     predef.push_back(CA::xmlNodeSpec( caKEY_DEPLOY,"layer.maxtask.deploy",&deploy));
     predef.push_back(CA::xmlNodeSpec( caKEY_PACKAGE,"layer.maxtask.package",&package));
@@ -50,7 +51,8 @@ const CA::_cbt *ICAXml_Layer::caKEY_NAME = "name";
 const CA::_cbt *ICAXml_Layer::mName="layer";
 
 
-CAXml_Layer::CAXml_Layer(){
+CAXml_Layer::CAXml_Layer()
+{
     predef.push_back(CA::xmlNodeSpec( caKEY_INCLUDE,"layer.include",&include));
     predef.push_back(CA::xmlNodeSpec( caKEY_INFO,"layer.info",&info));
     predef.push_back(CA::xmlNodeSpec( caKEY_MAXTASK,"layer.maxtask",&maxtask.node_internal_value,&maxtask));
@@ -58,14 +60,16 @@ CAXml_Layer::CAXml_Layer(){
 }
 
 
-bool CAXml_Layer::loadFromXml(std::string filename){
-bool res=false;
-CA::IXmlNode *root=CA::IXmlNode::getNewNode();
-if(root->load(filename)){
-    loadFromXml(root);
-    res=true;
-   }
-delete root;
-return res;
+bool CAXml_Layer::loadFromXml(std::string filename)
+{
+    bool res=false;
+    CA::IXmlNode *root=CA::IXmlNode::getNewNode();
+    if(root->load(filename))
+    {
+        loadFromXml(root);
+        res=true;
+    }
+    delete root;
+    return res;
 }
 

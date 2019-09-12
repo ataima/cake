@@ -30,11 +30,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 class ICAXml_Layer_Maxtask
 {
 protected:
-   static const CA::_cbt *  caKEY_BUILD;
-   static const CA::_cbt *  caKEY_DEPLOY;
-   static const CA::_cbt *  caKEY_PACKAGE;
-   static const CA::_cbt *  caKEY_SOURCE;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_BUILD;
+    static const CA::_cbt *  caKEY_DEPLOY;
+    static const CA::_cbt *  caKEY_PACKAGE;
+    static const CA::_cbt *  caKEY_SOURCE;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Layer_Maxtask()=default;
@@ -45,11 +45,11 @@ public:
 class ICAXml_Layer
 {
 protected:
-   static const CA::_cbt *  caKEY_INCLUDE;
-   static const CA::_cbt *  caKEY_INFO;
-   static const CA::_cbt *  caKEY_MAXTASK;
-   static const CA::_cbt *  caKEY_NAME;
-   static const CA::_cbt *   mName;
+    static const CA::_cbt *  caKEY_INCLUDE;
+    static const CA::_cbt *  caKEY_INFO;
+    static const CA::_cbt *  caKEY_MAXTASK;
+    static const CA::_cbt *  caKEY_NAME;
+    static const CA::_cbt *   mName;
 
 public:
     virtual ~ICAXml_Layer()=default;
@@ -69,16 +69,16 @@ protected:
 public:
 /// ctor
     CAXml_Layer_Maxtask();
-/// value of this node : 
-   std::string node_internal_value;
+/// value of this node :
+    std::string node_internal_value;
 /// value of node : layer.maxtask.build
-   std::string build;
+    std::string build;
 /// value of node : layer.maxtask.deploy
-   std::string deploy;
+    std::string deploy;
 /// value of node : layer.maxtask.package
-   std::string package;
+    std::string package;
 /// value of node : layer.maxtask.source
-   std::string source;
+    std::string source;
 public:
 /// getters
 /// return this node name
@@ -117,16 +117,16 @@ protected:
 public:
 /// ctor
     CAXml_Layer();
-/// value of this node : 
-   std::string node_internal_value;
+/// value of this node :
+    std::string node_internal_value;
 /// value of nodes[] : layer.include
-   std::vector<std::string> include;
+    std::vector<std::string> include;
 /// value of node : layer.info
-   std::string info;
+    std::string info;
 /// object for node : layer.maxtask
-   CAXml_Layer_Maxtask maxtask;
+    CAXml_Layer_Maxtask maxtask;
 /// value of node : layer.name
-   std::string name;
+    std::string name;
 public:
 /// getters
 /// return this node name
@@ -161,7 +161,7 @@ public:
         ss<<"</"<<getICAXml_Name_Value()<<">"<<std::endl;
     }
 /// entry point from file xml to variable class members
-   bool loadFromXml(std::string filename) final;
+    bool loadFromXml(std::string filename) final;
 };
 
 
