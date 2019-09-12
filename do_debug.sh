@@ -18,7 +18,6 @@ fi
 #cd Debug$2$1
 rm -rf build
 make -C templatexml clean all
-sleep 5
 cmake -DCMAKE_INSTALL_PREFIX=Debug$2$1 -DCMAKE_TOOLCHAIN_FILE=./$1_$2_i686.toolchain.cmake  -DCMAKE_BUILD_TYPE:STRING=Debug -H$PWD -B$PWD/build "-GUnix Makefiles"
 make -C build -j8 all install
 
