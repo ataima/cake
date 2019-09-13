@@ -12,6 +12,8 @@
 #include "cathreadsimple.h"
 namespace CA
 {
+
+
 caThreadSimple::caThreadSimple()
 {
     mStatus = STOPPED;
@@ -100,7 +102,9 @@ void * caThreadSimple::ExecuteClient(void)
     if (reqFunc != nullptr)
     {
         mStatus = RUNNING;
-        return reqFunc(reqParam); //reqFunc must return NULLPTR for OK
+        auto res = reqFunc(reqParam); //reqFunc must return NULLPTR for OK
+        mStatus=EXITED;
+        return res;
     }
     return (void *) - 1;
 }
