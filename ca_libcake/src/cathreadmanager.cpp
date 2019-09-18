@@ -83,6 +83,7 @@ caThreadManager::~caThreadManager()
     pthread_mutex_destroy(&mMtxClients);
     pthread_mutex_destroy(&mMtxRun);
     pthread_mutex_destroy(&mMtxStop);
+    instance = nullptr;
 }
 
 bool caThreadManager::AddClient(functor func, void *param,  size_t index, const char *name)
@@ -148,11 +149,15 @@ void  caThreadManager::finalize( size_t index, int result)
     r.index=index;
     r.result=result;
     errors.push_back(r);
-    clientThread =running.at(index);
+    if(index<running.size())
+        clientThread =running.at(index);
     unlockRunning();
-    lockStopped();
-    stopped.push_back(clientThread);
-    unlockStopped();
+    if(clientThread!=nullptr)
+    {
+        lockStopped();
+        stopped.push_back(clientThread);
+        unlockStopped();
+    }
     //std::cerr<<"FINALIZE CLIENT = "<<index<<" "<<stopped.size()<<":"<<running.size()<<std::endl;
     // check more thread
     auto crun=GetRunningSize();

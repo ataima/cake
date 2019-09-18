@@ -51,6 +51,7 @@ caThreadClient::caThreadClient( size_t index,cleanctor cc)
     mTickCount = 0;
     mName[0] = '\0';
     cleanfunc=cc;
+    pthread_mutex_init(&caThreadClient::mMtx,nullptr);
 }
 
 void caThreadClient::Reset(void)
