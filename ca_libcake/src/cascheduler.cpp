@@ -35,7 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <cstdlib>
 #include "cascheduler.h"
 #include "caphaseutils.h"
-
+#include <unistd.h>
 
 namespace CA
 {
@@ -56,6 +56,7 @@ void  ISchedulerManager::setInstance(ISchedulerManager *_mng)
 caScheduler::caScheduler(phaseMaxTask & _max_thread,prjPhase _phase):phase(_phase)
 {
     max_thread=caPhaseUtils::getPhaseMaxThread(phase,_max_thread);
+    thmanager=nullptr;
 }
 
 void caScheduler::addExec(IPrjStatus *work)
@@ -63,7 +64,7 @@ void caScheduler::addExec(IPrjStatus *work)
     auto test=works_set.find(work->getName());
     if(test==works_set.end())
     {
-        works.push(work);
+        works.push_back(work);
         works_set.insert(work->getName());
         LogInfo("%s : add work n. %d",work->getName().c_str(),works.size());
     }
@@ -73,9 +74,73 @@ void caScheduler::addExec(IPrjStatus *work)
     }
 }
 
+
+
+void * caScheduler::shellfunc(void * param)
+{
+    auto res=-1;
+    int *res_ptr=nullptr;
+    caPrjStatus * thst=static_cast<caPrjStatus *>(param);
+    if(thst!=nullptr)
+    {
+        res=system(thst->getFullPath().c_str());
+        delete thst;
+    }
+    if(res)
+        res_ptr++;
+    return (void* )res_ptr;
+}
+
 int caScheduler::doExec()
 {
     LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d : %d",caPhaseUtils::mainPhaseToCStr(phase),works_set.size(),max_thread);
+    thmanager= new caThreadManager();
+    if(thmanager!=nullptr)
+    {
+        auto i=0;
+        for(auto w : works )
+        {
+            caPrjStatus * wst=dynamic_cast<caPrjStatus *>(w);
+            caPrjStatus * thst=new caPrjStatus(*wst);
+            thmanager->AddClient(shellfunc,thst,i,wst->getName().c_str());
+            i++;
+        }
+        thmanager->StartClients(max_thread);
+        statusThreads st;
+        do
+        {
+            thmanager->GetStatus(st);
+            usleep(10000);
+        }
+        while(st.clients>st.running);
+        thmanager->GetStatus(st);
+        LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  STARTED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
+        do
+        {
+            thmanager->GetStatus(st);
+            usleep(10000);
+        }
+        while(st.running>st.stopped);
+        LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
+        thmanager->GetStatus(st);
+        if(!st.errors.empty())
+        {
+            auto start=st.errors.begin();
+            auto stop=st.errors.end();
+            while (start!=stop)
+            {
+                IPrjStatus *errprt=works[start->index];
+                if(errprt!=nullptr)
+                {
+                    LogError("SCHEDULER : PHASE : %s >> JOB : %s  return ERROR(%d) ",caPhaseUtils::mainPhaseToCStr(phase),errprt->getFullPath().c_str(),start->result);
+                }
+                start++;
+            }
+        }
+        // end
+        delete thmanager;
+        thmanager=nullptr;
+    }
     return 0;
 }
 

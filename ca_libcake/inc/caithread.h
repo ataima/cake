@@ -26,7 +26,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 namespace CA
 {
+
+
+
 typedef void * (*functor)(void *);
+typedef void (*cleanctor)(size_t, int);
+
 
 typedef enum tag_thread_status
 {

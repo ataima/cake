@@ -305,7 +305,7 @@ class IScheduler
 {
 public:
     virtual void addExec(IPrjStatus  *status )=0;
-    virtual int doExec()=0;
+    virtual int  doExec()=0;
 };
 
 

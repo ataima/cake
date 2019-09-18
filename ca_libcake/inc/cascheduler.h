@@ -29,6 +29,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include "cainterfaces.h"
 #include "cajoblayer.h"
+#include "caithread.h"
+#include "cathreadclient.h"
+#include "cathreadmanager.h"
 #include <stack>
 
 namespace CA
@@ -40,14 +43,17 @@ namespace CA
 class caScheduler
     :public IScheduler
 {
-    std::stack<IPrjStatus *> works;
+    std::vector<IPrjStatus *> works;
     std::set<std::string> works_set;
     size_t max_thread;
     prjPhase phase;
+    caThreadManager *thmanager;
 public:
     caScheduler (phaseMaxTask & _max_thread,prjPhase _phase);
     virtual void addExec( IPrjStatus * status) final;
     virtual int doExec() final;
+public:
+    static void * shellfunc(void *param);
 };
 
 

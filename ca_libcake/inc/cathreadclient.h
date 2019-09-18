@@ -1,7 +1,6 @@
+#ifndef THREAD_CLIENT_FILE_HEADER
+#define THREAD_CLIENT_FILE_HEADER
 
-
-#ifndef THREAD_SIMPLE_FILE_HEADER
-#define THREAD_SIMPLE_FILE_HEADER
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
 
@@ -27,46 +26,100 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
+#include <caithread.h>
+
 
 namespace CA
 {
 
 
-#include "caithread.h"
 
-class caThreadSimple
+
+class caThreadClient
 {
-private:
     caThreadStatus mStatus;
+    caThreadMode mMode;
     pthread_t *mThid;
+    static pthread_mutex_t mMtx;
+    pthread_cond_t mCond;
     functor reqFunc;
+    cleanctor cleanfunc;
+    size_t mIndex;
+    unsigned long int mTickCount;
     void *reqParam;
-    void * ExecuteClient(void);
-    void CleanUp(void);
+    char mName[32];
 
-public:
-    caThreadSimple();
-    ~caThreadSimple();
-    bool InitThread(functor entry, void *param);
+
+    bool CreateThread();
+    int WaitForSignal(void);
+    int ExecuteClient(void);
+    int Lock(void);
+    int Unlock(void);
+    int CondWait(void);
+    int CondSignal(void);
     void DestroyThread(void);
     void JoinThread(void);
-    void SleepThread(unsigned int delay);
+    inline void finalize_cleanup(int result)
+    {
+        if (cleanfunc!=nullptr)
+            cleanfunc(mIndex,result);
+    }
 
-    caThreadStatus getStatus(void)
+
+public:
+    caThreadClient( size_t index = 0,cleanctor cc=nullptr);
+    ~caThreadClient();
+    bool InitThread(functor entry, void *param, const char *name);
+    void SleepThread(unsigned int delay);
+    void Resume(void);
+    void ReqExit(void);
+    void Reset(void);
+
+    inline caThreadStatus getStatus(void)
     {
         return mStatus;
     }
 
-    pthread_t * getThreadId(void)
+    inline void setStatus(caThreadStatus m)
+    {
+        mStatus = m;
+    }
+
+    inline caThreadMode getMode(void)
+    {
+        return mMode;
+    }
+
+    inline pthread_t * getThreadId(void)
     {
         return mThid;
     }
+
+    inline const char *getName(void)
+    {
+        return mName;
+    }
+
+    inline int getTickCount(void)
+    {
+        return mTickCount;
+    }
+
+    inline size_t getIndex(void)
+    {
+        return mIndex;
+    }
+
 public:
     static void * entry_point(void *param);
     static void cleanup_point(void *param);
 
 };
 
+
+
 }
 
-#endif /* THREADSCHEDULER_H */
+
+#endif /* THREADCLIENT_H */
+
