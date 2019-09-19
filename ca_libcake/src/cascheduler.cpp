@@ -83,7 +83,9 @@ void * caScheduler::shellfunc(void * param)
     caPrjStatus * thst=static_cast<caPrjStatus *>(param);
     if(thst!=nullptr)
     {
-        res=system(thst->getFullPath().c_str());
+        std::string script=thst->getPathScript();
+        caUtils::appendPath(script,thst->getNextExec());
+        res=system(script.c_str());
         delete thst;
     }
     if(res)
@@ -132,7 +134,20 @@ int caScheduler::doExec()
                 IPrjStatus *errprt=works[start->index];
                 if(errprt!=nullptr)
                 {
-                    LogError("SCHEDULER : PHASE : %s >> JOB : %s  return ERROR(%d) ",caPhaseUtils::mainPhaseToCStr(phase),errprt->getFullPath().c_str(),start->result);
+                    if(start->result!=0)
+                    {
+                        LogError("SCHEDULER : PHASE : %s >> JOB : %s : %s return ERROR(%d) ",caPhaseUtils::mainPhaseToCStr(phase),
+                                 errprt->getPathScript().c_str(),
+                                 errprt->getNextExec().c_str(),
+                                 start->result);
+                    }
+                    else
+                    {
+                        LogInfo("SCHEDULER : PHASE : %s >> JOB : %s : %s return Ok(%d) ",caPhaseUtils::mainPhaseToCStr(phase),
+                                errprt->getPathScript().c_str(),
+                                errprt->getNextExec().c_str(),
+                                start->result);
+                    }
                 }
                 start++;
             }

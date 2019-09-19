@@ -33,6 +33,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "castatusconf.h"
 #include <caconfenv.h>
 #include <cstdlib>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 namespace CA
@@ -48,6 +50,10 @@ bool caJobMakeBase::checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, I
     caUtils::checkDirExistOrCreate(replaced);
     caUtils::appendPath(replaced,pst->getName());
     caUtils::checkDirExistOrCreate(replaced);
+    if(pst->getPathScript()!=replaced)
+    {
+        pst->setPathScript(replaced);
+    }
     caUtils::appendPath(replaced,pst->getNextExec());
     scriptname=replaced;
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
@@ -91,7 +97,16 @@ bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env,
         if(funcToCreate!=nullptr)
         {
             res=funcToCreate(env,pst,scriptToCreate);
-            LogInfo("Layer : %s : Project : %s : \n\t\tcreate script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
+            if(res)
+            {
+                sync();
+                chmod(scriptToCreate.c_str(),0775);
+                LogInfo("Layer : %s : Project : %s : \n\t\tcreate script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
+            }
+            else
+            {
+                LogError("Layer : %s : Project : %s : \n\t\t Fail to create script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
+            }
         }
     }
     return res;

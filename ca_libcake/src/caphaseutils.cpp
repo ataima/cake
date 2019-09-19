@@ -36,12 +36,12 @@ const char *  caPhaseUtils::mainPhaseToCStr(prjPhase phase)
 {
     const char *pmsg[]=
     {
-        "ST_NONE",
-        "ST_SOURCE",
-        "ST_BUILD",
-        "ST_PACKAGE",
-        "ST_DEPLOY",
-        "ST_COMPLETE"
+        "NO_DEF",
+        "SOURCE",
+        "BUILD",
+        "PACKAGE",
+        "DEPLOY",
+        "COMPLETE"
     };
     if((size_t)phase > (size_t)ST_COMPLETE)return nullptr;
     return pmsg[(size_t)phase];

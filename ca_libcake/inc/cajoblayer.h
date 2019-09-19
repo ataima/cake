@@ -44,6 +44,7 @@ private:
     std::string fullprojconf;
     std::string layer;
     std::string name;
+    std::string scriptpath;
     void * st;
     std::string next_exec;
     prjPhase phase;
@@ -64,16 +65,17 @@ public:
     virtual inline std::string & getNextExec() final {return next_exec;}
     virtual inline void setNextExec(std::string v) final { next_exec=v;};
     virtual inline prjPhase getMainPhase() final {return phase;}
-    virtual inline void setMainPhase(prjPhase _n)
+    virtual inline void setMainPhase(prjPhase _n)final
     {
         phase=_n;
     }
     virtual inline prjPhaseSource getPhaseSource()final {return pSource; }
-    virtual inline void setPhaseSource(prjPhaseSource _v)
+    virtual inline void setPhaseSource(prjPhaseSource _v)final
     {
         phase=ST_SOURCE;
         pSource=_v;
     }
+    virtual inline std::string & getPathScript()final {return scriptpath;}
     virtual inline void incPhaseSource() final
     {
         unsigned int v=(unsigned int )pSource;
@@ -81,7 +83,7 @@ public:
         pSource=(prjPhaseSource)v;
     }
     virtual inline prjPhaseBuild getPhaseBuild()final {return pBuild;}
-    virtual inline void setPhaseBuild(prjPhaseBuild _v)
+    virtual inline void setPhaseBuild(prjPhaseBuild _v)final
     {
         phase=ST_BUILD;
         pBuild=_v;
@@ -93,7 +95,7 @@ public:
         pBuild=(prjPhaseBuild)v;
     }
     virtual inline prjPhasePackage getPhasePackage()final {return pPackage;}
-    virtual inline void setPhasePackage(prjPhasePackage _v)
+    virtual inline void setPhasePackage(prjPhasePackage _v)final
     {
         phase=ST_PACKAGE;
         pPackage=_v;
@@ -105,7 +107,7 @@ public:
         pPackage=(prjPhasePackage)v;
     }
     virtual inline prjPhaseDeploy  getPhaseDeploy()final {return pDeploy;}
-    virtual inline void setPhaseDeploy(prjPhaseDeploy _v)
+    virtual inline void setPhaseDeploy(prjPhaseDeploy _v)final
     {
         phase=ST_DEPLOY;
         pDeploy=_v;
@@ -116,13 +118,17 @@ public:
         v++;
         pDeploy=(prjPhaseDeploy)v;
     }
-    virtual inline void setXmlStatus(void *stnew)
+    virtual inline void setXmlStatus(void *stnew)final
     {
         st=stnew;
     }
-    virtual inline void setFullPath(std::string & p)
+    virtual inline void setFullPath(std::string & p)final
     {
         fullpath=p;
+    }
+    virtual inline void setPathScript(std::string & p) final
+    {
+        scriptpath=p;
     }
     virtual void clearAllStatus() final
     {

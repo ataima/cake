@@ -298,6 +298,8 @@ public:
     virtual void setPhaseDeploy(prjPhaseDeploy _v)=0;
     virtual void incPhaseDeploy()=0;
     virtual void clearAllStatus()=0;
+    virtual std::string & getPathScript()=0;
+    virtual void setPathScript(std::string & p)=0;
 };
 
 
