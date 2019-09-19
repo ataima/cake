@@ -35,6 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <cstdlib>
 #include "cascheduler.h"
 #include "caphaseutils.h"
+#include "caprjstatus.h"
 #include <unistd.h>
 
 namespace CA
