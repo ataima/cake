@@ -270,5 +270,262 @@ void caPrjStatusUtils::setCurrentScript(IPrjStatus *st)
     }
 }
 
+void caPrjStatusUtils::save(IPrjStatus *st)
+{
+
+    class save_source_none
+    {
+    public:
+        save_source_none(IPrjStatus *st,CAXml_Status *xml)
+        {
+            xml->pre_download="";
+            xml->download="";
+            xml->post_download="";
+            xml->pre_patch="";
+            xml->patch="";
+            xml->post_patch="";
+            xml->pre_save_source="";
+            xml->save_source="";
+            xml->post_save_source="";
+            //
+            xml->pre_configure="";
+            xml->configure="";
+            xml->post_configure="";
+            xml->pre_build="";
+            xml->build="";
+            xml->post_build="";
+            xml->pre_install="";
+            xml->install="";
+            xml->post_install="";
+            //
+            xml->pre_package="";
+            xml->package="";
+            xml->post_package="";
+            //
+            xml->pre_deploy="";
+            xml->deploy="";
+            xml->post_deploy="";
+        }
+    };
+
+    class save_source_status
+    {
+    public:
+        save_source_status(IPrjStatus *st,CAXml_Status *xml)
+        {
+            if(st!=nullptr && xml!=nullptr)
+            {
+                switch(st->getPhaseSource())
+                {
+                case ST_SOURCE_NONE:
+                    xml->pre_download="";
+                    xml->download="";
+                    xml->post_download="";
+                    xml->pre_patch="";
+                    xml->patch="";
+                    xml->post_patch="";
+                    xml->pre_save_source="";
+                    xml->save_source="";
+                    xml->post_save_source="";
+                    break;
+                case ST_SOURCE_PRE_DOWNLOAD:
+                    xml->pre_download="1";
+                    break;
+                case ST_SOURCE_DOWNLOAD:
+                    xml->download="1";
+                    break;
+                case ST_SOURCE_POST_DOWNLOAD:
+                    xml->post_download="1";
+                    break;
+                case ST_SOURCE_PRE_PATCH:
+                    xml->pre_patch="1";
+                    break;
+                case ST_SOURCE_PATCH:
+                    xml->patch="1";
+                    break;
+                case ST_SOURCE_POST_PATCH:
+                    xml->post_patch="1";
+                    break;
+                case ST_SOURCE_PRE_SAVE:
+                    xml->pre_save_source="1";
+                    break;
+                case ST_SOURCE_SAVE:
+                    xml->save_source="1";
+                    break;
+                case ST_SOURCE_POST_SAVE:
+                    xml->post_save_source="1";
+                    break;
+                }
+            }
+        }
+    };
+
+    class save_build_status
+    {
+    public:
+        save_build_status(IPrjStatus *st,CAXml_Status *xml)
+        {
+            if(st!=nullptr && xml!=nullptr)
+            {
+                switch(st->getPhaseBuild())
+                {
+                case ST_BUILD_NONE:
+                    xml->pre_configure="";
+                    xml->configure="";
+                    xml->post_configure="";
+                    xml->pre_build="";
+                    xml->build="";
+                    xml->post_build="";
+                    xml->pre_install="";
+                    xml->install="";
+                    xml->post_install="";
+                    break;
+                case ST_BUILD_PRE_CONFIGURE:
+                    xml->pre_configure="1";
+                    break;
+                case ST_BUILD_CONFIGURE:
+                    xml->configure="1";
+                    break;
+                case ST_BUILD_POST_CONFIGURE:
+                    xml->post_configure="1";
+                    break;
+                case ST_BUILD_PRE_BUILD:
+                    xml->pre_build="1";
+                    break;
+                case ST_BUILD_BUILD:
+                    xml->build="1";
+                    break;
+                case ST_BUILD_POST_BUILD:
+                    xml->post_build="1";
+                    break;
+                case ST_BUILD_PRE_INSTALL:
+                    xml->pre_install="1";
+                    break;
+                case ST_BUILD_INSTALL:
+                    xml->install="1";
+                    break;
+                case ST_BUILD_POST_INSTALL:
+                    xml->post_install="1";
+                    break;
+                }
+            }
+        }
+    };
+
+    class save_package_status
+    {
+    public:
+        save_package_status(IPrjStatus *st,CAXml_Status *xml)
+        {
+            if(st!=nullptr && xml!=nullptr)
+            {
+                switch(st->getPhasePackage())
+                {
+                case ST_PACKAGE_NONE:
+                    xml->pre_package="";
+                    xml->package="";
+                    xml->post_package="";
+                    break;
+                case ST_PACKAGE_PRE:
+                    xml->pre_package="1";
+                    break;
+                case ST_PACKAGE_PACKAGE:
+                    xml->package="1";
+                    break;
+                case ST_PACKAGE_POST:
+                    xml->post_package="1";
+                    break;
+                }
+            }
+        }
+    };
+
+    class save_deploy_status
+    {
+    public:
+        save_deploy_status(IPrjStatus *st,CAXml_Status *xml)
+        {
+            if(st!=nullptr && xml!=nullptr)
+            {
+                switch(st->getPhaseDeploy())
+                {
+                case ST_DEPLOY_NONE:
+                    xml->pre_deploy="";
+                    xml->deploy="";
+                    xml->post_deploy="";
+                    break;
+                case ST_DEPLOY_PRE:
+                    xml->pre_deploy="1";
+                    break;
+                case ST_DEPLOY:
+                    xml->deploy="1";
+                    break;
+                case ST_DEPLOY_POST:
+                    xml->post_deploy="1";
+                    break;
+                }
+            }
+        }
+    };
+
+    if (st)
+    {
+        CAXml_Status *cur = static_cast<CAXml_Status *>(st->getXmlStatus());
+        if(cur)
+        {
+            switch(st->getMainPhase())
+            {
+            case ST_COMPLETE:
+                break;
+            case ST_NONE:
+            {
+                save_source_none s(st,cur);
+            }
+            break;
+            case ST_SOURCE:
+            {
+                save_source_status s(st,cur);
+            }
+            break;
+            case ST_BUILD:
+            {
+                save_build_status s(st,cur);
+            }
+            break;
+            case ST_PACKAGE:
+            {
+                save_package_status s(st,cur);
+            }
+            break;
+            case ST_DEPLOY:
+            {
+                save_deploy_status s(st,cur);
+            }
+            break;
+            }
+            try
+            {
+                std::stringstream ss;
+                cur->toString(ss);
+                if(!ss.str().empty())
+                {
+                    std::ofstream ofs (st->getFullPath(), std::ofstream::out);
+                    if(ofs.is_open())
+                    {
+                        ofs<<ss.str();
+                        ofs.flush();
+                        ofs.close();
+                    }
+                }
+            }
+            catch(...)
+            {
+                std::string msg="STATUS : Cannot write on "+st->getFullPath();
+                std::runtime_error e(msg.c_str());
+                throw(e);
+            }
+        }
+    }
+}
 
 }

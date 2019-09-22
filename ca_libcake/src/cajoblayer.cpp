@@ -240,6 +240,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             std::stringstream ss;
             status->toString(ss);
             f<<ss.str().c_str();
+            f.flush();
             f.close();
             auto nit=projects_status.find(prj);
             if(nit!=projects_status.end())

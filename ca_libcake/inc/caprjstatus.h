@@ -50,6 +50,7 @@ private:
     prjPhaseBuild pBuild;
     prjPhasePackage pPackage;
     prjPhaseDeploy  pDeploy;
+    int exec_result;
 public:
     caPrjStatus(std::string & _name, std::string & _proj,std::string &_layer):
         name(_name),fullprojconf(_proj),layer(_layer),
@@ -62,12 +63,14 @@ public:
     virtual inline void * getXmlStatus() final {return st;}
     virtual inline std::string & getNextExec() final {return next_exec;}
     virtual inline void setNextExec(std::string v) final { next_exec=v;};
+    virtual inline int getExecResult() final { return exec_result;}
+    virtual inline void setExecResult(int n) final {exec_result=n;}
     virtual inline prjPhase getMainPhase() final {return phase;}
     virtual inline void setMainPhase(prjPhase _n)final
     {
         phase=_n;
     }
-    virtual inline prjPhaseSource getPhaseSource()final {return pSource; }
+    virtual inline prjPhaseSource getPhaseSource()final {return pSource;}
     virtual inline void setPhaseSource(prjPhaseSource _v)final
     {
         phase=ST_SOURCE;
@@ -145,6 +148,7 @@ public:
     static void setNextStep(IPrjStatus *st);
     static void getNextExec(IPrjStatus *st);
     static void setCurrentScript(IPrjStatus *st);
+    static void save(IPrjStatus *st);
 };
 
 }

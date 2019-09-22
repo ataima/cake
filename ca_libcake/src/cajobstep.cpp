@@ -118,8 +118,9 @@ void caJobStep::doPrepare(void)
 }
 
 
-void caJobStep::doWork(void)
+bool caJobStep::doWork(void)
 {
+    auto res=false;
     std::list<std::string> order_prj;
     auto towork=layer->getNumWork(order_prj);
     if(towork>0)
@@ -143,7 +144,7 @@ void caJobStep::doWork(void)
                     }
                 }
             }
-            msched->doExec();
+            res=msched->doExec();
         }
     }
     else
@@ -151,6 +152,7 @@ void caJobStep::doWork(void)
         CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step *>(step_conf);
         LogInfo("%s : %s : COMPLETE !",step->name.c_str(),layer->getName().c_str());
     }
+    return res;
 }
 
 void caJobStep::prepareScheduler()
@@ -186,15 +188,19 @@ void caJobStepManager::prepareStep(IGetConfEnv  * _env)
 }
 
 
-void caJobStepManager::doWork(void)
+bool caJobStepManager::doWork(void)
 {
+    auto res=false;
     for(auto job: *this)
     {
         if(job)
         {
-            job->doWork();
+            res=job->doWork();
         }
+        if(res==false)
+            break;
     }
+    return res;
 }
 
 void caJobStepManager::doPrepare(void)

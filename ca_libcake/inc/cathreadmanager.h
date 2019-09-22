@@ -39,18 +39,13 @@ class caThreadManager;
 typedef std::vector<caThreadClient *> thArray;
 typedef int (*functor_nexttask)(caThreadManager *instance);
 
-typedef struct tag_resutl_thread
-{
-    size_t index;
-    int result;
-} resultThread;
 
 typedef struct tag_status_thread
 {
     size_t clients;
     size_t running;
     size_t stopped;
-    std::vector<resultThread> errors;
+    size_t errors;
 } statusThreads;
 
 class caThreadManager
@@ -60,7 +55,7 @@ private:
     thArray running;
     thArray stopped;
     size_t max_running;
-    std::vector<resultThread> errors;
+    size_t errors;
     static pthread_mutex_t mMtxClients;
     static pthread_mutex_t mMtxRun;
     static pthread_mutex_t mMtxStop;
@@ -82,7 +77,7 @@ public:
 
     inline bool haveErrors(void)
     {
-        return !errors.empty();
+        return errors!=0;
     }
 
     inline static caThreadManager * getInstance(void)

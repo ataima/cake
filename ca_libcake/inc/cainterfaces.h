@@ -300,6 +300,8 @@ public:
     virtual void clearAllStatus()=0;
     virtual std::string & getPathScript()=0;
     virtual void setPathScript(std::string & p)=0;
+    virtual int  getExecResult()=0;
+    virtual void setExecResult(int n)=0;
 };
 
 
@@ -308,6 +310,7 @@ class IScheduler
 public:
     virtual void addExec(IPrjStatus  *status )=0;
     virtual int  doExec()=0;
+    virtual bool empty()=0;
 };
 
 

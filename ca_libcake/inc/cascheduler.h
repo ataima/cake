@@ -52,8 +52,10 @@ public:
     caScheduler (phaseMaxTask & _max_thread,prjPhase _phase);
     virtual void addExec( IPrjStatus * status) final;
     virtual int doExec() final;
+    virtual inline bool empty() final { return works.empty(); }
 public:
     static void * shellfunc(void *param);
+
 };
 
 

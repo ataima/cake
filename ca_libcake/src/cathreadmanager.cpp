@@ -59,7 +59,7 @@ caThreadManager::caThreadManager()
     {
         std::cerr << "caThreadManager::instance already set !!" << std::endl;
     }
-    errors.clear();
+    errors=0;
     pthread_mutex_init(&mMtxClients,nullptr);
     pthread_mutex_init(&mMtxRun,nullptr);
     pthread_mutex_init(&mMtxStop,nullptr);
@@ -73,12 +73,25 @@ caThreadManager::~caThreadManager()
     lockClients();
     for(auto th: clients)
     {
+        if(th->getStatus()!=EXITED)
+        {
+            usleep(10000);
+            if(th->getStatus()!=EXITED)
+            {
+                usleep(100000);
+                if(th->getStatus()!=EXITED)
+                {
+                    usleep(1000000);
+                }
+
+            }
+        }
         delete th;
     }
     clients.clear();
     running.clear();
     stopped.clear();
-    errors.clear();
+    errors=0;
     unlockClients();
     pthread_mutex_destroy(&mMtxClients);
     pthread_mutex_destroy(&mMtxRun);
@@ -145,10 +158,10 @@ void  caThreadManager::finalize( size_t index, int result)
     // save error
     // save to stopped thread
     lockRunning();
-    resultThread r;
-    r.index=index;
-    r.result=result;
-    errors.push_back(r);
+    if(result!=0)
+    {
+        errors++;
+    }
     if(index<running.size())
         clientThread =running.at(index);
     unlockRunning();
@@ -197,7 +210,7 @@ bool caThreadManager::Reset(void)
         lockRunning();
         lockStopped();
         running.clear();
-        errors.clear();
+        errors=0;
         stopped.clear();
         for(auto th: clients)
         {
@@ -250,8 +263,7 @@ void caThreadManager::GetStatus(statusThreads &st)
     st.clients=GetClientsSize();
     st.running=GetRunningSize();
     st.stopped=GetStoppedSize();
-    st.errors.clear();
-    st.errors.insert(st.errors.begin(),errors.begin(),errors.end());
+    st.errors=errors;
 }
 
 

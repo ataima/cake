@@ -309,7 +309,6 @@ void caThreadClient::ReqExit(void)
         if (CondSignal() == 0)
             mStatus = TRY_EXIT;
         Unlock();
-        std::cerr<<"Force REQ EXIT ID="<<mIndex<<std::endl;
         usleep(2000);
         DestroyThread();
     }
