@@ -64,7 +64,10 @@ public:
     virtual inline std::string & getNextExec() final {return next_exec;}
     virtual inline void setNextExec(std::string v) final { next_exec=v;};
     virtual inline int getExecResult() final { return exec_result;}
-    virtual inline void setExecResult(int n) final {exec_result=n;}
+    virtual inline void setExecResult(int n) final
+    {
+        exec_result=n;
+    }
     virtual inline prjPhase getMainPhase() final {return phase;}
     virtual inline void setMainPhase(prjPhase _n)final
     {
@@ -149,6 +152,7 @@ public:
     static void getNextExec(IPrjStatus *st);
     static void setCurrentScript(IPrjStatus *st);
     static void save(IPrjStatus *st);
+
 };
 
 }

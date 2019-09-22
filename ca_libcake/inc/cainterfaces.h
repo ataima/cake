@@ -270,7 +270,6 @@ public:
 };
 
 
-
 class IPrjStatus
 {
 public:
@@ -305,12 +304,19 @@ public:
 };
 
 
+typedef std::vector<IPrjStatus *>  prjStatusArray;
+
+
 class IScheduler
 {
 public:
     virtual void addExec(IPrjStatus  *status )=0;
     virtual int  doExec()=0;
     virtual bool empty()=0;
+    virtual size_t appendJobs(IScheduler * prevJobs)=0;
+    virtual size_t removeCompleted(void)=0;
+    virtual prjPhase getPhase()=0;
+    virtual     prjStatusArray & getCurrentWorks(void)=0;
 };
 
 

@@ -60,6 +60,49 @@ caScheduler::caScheduler(phaseMaxTask & _max_thread,prjPhase _phase):phase(_phas
     thmanager=nullptr;
 }
 
+
+size_t caScheduler::appendJobs(IScheduler *prevJobs)
+{
+    auto res=0;
+    if(prevJobs)
+    {
+        prjStatusArray & wh=prevJobs->getCurrentWorks();
+        auto wit=wh.begin();
+        auto wend=wh.end();
+        while(wit!=wend)
+        {
+            if((*wit)->getMainPhase()==phase)
+            {
+                works.push_back(*wit);
+                wit=wh.erase(wit);
+                res++;
+            }
+            else
+                wit++;
+        }
+    }
+    return res;
+}
+
+
+size_t caScheduler::removeCompleted(void)
+{
+    auto res=0;
+    auto wit=works.begin();
+    auto wend=works.end();
+    while(!works.empty())
+    {
+        if((*wit)->getMainPhase()==ST_COMPLETE)
+        {
+            wit=works.erase(wit);
+            res++;
+        }
+        else
+            wit++;
+    }
+    return res;
+}
+
 void caScheduler::addExec(IPrjStatus *work)
 {
     auto test=works_set.find(work->getName());
@@ -74,7 +117,6 @@ void caScheduler::addExec(IPrjStatus *work)
         LogWarning("%s : work already present on to do works",work->getName().c_str());
     }
 }
-
 
 
 void * caScheduler::shellfunc(void * param)
@@ -96,12 +138,13 @@ void * caScheduler::shellfunc(void * param)
         {
             LogError("EXEC : '%s' : RES=%d",script.c_str(),res);
         }
-        thst->setExecResult(1);
+        thst->setExecResult(res);
     }
     if(res)
         res_ptr++;
     return (void* )res_ptr;
 }
+
 
 int caScheduler::doExec()
 {
@@ -150,14 +193,17 @@ int caScheduler::doExec()
                 }
                 // check IPrjStatus -> advance all OK
                 LogInfo("SCHEDULER : PHASE : %s >> JOBS : UPDATE STATUS  ",caPhaseUtils::mainPhaseToCStr(phase));
-                for (auto w : works)
+                auto wit=works.begin();
+                auto wend=works.end();
+                while (wit!=wend)
                 {
-                    if(w!=nullptr && w->getMainPhase()==phase && w->getExecResult()==0)
+                    if((*wit)!=nullptr && (*wit)->getMainPhase()==phase && (*wit)->getExecResult()==0)
                     {
-                        caPrjStatusUtils::save(w);
-                        caPrjStatusUtils::setNextStep(w);
+                        caPrjStatusUtils::save(*wit);
+                        caPrjStatusUtils::setNextStep(*wit);
                         numthisphase++;
                     }
+                    wit++;
                 }
             }
             // end
@@ -171,6 +217,7 @@ int caScheduler::doExec()
     }
     return jresult;
 }
+
 
 caSchedulerManager::caSchedulerManager(phaseMaxTask &  max_thread)
 {
@@ -195,39 +242,91 @@ caSchedulerManager::caSchedulerManager(phaseMaxTask &  max_thread)
     ISchedulerManager::setInstance(this);
 }
 
+
 bool caSchedulerManager::doExec()
 {
+    class exec_phase
+    {
+    public:
+        static int run(IScheduler * exec,IScheduler *next_exec )
+        {
+            auto res=exec->doExec();
+            if( res==0 )
+            {
+                if ( next_exec!=nullptr )
+                {
+                    unsigned int execPh=(unsigned int)exec->getPhase();
+                    unsigned int nextPh=(unsigned int)next_exec->getPhase();
+                    if(execPh<nextPh)
+                    {
+                        next_exec->appendJobs(exec);
+                    }
+                }
+                else
+                {
+                    unsigned int execPh=(unsigned int)exec->getPhase();
+                    if(execPh==ST_DEPLOY)
+                    {
+                        exec->removeCompleted();
+                    }
+                }
+            }
+            return res;
+        }
+    };
+
     auto res=0;
     IScheduler *exec=workers.at(ST_SOURCE);
+    IScheduler *next_exec=workers.at(ST_BUILD);
     if(exec!=nullptr && !exec->empty())
     {
-        res=exec->doExec();
+        do
+        {
+            res=exec_phase::run(exec,next_exec);
+        }
+        while(res==0 && !exec->empty());
     }
     if(res==0)
     {
         exec=workers.at(ST_BUILD);
+        next_exec=workers.at(ST_PACKAGE);
         if(exec!=nullptr && !exec->empty())
         {
-            res=exec->doExec();
+            do
+            {
+                res=exec_phase::run(exec,next_exec);
+            }
+            while(res==0 && !exec->empty());
         }
         if(res==0)
         {
             exec=workers.at(ST_PACKAGE);
+            next_exec=workers.at(ST_PACKAGE);
             if(exec!=nullptr && !exec->empty())
             {
-                res=exec->doExec();
+                do
+                {
+                    res=exec_phase::run(exec,next_exec);
+                }
+                while(res==0 && !exec->empty());
             }
             if(res==0)
             {
                 exec=workers.at(ST_DEPLOY);
+                next_exec=nullptr;
                 if(exec!=nullptr && !exec->empty())
                 {
-                    res=exec->doExec();
+                    do
+                    {
+                        res=exec_phase::run(exec,next_exec);
+                    }
+                    while(res==0 && !exec->empty());
                 }
             }
         }
     }
     return res==0;
 }
+
 
 }

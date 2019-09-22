@@ -34,6 +34,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 namespace CA
 {
 
+
+
 void caPrjStatusUtils::setNextStep(IPrjStatus *st)
 {
     if (st)
@@ -88,6 +90,7 @@ void caPrjStatusUtils::setNextStep(IPrjStatus *st)
             break;
         }
     }
+    setCurrentScript(st);
 }
 
 
@@ -457,7 +460,7 @@ void caPrjStatusUtils::save(IPrjStatus *st)
                 case ST_DEPLOY_PRE:
                     xml->pre_deploy="1";
                     break;
-                case ST_DEPLOY:
+                case ST_DEPLOY_IMAGE:
                     xml->deploy="1";
                     break;
                 case ST_DEPLOY_POST:

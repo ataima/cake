@@ -40,22 +40,29 @@ namespace CA
 
 
 
+
+
+
 class caScheduler
     :public IScheduler
 {
-    std::vector<IPrjStatus *> works;
+    prjStatusArray works;
     std::set<std::string> works_set;
     size_t max_thread;
     prjPhase phase;
     caThreadManager *thmanager;
 public:
+    virtual inline prjStatusArray & getCurrentWorks(void)final {return works;}
+public:
     caScheduler (phaseMaxTask & _max_thread,prjPhase _phase);
+    virtual size_t appendJobs(IScheduler *prevJobs)final;
+    virtual size_t removeCompleted(void)final;
     virtual void addExec( IPrjStatus * status) final;
     virtual int doExec() final;
     virtual inline bool empty() final { return works.empty(); }
+    virtual inline prjPhase getPhase()final{return phase;}
 public:
     static void * shellfunc(void *param);
-
 };
 
 

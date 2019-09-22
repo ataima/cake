@@ -122,6 +122,7 @@ void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
     }
     of<<std::endl;
     env->addEnvToScript(of);
+    of<<"exit 1 "<<std::endl;
     of.flush();
 }
 
