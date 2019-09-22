@@ -122,8 +122,9 @@ void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
     }
     of<<std::endl;
     env->addEnvToScript(of);
-    of<<"exit 1 "<<std::endl;
+    of<<"exit 0 "<<std::endl;
     of.flush();
+    sync();
 }
 
 void caJobMakeSourceScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)

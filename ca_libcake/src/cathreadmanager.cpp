@@ -310,13 +310,16 @@ void  caThreadManager::lockRunning(void)
 void  caThreadManager::unlockRunning(void)
 {
     auto res=-1;
+    auto fail=0;
     do
     {
         res=pthread_mutex_unlock(&mMtxRun);
         if(res)
         {
             std::cerr<<"UNLOCK RUNNING ERROR"<<std::endl;
-            break;
+            fail++;
+            if(fail>20)break;
+            usleep(50000);
         }
     }
     while(res!=0);
@@ -326,13 +329,16 @@ void  caThreadManager::unlockRunning(void)
 void  caThreadManager::lockStopped(void)
 {
     auto res=-1;
+    auto fail=0;
     do
     {
         res=pthread_mutex_trylock(&mMtxStop);
         if(res)
         {
             std::cerr<<"LOCK STOPPED ERROR"<<std::endl;
-            break;
+            fail++;
+            if(fail>20)break;
+            usleep(50000);
         }
     }
     while(res!=0);

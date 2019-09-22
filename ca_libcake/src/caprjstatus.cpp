@@ -28,7 +28,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cautils.h"
 #include "castatusconf.h"
 #include "caprjstatus.h"
-
+#include <unistd.h>
 
 
 namespace CA
@@ -279,7 +279,7 @@ void caPrjStatusUtils::save(IPrjStatus *st)
     class save_source_none
     {
     public:
-        save_source_none(IPrjStatus *st,CAXml_Status *xml)
+        static void save(IPrjStatus *st,CAXml_Status *xml)
         {
             xml->pre_download="";
             xml->download="";
@@ -314,7 +314,7 @@ void caPrjStatusUtils::save(IPrjStatus *st)
     class save_source_status
     {
     public:
-        save_source_status(IPrjStatus *st,CAXml_Status *xml)
+        static void save(IPrjStatus *st,CAXml_Status *xml)
         {
             if(st!=nullptr && xml!=nullptr)
             {
@@ -366,7 +366,7 @@ void caPrjStatusUtils::save(IPrjStatus *st)
     class save_build_status
     {
     public:
-        save_build_status(IPrjStatus *st,CAXml_Status *xml)
+        static void save(IPrjStatus *st,CAXml_Status *xml)
         {
             if(st!=nullptr && xml!=nullptr)
             {
@@ -418,7 +418,7 @@ void caPrjStatusUtils::save(IPrjStatus *st)
     class save_package_status
     {
     public:
-        save_package_status(IPrjStatus *st,CAXml_Status *xml)
+        static void save(IPrjStatus *st,CAXml_Status *xml)
         {
             if(st!=nullptr && xml!=nullptr)
             {
@@ -446,7 +446,7 @@ void caPrjStatusUtils::save(IPrjStatus *st)
     class save_deploy_status
     {
     public:
-        save_deploy_status(IPrjStatus *st,CAXml_Status *xml)
+        static void save(IPrjStatus *st,CAXml_Status *xml)
         {
             if(st!=nullptr && xml!=nullptr)
             {
@@ -482,51 +482,48 @@ void caPrjStatusUtils::save(IPrjStatus *st)
                 break;
             case ST_NONE:
             {
-                save_source_none s(st,cur);
+                save_source_none::save(st,cur);
             }
             break;
             case ST_SOURCE:
             {
-                save_source_status s(st,cur);
+                save_source_status::save(st,cur);
             }
             break;
             case ST_BUILD:
             {
-                save_build_status s(st,cur);
+                save_build_status::save(st,cur);
             }
             break;
             case ST_PACKAGE:
             {
-                save_package_status s(st,cur);
+                save_package_status::save(st,cur);
             }
             break;
             case ST_DEPLOY:
             {
-                save_deploy_status s(st,cur);
+                save_deploy_status::save(st,cur);
             }
             break;
             }
-            try
+            //try
+            //{
+            std::fstream ofs (st->getFullPath(), std::ios_base::out | std::ios_base::trunc);
+            if(ofs.is_open())
             {
-                std::stringstream ss;
-                cur->toString(ss);
-                if(!ss.str().empty())
-                {
-                    std::ofstream ofs (st->getFullPath(), std::ofstream::out);
-                    if(ofs.is_open())
-                    {
-                        ofs<<ss.str();
-                        ofs.flush();
-                        ofs.close();
-                    }
-                }
+                cur->toString(ofs);
+                ofs.flush();
+                ofs.close();
             }
-            catch(...)
-            {
-                std::string msg="STATUS : Cannot write on "+st->getFullPath();
-                std::runtime_error e(msg.c_str());
-                throw(e);
-            }
+            sync();
+
+            //}
+            //catch(...)
+            //{
+            //    std::string msg="STATUS : Cannot write on "+st->getFullPath();
+            //    std::runtime_error e(msg.c_str());
+            //    throw(e);
+            //}
         }
     }
 }

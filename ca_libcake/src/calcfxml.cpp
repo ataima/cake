@@ -664,14 +664,14 @@ void LCFXml::toString(std::iostream &ss, CA::optionsList *optl)
     }
 }
 
-void LCFXml::toString(std::iostream &out, IKeyValue *obj, std::string &parent)
+void LCFXml::toString(std::iostream &ss, IKeyValue *obj, std::string &parent)
 {
     keyList *list = obj->getICAXml_Predef_List();
-    std::stringstream ss;
+    //std::stringstream ss;
     std::string tab;
     for (auto it : *list)
     {
-        ss.str("");
+        //ss.str("");
         switch (it.type)
         {
         case CA::IXmlNode::xmlNodeType::inode_simple:
@@ -795,8 +795,9 @@ void LCFXml::toString(std::iostream &out, IKeyValue *obj, std::string &parent)
 #if DEBUG_TOSTRING
         std::cout<<out.str();
 #endif
-        out << ss.str();
+        //out << ss.str();
     }
+    ss.flush();
 }
 
 void LCFXml::toMap(std::map<std::string , std::string> & outmap,IKeyValue *obj,

@@ -71,14 +71,13 @@ size_t caScheduler::appendJobs(IScheduler *prevJobs)
         auto wend=wh.end();
         while(wit!=wend)
         {
-            if((*wit)->getMainPhase()==phase)
+            IPrjStatus *status=(*wit);
+            if(status->getMainPhase()==phase)
             {
-                works.push_back(*wit);
-                wit=wh.erase(wit);
+                works.push_back(status);
                 res++;
             }
-            else
-                wit++;
+            wit++;
         }
     }
     return res;
@@ -128,16 +127,7 @@ void * caScheduler::shellfunc(void * param)
     {
         std::string script=thst->getPathScript();
         caUtils::appendPath(script,thst->getNextExec());
-
         res=system(script.c_str());
-        if(res==0)
-        {
-            LogInfo("EXEC : '%s' : RES=%d",script.c_str(),res);
-        }
-        else
-        {
-            LogError("EXEC : '%s' : RES=%d",script.c_str(),res);
-        }
         thst->setExecResult(res);
     }
     if(res)
@@ -187,30 +177,43 @@ int caScheduler::doExec()
                 LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
                 thmanager->GetStatus(st);
                 jresult=st.errors;
-                if(st.errors!=0)
-                {
-                    LogError("SCHEDULER : PHASE : %s >> JOB :  return ERRORS",caPhaseUtils::mainPhaseToCStr(phase));
-                }
-                // check IPrjStatus -> advance all OK
-                LogInfo("SCHEDULER : PHASE : %s >> JOBS : UPDATE STATUS  ",caPhaseUtils::mainPhaseToCStr(phase));
-                auto wit=works.begin();
-                auto wend=works.end();
-                while (wit!=wend)
-                {
-                    if((*wit)!=nullptr && (*wit)->getMainPhase()==phase && (*wit)->getExecResult()==0)
-                    {
-                        caPrjStatusUtils::save(*wit);
-                        caPrjStatusUtils::setNextStep(*wit);
-                        numthisphase++;
-                    }
-                    wit++;
-                }
+
             }
             // end
             delete thmanager;
             thmanager=nullptr;
-            // errors preset
-            if(jresult!=0)break;
+            sync();
+            // check IPrjStatus -> advance all OK
+            LogInfo("SCHEDULER : PHASE : %s >> JOBS : UPDATE STATUS  ",caPhaseUtils::mainPhaseToCStr(phase));
+            auto wit=works.begin();
+            auto wend=works.end();
+            auto index=0;
+            while (wit!=wend)
+            {
+                IPrjStatus *status=*wit;
+                if(status!=nullptr && status->getExecResult()==0)
+                {
+                    LogInfo("SCHEDULER : PHASE : %s >> JOBS :  %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
+                            index,status->getLayer().c_str(),status->getName().c_str(),status->getNextExec().c_str(),status->getExecResult());
+                    caPrjStatusUtils::save(*wit);
+                    caPrjStatusUtils::setNextStep(*wit);
+                    numthisphase++;
+                    sync();
+                }
+                else
+                {
+                    LogError("SCHEDULER : PHASE : %s >> JOBS :  %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
+                             index,status->getLayer().c_str(),status->getName().c_str(),status->getNextExec().c_str(),status->getExecResult());
+
+                }
+                wit++;
+                index++;
+            }
+            if(jresult!=0)
+            {
+                LogError("SCHEDULER : PHASE : %s >> JOB :  return ERRORS",caPhaseUtils::mainPhaseToCStr(phase));
+                break;
+            }
             // no more job in this phase
             if(numthisphase==0)break;
         }
@@ -301,7 +304,7 @@ bool caSchedulerManager::doExec()
         if(res==0)
         {
             exec=workers.at(ST_PACKAGE);
-            next_exec=workers.at(ST_PACKAGE);
+            next_exec=workers.at(ST_DEPLOY);
             if(exec!=nullptr && !exec->empty())
             {
                 do
