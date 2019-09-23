@@ -31,7 +31,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <caconfenv.h>
 #include <cstdlib>
 #include <unistd.h>
-#include <string.h>
+
 
 
 namespace CA
@@ -116,6 +116,7 @@ bool cakeManager::run(const std::string &_conf_file)
                 }
                 jobs.prepareStep(env);
                 jobs.doPrepare();
+                sync();
                 jobs.doWork();
             }
         }

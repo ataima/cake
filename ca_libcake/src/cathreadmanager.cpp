@@ -69,30 +69,28 @@ caThreadManager::caThreadManager()
 caThreadManager::~caThreadManager()
 {
     HERE1();
+    auto err=0;
     StopClients();
     lockClients();
     for(auto th: clients)
     {
-        if(th->getStatus()!=EXITED)
+        err=0;
+        while(th->getStatus()!=EXITED && err<1000)
         {
             usleep(10000);
-            if(th->getStatus()!=EXITED)
-            {
-                usleep(100000);
-                if(th->getStatus()!=EXITED)
-                {
-                    usleep(1000000);
-                }
-
-            }
+            err++;
         }
         delete th;
     }
     clients.clear();
-    running.clear();
-    stopped.clear();
     errors=0;
     unlockClients();
+    lockRunning();
+    running.clear();
+    unlockRunning();
+    lockStopped();
+    stopped.clear();
+    unlockStopped();
     pthread_mutex_destroy(&mMtxClients);
     pthread_mutex_destroy(&mMtxRun);
     pthread_mutex_destroy(&mMtxStop);
@@ -177,6 +175,7 @@ void  caThreadManager::finalize( size_t index, int result)
     auto cclient=GetClientsSize();
     if(crun<cclient)
         Run(crun);
+    clientThread->JoinThread();
 }
 
 
@@ -296,7 +295,7 @@ void  caThreadManager::lockRunning(void)
     auto res=-1;
     do
     {
-        res=pthread_mutex_trylock(&mMtxRun);
+        res=pthread_mutex_lock(&mMtxRun);
         if(res)
         {
             std::cerr<<"LOCK RUNNING ERROR"<<std::endl;
@@ -332,7 +331,7 @@ void  caThreadManager::lockStopped(void)
     auto fail=0;
     do
     {
-        res=pthread_mutex_trylock(&mMtxStop);
+        res=pthread_mutex_lock(&mMtxStop);
         if(res)
         {
             std::cerr<<"LOCK STOPPED ERROR"<<std::endl;
@@ -364,13 +363,16 @@ void  caThreadManager::unlockStopped(void)
 void  caThreadManager::lockClients(void)
 {
     auto res=-1;
+    auto fail=0;
     do
     {
-        res=pthread_mutex_trylock(&mMtxClients);
+        res=pthread_mutex_lock(&mMtxClients);
         if(res)
         {
             std::cerr<<"LOCK CLIENTS ERROR"<<std::endl;
-            break;
+            fail++;
+            if(fail>20)break;
+            usleep(50000);
         }
     }
     while(res!=0);

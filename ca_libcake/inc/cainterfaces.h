@@ -314,9 +314,9 @@ public:
     virtual int  doExec()=0;
     virtual bool empty()=0;
     virtual size_t appendJobs(IScheduler * prevJobs)=0;
-    virtual size_t removeCompleted(void)=0;
+    virtual size_t removeCompleted()=0;
     virtual prjPhase getPhase()=0;
-    virtual     prjStatusArray & getCurrentWorks(void)=0;
+    virtual     prjStatusArray & getCurrentWorks()=0;
 };
 
 
@@ -327,7 +327,7 @@ private:
 public:
     virtual ~ISchedulerManager()
     {
-        if(instance!=nullptr)
+        if(instance)
         {
             delete instance;
         }

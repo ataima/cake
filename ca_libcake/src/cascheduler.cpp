@@ -68,17 +68,20 @@ size_t caScheduler::appendJobs(IScheduler *prevJobs)
     {
         prjStatusArray & wh=prevJobs->getCurrentWorks();
         auto wit=wh.begin();
-        auto wend=wh.end();
-        while(wit!=wend)
+        while(wit!=wh.end())
         {
             IPrjStatus *status=(*wit);
             if(status->getMainPhase()==phase)
             {
-                works.push_back(status);
+                this->addExec(status);
+                auto nit=wh.erase(wit);
+                wit=nit;
                 res++;
             }
-            wit++;
+            else
+                wit++;
         }
+
     }
     return res;
 }
@@ -89,15 +92,18 @@ size_t caScheduler::removeCompleted(void)
     auto res=0;
     auto wit=works.begin();
     auto wend=works.end();
-    while(!works.empty())
+    while(wit!=wend)
     {
         if((*wit)->getMainPhase()==ST_COMPLETE)
         {
-            wit=works.erase(wit);
             res++;
         }
-        else
-            wit++;
+        wit++;
+    }
+    if(res==works.size())
+    {
+        works.clear();
+        works_set.clear();
     }
     return res;
 }
@@ -139,22 +145,28 @@ void * caScheduler::shellfunc(void * param)
 int caScheduler::doExec()
 {
     auto jresult=-1;
+    auto numtoexec=0,index=0;
+    auto wit=works.begin();
+    auto wend=works.end();
+    IPrjStatus * status;
     LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d : %d",caPhaseUtils::mainPhaseToCStr(phase),works_set.size(),max_thread);
     while(1)
     {
         thmanager= new caThreadManager();
         if(thmanager!=nullptr)
         {
-            auto numtoexec=0;
-            auto numthisphase=0;
-            for(auto w : works )
+            numtoexec=0;
+            wit=works.begin();
+            wend=works.end();
+            while(wit!=wend )
             {
-                caPrjStatus * wst=dynamic_cast<caPrjStatus *>(w);
-                if(wst!=nullptr &&  wst->getMainPhase()==phase)
+                IPrjStatus * status=(*wit);
+                if(status!=nullptr &&  status->getMainPhase()==phase)
                 {
-                    thmanager->AddClient(shellfunc,wst,numtoexec,wst->getName().c_str());
+                    thmanager->AddClient(shellfunc,status,numtoexec,status->getName().c_str());
                     numtoexec++;
                 }
+                wit++;
             }
             if(numtoexec>0)
             {
@@ -163,7 +175,7 @@ int caScheduler::doExec()
                 do
                 {
                     thmanager->GetStatus(st);
-                    usleep(10000);
+                    usleep(1000);
                 }
                 while(st.clients>st.running);
                 thmanager->GetStatus(st);
@@ -171,13 +183,12 @@ int caScheduler::doExec()
                 do
                 {
                     thmanager->GetStatus(st);
-                    usleep(10000);
+                    usleep(1000);
                 }
                 while(st.running>st.stopped);
                 LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
                 thmanager->GetStatus(st);
                 jresult=st.errors;
-
             }
             // end
             delete thmanager;
@@ -185,20 +196,18 @@ int caScheduler::doExec()
             sync();
             // check IPrjStatus -> advance all OK
             LogInfo("SCHEDULER : PHASE : %s >> JOBS : UPDATE STATUS  ",caPhaseUtils::mainPhaseToCStr(phase));
-            auto wit=works.begin();
-            auto wend=works.end();
-            auto index=0;
+            wit=works.begin();
+            wend=works.end();
+            index=0;
             while (wit!=wend)
             {
-                IPrjStatus *status=*wit;
-                if(status!=nullptr && status->getExecResult()==0)
+                status=(*wit);
+                if(status!=nullptr && status->getMainPhase()==phase && status->getExecResult()==0)
                 {
                     LogInfo("SCHEDULER : PHASE : %s >> JOBS :  %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
                             index,status->getLayer().c_str(),status->getName().c_str(),status->getNextExec().c_str(),status->getExecResult());
-                    caPrjStatusUtils::save(*wit);
-                    caPrjStatusUtils::setNextStep(*wit);
-                    numthisphase++;
-                    sync();
+                    caPrjStatusUtils::save(status);
+                    caPrjStatusUtils::setNextStep(status);
                 }
                 else
                 {
@@ -214,8 +223,21 @@ int caScheduler::doExec()
                 LogError("SCHEDULER : PHASE : %s >> JOB :  return ERRORS",caPhaseUtils::mainPhaseToCStr(phase));
                 break;
             }
-            // no more job in this phase
-            if(numthisphase==0)break;
+            numtoexec=0;
+            wit=works.begin();
+            wend=works.end();
+            index=0;
+            while (wit!=wend)
+            {
+                status=(*wit);
+                if(status!=nullptr &&  status->getMainPhase()==phase)
+                {
+                    numtoexec++;
+                    break;
+                }
+                wit++;
+            }
+            if(numtoexec==0)break;
         }
     }
     return jresult;

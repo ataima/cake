@@ -12,9 +12,9 @@ then
 fi
 
 
-#rm -rf Release$2$1
+rm -rf Release$2$1
 
-#mkdir Release$2$1
+mkdir Release$2$1
 #cd Release$2$1
 rm -rf build
 make -C templatexml clean all

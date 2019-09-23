@@ -67,14 +67,14 @@ class Logger
 private:
     void print(ILogParam *p);
 
-    ILogParam *remove(void);
+    ILogParam *remove();
 
 public:
     Logger();
 
-    ~Logger();
+    ~Logger() final;
 
-    void log(int level, const char *__fmt, ...);
+    void log(int level, const char *__fmt, ...) final;
 
     static void entry(ILogger *current);
 
@@ -123,8 +123,8 @@ class FilePrinter
 private:
     FILE *file;
 public:
-    FilePrinter(const char *name);
-    ~FilePrinter();
+    explicit FilePrinter(const char *name);
+    ~FilePrinter() final;
     void   out( int level, std::string & msg) final;
 };
 

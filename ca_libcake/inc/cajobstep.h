@@ -42,8 +42,8 @@ class ICAjob_step
 public:
     virtual void reset()=0;
     virtual void prepareDefaultEnv(IGetConfEnv  * _env)=0;
-    virtual bool doWork(void)=0;
-    virtual void doPrepare(void)=0;
+    virtual bool doWork()=0;
+    virtual void doPrepare()=0;
     virtual ICAXml_Main_Defaults_Step  *getStep()=0;
     virtual ICAXml_Layer *getLayer()=0;
     virtual IGetConfEnv* getEnv()=0;
@@ -56,8 +56,8 @@ class ICAjob_step_manager
 public:
     virtual void reset()=0;
     virtual void prepareStep(IGetConfEnv  * _env)=0;
-    virtual bool doWork(void)=0;
-    virtual void doPrepare(void)=0;
+    virtual bool doWork()=0;
+    virtual void doPrepare()=0;
 };
 
 
@@ -74,23 +74,23 @@ protected:
     IGetConfEnv  *env;
     ICAjob_layer *layer;
     ICAjob_make_script *generator;
-    void AddUserEnv(void);
+    void AddUserEnv();
 public:
     caJobStep(ICAXml_Main_Defaults_Step  *_step_conf,ICAXml_Layer *_layers_conf);
     ~caJobStep();
     void reset() final;
     void prepareDefaultEnv(IGetConfEnv  * _env) final;
-    bool doWork(void) final;
-    void doPrepare(void) final;
-    inline ICAXml_Main_Defaults_Step  *getStep()
+    bool doWork() final;
+    void doPrepare() final;
+    inline ICAXml_Main_Defaults_Step  *getStep() final
     {
         return step_conf;
     };
-    ICAXml_Layer *getLayer()
+    ICAXml_Layer *getLayer() final
     {
         return layers_conf;
     }
-    IGetConfEnv* getEnv()
+    IGetConfEnv* getEnv() final
     {
         return env;
     }
@@ -106,8 +106,8 @@ class caJobStepManager
 public:
     void reset() final;
     void prepareStep(IGetConfEnv  * _env) final;
-    bool doWork(void) final;
-    void doPrepare(void) final;
+    bool doWork() final;
+    void doPrepare() final;
 };
 
 

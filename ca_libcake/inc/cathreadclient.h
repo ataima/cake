@@ -51,14 +51,14 @@ class caThreadClient
 
 
     bool CreateThread();
-    int WaitForSignal(void);
-    int ExecuteClient(void);
-    int Lock(void);
-    int Unlock(void);
-    int CondWait(void);
-    int CondSignal(void);
-    void DestroyThread(void);
-    void JoinThread(void);
+    int WaitForSignal();
+    int ExecuteClient();
+    int Lock();
+    int Unlock();
+    int CondWait();
+    int CondSignal();
+    void DestroyThread();
+
     inline void finalize_cleanup(int result)
     {
         if (cleanfunc!=nullptr)
@@ -67,15 +67,16 @@ class caThreadClient
 
 
 public:
-    caThreadClient( size_t index = 0,cleanctor cc=nullptr);
+    explicit caThreadClient( size_t index = 0,cleanctor cc=nullptr);
     ~caThreadClient();
     bool InitThread(functor entry, void *param, const char *name);
     void SleepThread(unsigned int delay);
-    void Resume(void);
-    void ReqExit(void);
-    void Reset(void);
+    void Resume();
+    void ReqExit();
+    void Reset();
+    void JoinThread();
 
-    inline caThreadStatus getStatus(void)
+    inline caThreadStatus getStatus()
     {
         return mStatus;
     }
@@ -85,27 +86,27 @@ public:
         mStatus = m;
     }
 
-    inline caThreadMode getMode(void)
+    inline caThreadMode getMode()
     {
         return mMode;
     }
 
-    inline pthread_t * getThreadId(void)
+    inline pthread_t * getThreadId()
     {
         return mThid;
     }
 
-    inline const char *getName(void)
+    inline const char *getName()
     {
         return mName;
     }
 
-    inline int getTickCount(void)
+    inline unsigned long int getTickCount()
     {
         return mTickCount;
     }
 
-    inline size_t getIndex(void)
+    inline size_t getIndex()
     {
         return mIndex;
     }

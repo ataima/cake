@@ -59,13 +59,13 @@
             <asflags/>
             <c_include_path/>
             <cc>gcc</cc>
-            <cflags>-O3 -fPIC -m64</cflags>
+            <cflags>"-O3 -fPIC -m64"</cflags>
             <cpath>$DEPLOY/include</cpath>
             <cplus_include_path/>
-            <cppflags>-O3   -fPIC -m64</cppflags>
+            <cppflags>"-O3   -fPIC -m64"</cppflags>
             <cross>x86_64-pc-linux-gnu</cross>
             <cxx>g++</cxx>
-            <cxxflags>-O3  -fPIC -m64</cxxflags>
+            <cxxflags>"-O3  -fPIC -m64"</cxxflags>
             <id>1</id>
             <info>"build utility
                 build with new  compiler some basics utilities"</info>
@@ -90,13 +90,13 @@
             <asflags/>
             <c_include_path/>
             <cc/>
-            <cflags>-O3 -fPIC -m64</cflags>
+            <cflags>"-O3 -fPIC -m64"</cflags>
             <cpath/>
             <cplus_include_path/>
-            <cppflags>-O3 -fPIC -m64</cppflags>
+            <cppflags>"-O3 -fPIC -m64"</cppflags>
             <cross>arm-none-eabi</cross>
             <cxx/>
-            <cxxflags>-O3 -fPIC -m64</cxxflags>
+            <cxxflags>"-O3 -fPIC -m64"</cxxflags>
             <id>2</id>
             <info>"build cross compiler
                 build with new  compiler x86_64 the arm gcc compiler none eabi"</info>
@@ -121,13 +121,13 @@
             <asflags/>
             <c_include_path/>
             <cc/>
-            <cflags>-O3 -fPIC -m64</cflags>
+            <cflags>"-O3 -fPIC -m64"</cflags>
             <cpath/>
             <cplus_include_path/>
-            <cppflags>-O3 -fPIC -m64</cppflags>
+            <cppflags>"-O3 -fPIC -m64"</cppflags>
             <cross>arm-linux-gnueabi</cross>
             <cxx/>
-            <cxxflags>-O3 -fPIC -m64</cxxflags>
+            <cxxflags>"-O3 -fPIC -m64"</cxxflags>
             <id>3</id>
             <info>create croos sysroot
                     build with new  compiler  x86_64 the arm gcc compiler gnu linux eabi</info>
@@ -146,3 +146,4 @@
         </step>
     </defaults>
 </main>
+

@@ -40,7 +40,7 @@ protected:
     void replaceValue(std::string & in, std::string & out);
 public:
     caGetConfEnv(const char *home,const char *pwd,const char *user);
-    caGetConfEnv( IGetConfEnv * b);
+    explicit caGetConfEnv(  IGetConfEnv * b);
     ~caGetConfEnv() final;
     bool add(const char *key,std::string value) final;
     bool add(envMap & map)final ;

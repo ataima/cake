@@ -32,9 +32,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cajoblayer.h"
 #include "cautils.h"
 #include "castatusconf.h"
-#include <caconfenv.h>
-#include <cstdlib>
 #include <caprjstatus.h>
+#include <unistd.h>
 
 namespace CA
 {
@@ -236,12 +235,12 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             LogInfo("%s:Status file  for project %s not available ,create ",
                     layer_name.c_str(),prj.c_str());
             ICAXml_Status *status =new CAXml_Status();
-            std::ofstream f(p_status);
-            std::stringstream ss;
-            status->toString(ss);
-            f<<ss.str().c_str();
-            f.flush();
-            f.close();
+            std::fstream *f=new std::fstream(p_status,std::ios_base::out);
+            status->toString(*f);
+            f->flush();
+            f->close();
+            sync();
+            delete f;
             auto nit=projects_status.find(prj);
             if(nit!=projects_status.end())
             {

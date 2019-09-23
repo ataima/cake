@@ -41,23 +41,23 @@ private:
     pthread_t *mThid;
     functor reqFunc;
     void *reqParam;
-    void * ExecuteClient(void);
+    void * ExecuteClient();
     void CleanUp(void);
 
 public:
     caThreadSimple();
     ~caThreadSimple();
     bool InitThread(functor entry, void *param);
-    void DestroyThread(void);
-    void JoinThread(void);
+    void DestroyThread();
+    void JoinThread();
     void SleepThread(unsigned int delay);
 
-    caThreadStatus getStatus(void)
+    caThreadStatus getStatus()
     {
         return mStatus;
     }
 
-    pthread_t * getThreadId(void)
+    pthread_t * getThreadId()
     {
         return mThid;
     }

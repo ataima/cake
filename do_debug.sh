@@ -12,9 +12,9 @@ then
 fi
 
 
-#rm -rf Debug$2$1
+rm -rf Debug$2$1
 
-#mkdir Debug$2$1
+mkdir Debug$2$1
 #cd Debug$2$1
 rm -rf build
 make -C templatexml clean all

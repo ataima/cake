@@ -1,16 +1,9 @@
 
-#include "calogiface.h"
-#include "caminiXml.h"
-#include "calogiface.h"
+
 #include <iostream>
 #include "caargopt.h"
-#include "caargv.h"
-#include "calogiface.h"
 #include <unistd.h>
-#include <stdio.h>
-#include <limits.h>
-#include <libgen.h>
-#include <numeric>
+
 
 
 /**************************************************************

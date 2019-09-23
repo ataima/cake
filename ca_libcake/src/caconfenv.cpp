@@ -25,7 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #include <caconfenv.h>
 #include <calogger.h>
-#include "caconfenv.h"
+
 
 
 namespace CA
@@ -73,7 +73,7 @@ bool caGetConfEnv::add(const char *key,std::string value)
 bool caGetConfEnv::add(envMap & tmap)
 {
     bool res=false;
-    for(auto n: tmap)
+    for(auto & n: tmap)
     {
         res=add(n.first.c_str(),n.second);
     }
@@ -108,7 +108,7 @@ bool caGetConfEnv::getValue(const char * key,std::string & out)
 
 void caGetConfEnv::addEnvToScript(std::ofstream & of)
 {
-    for(auto n: keyVal)
+    for(auto & n: keyVal)
     {
         of<<n.first<<"="<<n.second<<std::endl;
     }
@@ -164,7 +164,7 @@ void caGetConfEnv::replaceValue(std::string & in, std::string & out)
 
 void caGetConfEnv::dump(const char *envname)
 {
-    for (auto const it : keyVal)
+    for (auto const & it : keyVal)
     {
         LogInfo("%s : env %s=%s",envname,it.first.c_str(),it.second.c_str());
     }

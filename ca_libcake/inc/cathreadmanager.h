@@ -62,9 +62,9 @@ private:
     static caThreadManager *instance;
 private:
     bool Run(size_t index);
-    size_t GetClientsSize(void);
-    size_t GetRunningSize(void);
-    size_t GetStoppedSize(void);
+    size_t GetClientsSize();
+    size_t GetRunningSize();
+    size_t GetStoppedSize();
 public:
     caThreadManager();
     ~caThreadManager();
@@ -72,25 +72,25 @@ public:
 
     void GetStatus(statusThreads &st);
     void StartClients(size_t max_run);
-    void StopClients(void);
-    bool Reset(void);
+    void StopClients();
+    bool Reset();
 
-    inline bool haveErrors(void)
+    inline bool haveErrors()
     {
         return errors!=0;
     }
 
-    inline static caThreadManager * getInstance(void)
+    inline static caThreadManager * getInstance()
     {
         return instance;
     }
 
-    void lockRunning(void);
-    void unlockRunning(void);
-    void lockStopped(void);
-    void unlockStopped(void);
-    void lockClients(void);
-    void unlockClients(void);
+    void lockRunning();
+    void unlockRunning();
+    void lockStopped();
+    void unlockStopped();
+    void lockClients();
+    void unlockClients();
 
     void finalize(size_t index,int result);
 public:

@@ -52,15 +52,15 @@ class caScheduler
     prjPhase phase;
     caThreadManager *thmanager;
 public:
-    virtual inline prjStatusArray & getCurrentWorks(void)final {return works;}
+    inline prjStatusArray & getCurrentWorks()final {return works;}
 public:
     caScheduler (phaseMaxTask & _max_thread,prjPhase _phase);
-    virtual size_t appendJobs(IScheduler *prevJobs)final;
-    virtual size_t removeCompleted(void)final;
-    virtual void addExec( IPrjStatus * status) final;
-    virtual int doExec() final;
-    virtual inline bool empty() final { return works.empty(); }
-    virtual inline prjPhase getPhase()final{return phase;}
+    size_t appendJobs(IScheduler *prevJobs)final;
+    size_t removeCompleted()final;
+    void addExec( IPrjStatus * status) final;
+    int doExec() final;
+    inline bool empty() final { return works.empty(); }
+    inline prjPhase getPhase()final{return phase;}
 public:
     static void * shellfunc(void *param);
 };
@@ -72,7 +72,7 @@ class caSchedulerManager
     phaseMaxTask max_task;
     std::vector<IScheduler * > workers;
 public:
-    caSchedulerManager(phaseMaxTask & max_thread);
+    explicit caSchedulerManager(phaseMaxTask & max_thread);
     inline void addExec(IPrjStatus *status) final
     {
         IScheduler *exec=workers.at(status->getMainPhase());

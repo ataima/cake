@@ -41,7 +41,7 @@ class ICAjob_layer
 {
 public:
     virtual size_t getNumWork(std::list<std::string > & order)=0;
-    virtual void   prepareScripts(void)=0;
+    virtual void   prepareScripts()=0;
     virtual statusMap* getStatusMap()=0;
     virtual std::string & getName()=0;
 
@@ -62,18 +62,18 @@ protected:
                               std::string & repo, std::string & layer_name);
     void prepareProjectScripts(std::string &repo);
 public:
-    caJobLayer(ICAjob_step *js):jobstep(js) {}
+    explicit caJobLayer( ICAjob_step *js):jobstep(js) {}
     ~caJobLayer();
-    inline size_t getNumWork(std::list<std::string > & order)
+    inline size_t getNumWork(std::list<std::string > & order) final
     {
         return loadLayerStatus(order);
     }
     void   prepareScripts() final;
-    inline  statusMap* getStatusMap()
+    inline  statusMap* getStatusMap() final
     {
         return &projects_status;
     }
-    inline std::string & getName()
+    inline std::string & getName() final
     {
         return layer_name;
     };
