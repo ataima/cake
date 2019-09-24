@@ -211,14 +211,14 @@ int caScheduler::doExec()
                 status=(*wit);
                 if(status!=nullptr && status->getMainPhase()==phase && status->getExecResult()==0)
                 {
-                    LogInfo("SCHEDULER : PHASE : %s >> JOBS :  %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
+                    LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
                             index,status->getLayer().c_str(),status->getName().c_str(),status->getNextExec().c_str(),status->getExecResult());
                     caPrjStatusUtils::save(status);
                     caPrjStatusUtils::setNextStep(status);
                 }
                 else
                 {
-                    LogError("SCHEDULER : PHASE : %s >> JOBS :  %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
+                    LogError("SCHEDULER : PHASE : %s >> JOBS : %d : \n\t%s:%s:%s RESULT=%d",caPhaseUtils::mainPhaseToCStr(phase),
                              index,status->getLayer().c_str(),status->getName().c_str(),status->getNextExec().c_str(),status->getExecResult());
 
                 }

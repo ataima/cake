@@ -797,6 +797,7 @@ miniXmlParse::miniXmlParse(const std::string & _in, miniXmlNode *_root)
                         p_last=p_start;
                         p_end = filebuff.end();
                     }
+                    delete [] buff;
                 }
                 fclose(in);
             }

@@ -29,7 +29,8 @@
             <cxxflags>-O3</cxxflags>
             <id>0</id>
             <info>"prepare new gcc from source
-                First step to create a gcc native at last version to build all packets"</info>
+                First step to create a gcc native at 
+                last version to build all packets"</info>
             <ld>ld</ld>
             <ldflags/>
             <libs/>
@@ -129,8 +130,9 @@
             <cxx/>
             <cxxflags>"-O3 -fPIC -m64"</cxxflags>
             <id>3</id>
-            <info>create croos sysroot
-                    build with new  compiler  x86_64 the arm gcc compiler gnu linux eabi</info>
+            <info>"create croos sysroot
+                    build with new  compiler  
+                    x86_64 the arm gcc compiler gnu linux eabi"</info>
             <ld/>
             <ldflags/>
             <libs/>
