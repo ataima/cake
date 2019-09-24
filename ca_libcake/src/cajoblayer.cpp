@@ -107,14 +107,14 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
             std::pair<std::string,IPrjStatus *> pv(prj,ns);
             projects_status.insert(pv);
             ICAjob_make_script *generator=nullptr;
-            while(ns->getMainPhase()!=ST_COMPLETE)
+            while(1)
             {
                 caPrjStatusUtils::setCurrentScript(ns);
                 switch(ns->getMainPhase())
                 {
                 case  ST_NONE:
-                    LogInfo("%s: starting generate scripts for project : %s",
-                            layer_name.c_str() , ns->getName().c_str());
+                    LogNotice("%s:\n\t -> starting generate scripts for project : %s",
+                              layer_name.c_str() , ns->getName().c_str());
                     break;
                 case  ST_SOURCE:
                     if(ns->getPhaseSource()!=ST_SOURCE_NONE)
@@ -141,10 +141,11 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
                     }
                     break;
                 case ST_COMPLETE:
-                    LogInfo("%s: generate scripts for project : %s coplete",
-                            layer_name.c_str() , ns->getName().c_str());
+                    LogNotice("%s:\n\t -> generate scripts for project : %s complete",
+                              layer_name.c_str() , ns->getName().c_str());
                     break;
                 }
+                if(ns->getMainPhase()==ST_COMPLETE)break;
                 if(generator)
                 {
                     generator->create(this,jobstep->getEnv(),ns);
@@ -204,7 +205,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
         if(!caUtils::compareFileChangeDate(projconf,p_status))
         {
             // project conf file is newer than status file : remove status file
-            LogInfo("%s:project configuration %s was changed : invalidate status ",
+            LogInfo("%s:\n\tproject configuration %s was changed : invalidate status ",
                     layer_name.c_str(),prj.c_str());
             remove(p_status.c_str());
         }
@@ -272,8 +273,8 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
                 order.push_back(prj);
             }
             else
-                LogInfo("%s : project : %s : completed ",
-                        layer_name.c_str(),prj.c_str());
+                LogAlert("%s : %s%s%s : completed ",
+                         layer_name.c_str(),YELLOW,prj.c_str(),WHITE);
         }
         else
         {
@@ -283,7 +284,7 @@ size_t caJobLayer::loadProjectsStatus(std::list<std::string > & order,std::strin
             sys_throw(msg);
         }
     }
-    LogInfo("%s : Total Projects to work %ld",layer_name.c_str(),result);
+    LogNotice("%s : Total Projects to work %ld",layer_name.c_str(),result);
     return result;
 }
 

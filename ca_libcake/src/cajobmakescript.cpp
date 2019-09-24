@@ -59,7 +59,7 @@ bool caJobMakeBase::checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, I
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
     if (argvObj && argvObj->getOption(f_force_generate)->isSelect())
     {
-        LogInfo("Layer : %s : Project : %s : scripts : %s  force generation",layer->getName().c_str(),pst->getName().c_str(),pst->getNextExec().c_str());
+        LogInfo("Layer : %s : Project : %s : scripts :\n\t -> %s  force generation",layer->getName().c_str(),pst->getName().c_str(),pst->getNextExec().c_str());
         remove(scriptname.c_str());
     }
     if(caUtils::checkFileExist(scriptname))
@@ -68,12 +68,12 @@ bool caJobMakeBase::checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, I
         res=caUtils::compareFileChangeDate(pst->getFullProjConf(),scriptname);
         if( !res)
         {
-            LogInfo("Layer : %s : Project : %s : scripts : %s out of date remove",layer->getName().c_str(),pst->getName().c_str(),pst->getNextExec().c_str());
+            LogInfo("Layer : %s : Project : %s : scripts :\n\t -> %s out of date remove",layer->getName().c_str(),pst->getName().c_str(),pst->getNextExec().c_str());
             remove(scriptname.c_str());
         }
         else
         {
-            LogInfo("Layer : %s : Project : %s : scripts : %s syncronized",layer->getName().c_str(),pst->getName().c_str(),pst->getNextExec().c_str());
+            LogInfo("Layer : %s : Project : %s : scripts :\n\t -> %s syncronized",layer->getName().c_str(),pst->getName().c_str(),pst->getNextExec().c_str());
         }
     }
     return res;
@@ -101,11 +101,11 @@ bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env,
             {
                 sync();
                 chmod(scriptToCreate.c_str(),0775);
-                LogInfo("Layer : %s : Project : %s : \n\t\tcreate script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
+                LogInfo("Layer : %s : Project : %s :\n\t ->create script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
             }
             else
             {
-                LogError("Layer : %s : Project : %s : \n\t\t Fail to create script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
+                LogError("Layer : %s : Project : %s :\n\t ->Fail to create script file %s",layer->getName().c_str(),pst->getName().c_str(),scriptToCreate.c_str());
             }
         }
     }

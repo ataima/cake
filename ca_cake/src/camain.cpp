@@ -112,7 +112,7 @@ bool mainAppExecutor::execute()
         for  ( const std::string & it : argvObj->getArgs())
         {
             cakeManager manager;
-            LogInfo("Starting %sCAKE%s : %s ", RED_LIGHT, WHITE,it.c_str());
+            LogCritical("Starting %sCAKE%s : %s ", RED_LIGHT, WHITE,it.c_str());
             if(manager.run(it))
             {
                 manager.reset();

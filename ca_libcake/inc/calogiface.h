@@ -67,6 +67,7 @@ namespace CA
 #define BLACK "\e[0;30m"
 #define REPLACE "\e[0m"
 
+
 #if _LOGGER_
 
 

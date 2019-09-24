@@ -151,6 +151,7 @@ bool caJobStep::doWork(void)
     {
         CAXml_Main_Defaults_Step *step=dynamic_cast<CAXml_Main_Defaults_Step *>(step_conf);
         LogInfo("%s : %s : COMPLETE !",step->name.c_str(),layer->getName().c_str());
+        res=true;
     }
     return res;
 }

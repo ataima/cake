@@ -63,8 +63,8 @@ int main ( int argc, const char * argv[])
     }
 
     std::chrono::steady_clock::time_point t_stop= std::chrono::steady_clock::now();
-    LogInfo("Total time : \e[1;31m %ld \e[1;36m ns \e[1;37m, bye....",
-            (t_stop - t_start).count());
+    LogCritical("Total time : \e[1;31m %ld \e[1;36m ns \e[1;37m, bye....",
+                (t_stop - t_start).count());
     sleep(1);
     exit (result);
 }

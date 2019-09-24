@@ -248,21 +248,21 @@ caSchedulerManager::caSchedulerManager(phaseMaxTask &  max_thread)
 {
     auto v=ST_NONE;
     memcpy(&max_task,&max_thread,sizeof(phaseMaxTask));
-    workers.insert(workers.begin(),ST_COMPLETE,nullptr);
+    //workers.insert(workers.begin(),(size_t)(ST_COMPLETE),nullptr);
     for(v=ST_NONE; v<=ST_COMPLETE;)
     {
         switch(v)
         {
         case ST_NONE:
         case ST_COMPLETE:
-            workers[(size_t)(v)]=nullptr;
+            workers.push_back( nullptr );
             break;
         default:
-            workers[(size_t)(v)]=new caScheduler(max_task,v);
+            workers.push_back( new caScheduler(max_task,v) );
             break;
         }
         size_t vv=(size_t)(v);
-        v=(prjPhase)++vv;
+        v=(prjPhase)(++vv);
     }
     ISchedulerManager::setInstance(this);
 }

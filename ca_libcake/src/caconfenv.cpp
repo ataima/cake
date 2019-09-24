@@ -64,8 +64,8 @@ bool caGetConfEnv::add(const char *key,std::string value)
     }
     else
     {
-        LogInfo("Warning env %s already defined with value %s",
-                it->first.c_str(),it->second.c_str());
+        LogWarning("Warning env %s already defined with value %s",
+                   it->first.c_str(),it->second.c_str());
     }
     return res;
 }
@@ -95,11 +95,11 @@ bool caGetConfEnv::getValue(const char * key,std::string & out)
         char * envres=std::getenv(key);
         if(envres==nullptr)
         {
-            LogInfo("Warning undefined env %s ",key);
+            LogWarning("Warning undefined env %s ",key);
         }
         else
         {
-            LogInfo("Warning load system env : %s=%s", key, envres);
+            LogDebug("Warning load system env : %s=%s", key, envres);
             out=envres;
         }
     }
@@ -166,7 +166,7 @@ void caGetConfEnv::dump(const char *envname)
 {
     for (auto const & it : keyVal)
     {
-        LogInfo("%s : env %s=%s",envname,it.first.c_str(),it.second.c_str());
+        LogDebug("%s : env %s=%s",envname,it.first.c_str(),it.second.c_str());
     }
 }
 

@@ -123,7 +123,7 @@ void Logger::print(ILogParam *p)
         {
             std::string msg;
             std::stringstream ts;
-            ts << "%s[" <<std::setw(12)<< (p->time - t_start).count() << " %sns%s ]%s "<<msginfo[p->level]<<" > %s"<<p->msg<<"%s%s";
+            ts << "%s[" <<std::setw(12)<< (p->time - t_start).count() << " %sns%s ]%s (%s"<<p->level<<"%s)%s > %s"<<p->msg<<"%s%s";
             t_start = p->time;
             msg = ts.str();
             for(auto printer : current_printers)
@@ -218,12 +218,13 @@ void DefaultPrinter::out( int level, std::string & msg)
 {
     const char * colors[]=
     {
-        RED,RED,RED,
+        RED,CYAN_LIGHT,RED,
         RED,BLUE_LIGHT,CYAN,WHITE,GRAY_DARK,nullptr
     };
     if(level<0)level=0;
     if(level>LOG_DEBUG)level=LOG_DEBUG+1;
-    fprintf(stderr ,msg.c_str(),GREEN_LIGHT,YELLOW,GREEN_LIGHT,WHITE,colors[level],REPLACE,"\n");
+    fprintf(stderr, msg.c_str(), GREEN_LIGHT, YELLOW, GREEN_LIGHT,
+            WHITE,PURPLE,WHITE,RED, colors[level], REPLACE, "\n");
 }
 
 FilePrinter::FilePrinter(const char *name)
@@ -241,14 +242,15 @@ void FilePrinter::out( int level, std::string & msg)
 
     const char * colors[]=
     {
-        RED,RED,RED,
+        RED,CYAN_LIGHT,RED,
         RED,BLUE_LIGHT,CYAN,WHITE,GRAY_DARK,nullptr
     };
     if(level<0)level=0;
     if(level>LOG_DEBUG)level=LOG_DEBUG+1;
     if(file)
     {
-        fprintf(file, msg.c_str(), GREEN_LIGHT, YELLOW, GREEN_LIGHT, WHITE, colors[level], REPLACE, "\n");
+        fprintf(file, msg.c_str(), GREEN_LIGHT, YELLOW, GREEN_LIGHT,
+                WHITE,PURPLE,WHITE,RED, colors[level], REPLACE, "\n");
     }
 }
 
