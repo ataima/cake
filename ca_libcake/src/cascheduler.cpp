@@ -170,8 +170,13 @@ int caScheduler::doExec()
             }
             if(numtoexec>0)
             {
-                thmanager->StartClients(max_thread);
                 statusThreads st;
+                thmanager->StartClients(max_thread);
+                LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  STARTED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
+                thmanager->WaitTerminateClients();
+                LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
+                /*
+
                 do
                 {
                     thmanager->GetStatus(st);
@@ -187,6 +192,8 @@ int caScheduler::doExec()
                 }
                 while(st.running>st.stopped);
                 LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
+                */
+                thmanager->JoinAll();
                 thmanager->GetStatus(st);
                 jresult=st.errors;
             }

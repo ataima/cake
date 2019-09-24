@@ -40,7 +40,7 @@ class caThreadClient
     caThreadStatus mStatus;
     caThreadMode mMode;
     pthread_t *mThid;
-    static pthread_mutex_t mMtx;
+    pthread_mutex_t mMtx;
     pthread_cond_t mCond;
     functor reqFunc;
     cleanctor cleanfunc;

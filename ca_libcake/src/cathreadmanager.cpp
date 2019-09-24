@@ -38,14 +38,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 namespace CA
 {
 
-pthread_mutex_t caThreadManager::mMtxClients = PTHREAD_MUTEX_INITIALIZER;
-
-pthread_mutex_t caThreadManager::mMtxRun = PTHREAD_MUTEX_INITIALIZER;
-
-pthread_mutex_t caThreadManager::mMtxStop = PTHREAD_MUTEX_INITIALIZER;
-
-
-
 caThreadManager *caThreadManager::instance = nullptr;
 
 caThreadManager::caThreadManager()
@@ -60,9 +52,15 @@ caThreadManager::caThreadManager()
         std::cerr << "caThreadManager::instance already set !!" << std::endl;
     }
     errors=0;
+    mMtxClients = PTHREAD_MUTEX_INITIALIZER;
+    mMtxRun = PTHREAD_MUTEX_INITIALIZER;
+    mMtxStop = PTHREAD_MUTEX_INITIALIZER;
+    mMtxEnd = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_init(&mMtxClients,nullptr);
     pthread_mutex_init(&mMtxRun,nullptr);
     pthread_mutex_init(&mMtxStop,nullptr);
+    pthread_mutex_init(&mMtxEnd,nullptr);
+    pthread_cond_init(&mCond, NULL);
     instance = this;
 }
 
@@ -94,6 +92,8 @@ caThreadManager::~caThreadManager()
     pthread_mutex_destroy(&mMtxClients);
     pthread_mutex_destroy(&mMtxRun);
     pthread_mutex_destroy(&mMtxStop);
+    pthread_mutex_destroy(&mMtxEnd);
+    pthread_cond_destroy(&mCond);
     instance = nullptr;
 }
 
@@ -173,9 +173,15 @@ void  caThreadManager::finalize( size_t index, int result)
     // check more thread
     auto crun=GetRunningSize();
     auto cclient=GetClientsSize();
+    auto cstop=GetStoppedSize();
     if(crun<cclient)
+    {
         Run(crun);
-    clientThread->JoinThread();
+    }
+    if(cstop==cclient)
+    {
+        ClientsTerminateSignal();
+    }
 }
 
 
@@ -395,6 +401,35 @@ void  caThreadManager::unlockClients(void)
     while(res!=0);
 }
 
+
+int caThreadManager::ClientsTerminateSignal(void)
+{
+    int ret = pthread_cond_signal(&mCond);
+    if (ret != 0)
+    {
+        std::cerr << "Cannot signalling condition" << std::endl;
+    }
+    return ret;
+}
+
+
+int caThreadManager::WaitTerminateClients(void)
+{
+    int ret = pthread_cond_wait(&mCond, &mMtxEnd);
+    if (ret != 0)
+    {
+        std::cerr << "Cannot waiting condition" << std::endl;
+    }
+    return ret;
+}
+
+void caThreadManager::JoinAll()
+{
+    for (auto & th : stopped)
+    {
+        th->JoinThread();
+    }
+}
 
 }
 

@@ -56,15 +56,24 @@ private:
     thArray stopped;
     size_t max_running;
     size_t errors;
-    static pthread_mutex_t mMtxClients;
-    static pthread_mutex_t mMtxRun;
-    static pthread_mutex_t mMtxStop;
+    pthread_mutex_t mMtxClients;
+    pthread_mutex_t mMtxRun;
+    pthread_mutex_t mMtxStop;
+    pthread_mutex_t mMtxEnd;
+    pthread_cond_t  mCond;
     static caThreadManager *instance;
 private:
     bool Run(size_t index);
     size_t GetClientsSize();
     size_t GetRunningSize();
     size_t GetStoppedSize();
+    void lockRunning();
+    void unlockRunning();
+    void lockStopped();
+    void unlockStopped();
+    void lockClients();
+    void unlockClients();
+    void finalize(size_t index,int result);
 public:
     caThreadManager();
     ~caThreadManager();
@@ -74,6 +83,9 @@ public:
     void StartClients(size_t max_run);
     void StopClients();
     bool Reset();
+    void JoinAll();
+    int ClientsTerminateSignal();
+    int WaitTerminateClients();
 
     inline bool haveErrors()
     {
@@ -85,14 +97,7 @@ public:
         return instance;
     }
 
-    void lockRunning();
-    void unlockRunning();
-    void lockStopped();
-    void unlockStopped();
-    void lockClients();
-    void unlockClients();
 
-    void finalize(size_t index,int result);
 public:
     static void finalize_client(size_t index,int result);
 };

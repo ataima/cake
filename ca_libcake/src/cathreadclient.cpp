@@ -36,9 +36,6 @@ namespace CA
 {
 
 
-pthread_mutex_t caThreadClient::mMtx = PTHREAD_MUTEX_INITIALIZER;
-
-
 caThreadClient::caThreadClient( size_t index,cleanctor cc)
 {
     HERE1();
@@ -51,8 +48,10 @@ caThreadClient::caThreadClient( size_t index,cleanctor cc)
     mTickCount = 0;
     mName[0] = '\0';
     cleanfunc=cc;
-    pthread_mutex_init(&caThreadClient::mMtx,nullptr);
+    mMtx = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_init(&mMtx,nullptr);
 }
+
 
 void caThreadClient::Reset(void)
 {
@@ -62,11 +61,14 @@ void caThreadClient::Reset(void)
     InitThread(reqFunc, reqParam, mName) ;
 }
 
+
 caThreadClient::~caThreadClient()
 {
     HERE1();
-    pthread_mutex_destroy(&caThreadClient::mMtx);
+    pthread_mutex_destroy(&mMtx);
+    pthread_cond_destroy(&mCond);
 }
+
 
 bool caThreadClient::InitThread(functor func, void *param, const char *name)
 {
@@ -85,6 +87,7 @@ bool caThreadClient::InitThread(functor func, void *param, const char *name)
     }
     return result;
 }
+
 
 bool caThreadClient::CreateThread()
 {
@@ -110,6 +113,7 @@ bool caThreadClient::CreateThread()
         return true;
 }
 
+
 void caThreadClient::DestroyThread(void)
 {
     HERE1();
@@ -122,6 +126,7 @@ void caThreadClient::DestroyThread(void)
     }
 }
 
+
 void caThreadClient::JoinThread(void)
 {
     HERE1();
@@ -130,6 +135,7 @@ void caThreadClient::JoinThread(void)
         pthread_join(*mThid, nullptr);
     }
 }
+
 
 void caThreadClient::SleepThread(unsigned int delay)
 {
@@ -142,6 +148,7 @@ void caThreadClient::SleepThread(unsigned int delay)
         sleep(delay / 1000);
     }
 }
+
 
 void * caThreadClient::entry_point(void *param)
 {
@@ -175,10 +182,11 @@ void * caThreadClient::entry_point(void *param)
     return (void *)resptr;
 }
 
+
 int caThreadClient::Lock(void)
 {
     HERE1();
-    int ret = pthread_mutex_lock(&caThreadClient::mMtx);
+    int ret = pthread_mutex_lock(&mMtx);
     if (ret != 0)
     {
         std::cerr << "Cannot lock mutex" << std::endl;
@@ -192,10 +200,11 @@ int caThreadClient::Lock(void)
     return ret;
 }
 
+
 int caThreadClient::Unlock(void)
 {
     HERE1();
-    int ret = pthread_mutex_unlock(&caThreadClient::mMtx);
+    int ret = pthread_mutex_unlock(&mMtx);
     if (ret != 0)
     {
         std::cerr << "Cannot unlock mutex" << std::endl;
@@ -209,10 +218,11 @@ int caThreadClient::Unlock(void)
     return ret;
 }
 
+
 int caThreadClient::CondWait(void)
 {
     HERE1();
-    int ret = pthread_cond_wait(&mCond, &caThreadClient::mMtx);
+    int ret = pthread_cond_wait(&mCond, &mMtx);
     if (ret != 0)
     {
         std::cerr << "Cannot waiting condition" << std::endl;
@@ -225,6 +235,7 @@ int caThreadClient::CondWait(void)
 #endif
     return ret;
 }
+
 
 int caThreadClient::CondSignal(void)
 {
@@ -242,6 +253,7 @@ int caThreadClient::CondSignal(void)
 #endif
     return ret;
 }
+
 
 int caThreadClient::WaitForSignal(void)
 {
@@ -265,6 +277,7 @@ int caThreadClient::WaitForSignal(void)
     return res;
 }
 
+
 int caThreadClient::ExecuteClient(void)
 {
     HERE1();
@@ -278,6 +291,7 @@ int caThreadClient::ExecuteClient(void)
     return res;
 }
 
+
 void caThreadClient::cleanup_point(void *param)
 {
     HERE();
@@ -289,6 +303,7 @@ void caThreadClient::cleanup_point(void *param)
     }
 }
 
+
 void caThreadClient::Resume(void)
 {
     HERE1();
@@ -299,6 +314,7 @@ void caThreadClient::Resume(void)
         Unlock();
     }
 }
+
 
 void caThreadClient::ReqExit(void)
 {
@@ -313,6 +329,5 @@ void caThreadClient::ReqExit(void)
         DestroyThread();
     }
 }
-
 
 }
