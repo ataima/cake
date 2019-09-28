@@ -175,25 +175,6 @@ int caScheduler::doExec()
                 LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  STARTED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
                 thmanager->WaitTerminateClients();
                 LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
-                /*
-
-                do
-                {
-                    thmanager->GetStatus(st);
-                    usleep(1000);
-                }
-                while(st.clients>st.running);
-                thmanager->GetStatus(st);
-                LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  STARTED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
-                do
-                {
-                    thmanager->GetStatus(st);
-                    usleep(1000);
-                }
-                while(st.running>st.stopped);
-                LogInfo("SCHEDULER : PHASE : %s >> JOBS : %d  COMPLETED ",caPhaseUtils::mainPhaseToCStr(phase),works_set.size());
-                */
-                thmanager->JoinAll();
                 thmanager->GetStatus(st);
                 jresult=st.errors;
             }

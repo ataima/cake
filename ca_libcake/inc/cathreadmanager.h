@@ -1,6 +1,5 @@
-#ifndef THREAD_MANAGER_FILE_HEADER
-#define THREAD_MANAGER_FILE_HEADER
-
+#ifndef CA_THREAD_MANAGER_H
+#define CA_THREAD_MANAGER_H
 
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
@@ -28,16 +27,18 @@ OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
 #include <vector>
+#include <cathreadclient.h>
 
 
 namespace CA
 {
 
-
 class caThreadManager;
 
+
+
+
 typedef std::vector<caThreadClient *> thArray;
-typedef int (*functor_nexttask)(caThreadManager *instance);
 
 
 typedef struct tag_status_thread
@@ -45,51 +46,42 @@ typedef struct tag_status_thread
     size_t clients;
     size_t running;
     size_t stopped;
-    size_t errors;
+    int errors;
 } statusThreads;
 
 class caThreadManager
 {
 private:
     thArray clients;
-    thArray running;
-    thArray stopped;
-    size_t max_running;
-    size_t errors;
-    pthread_mutex_t mMtxClients;
-    pthread_mutex_t mMtxRun;
-    pthread_mutex_t mMtxStop;
-    pthread_mutex_t mMtxEnd;
-    pthread_cond_t  mCond;
+    std::vector<int> running;
+    std::vector<int> stopped;
+    int max_running;
+    int errors;
+    std::mutex mMtxRun;
+    std::mutex mMtxStop;
+    std::mutex mMtxEnd;
+    std::mutex mMtxGo;
+    std::condition_variable mCondEnd;
     static caThreadManager *instance;
 private:
-    bool Run(size_t index);
-    size_t GetClientsSize();
-    size_t GetRunningSize();
-    size_t GetStoppedSize();
-    void lockRunning();
-    void unlockRunning();
-    void lockStopped();
-    void unlockStopped();
-    void lockClients();
-    void unlockClients();
-    void finalize(size_t index,int result);
+    bool Run(int index);
+    void pushRunning(int index);
+    void pushStopped(int index);
+    int  GetRunningSize();
+    int  GetStoppedSize();
+    void ClientsTerminateSignal();
+    void finalize(int index,int result);
 public:
     caThreadManager();
     ~caThreadManager();
-    bool AddClient(functor func,void *param, size_t index, const char *name);
-
+    bool AddClient(functor func,void *param, int index, const char *name);
     void GetStatus(statusThreads &st);
-    void StartClients(size_t max_run);
-    void StopClients();
-    bool Reset();
-    void JoinAll();
-    int ClientsTerminateSignal();
-    int WaitTerminateClients();
-
+    void StartClients(int max_run);
+    void Reset();
+    void WaitTerminateClients();
     inline bool haveErrors()
     {
-        return errors!=0;
+        return (errors!=0);
     }
 
     inline static caThreadManager * getInstance()
@@ -99,11 +91,10 @@ public:
 
 
 public:
-    static void finalize_client(size_t index,int result);
+    static void finalize_client(int index,int result);
 };
-
 
 }
 
-#endif
+#endif /* THREANMANAGER_H */
 

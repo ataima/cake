@@ -122,6 +122,8 @@ void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
     }
     of<<std::endl;
     env->addEnvToScript(of);
+    //auto w=rand()&7;
+    //of<<"sleep "<<w<<std::endl;
     of<<"exit 0 "<<std::endl;
     of.flush();
     sync();

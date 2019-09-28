@@ -1,5 +1,5 @@
-#ifndef THREAD_CLIENT_FILE_HEADER
-#define THREAD_CLIENT_FILE_HEADER
+#ifndef CA_THREAD_CLIENT_H
+#define CA_THREAD_CLIENT_H
 
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
@@ -26,56 +26,67 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
-#include <caithread.h>
+
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
+typedef void * (*functor)(void *);
+typedef void (*cleanctor)(int, int);
+
+typedef enum tag_thread_status
+{
+    STOPPED,
+    WAIT_SIGNAL,
+    RUNNING,
+    RESUME,
+    TRY_EXIT,
+    EXITED
+} caThreadStatus;
 
 
 namespace CA
 {
 
-
-
-
 class caThreadClient
 {
+protected:
     caThreadStatus mStatus;
-    caThreadMode mMode;
-    pthread_t *mThid;
-    pthread_mutex_t mMtx;
-    pthread_cond_t mCond;
+    std::thread *mThid;
+    std::mutex mMtx;
+    std::mutex mMtxSignal;
+    std::condition_variable mCond;
     functor reqFunc;
     cleanctor cleanfunc;
-    size_t mIndex;
+    int mIndex;
     unsigned long int mTickCount;
     void *reqParam;
     char mName[32];
 
 
     bool CreateThread();
-    int WaitForSignal();
+    void WaitForSignal();
     int ExecuteClient();
-    int Lock();
-    int Unlock();
-    int CondWait();
-    int CondSignal();
-    void DestroyThread();
+    void CondWait();
+    void CondSignal();
 
-    inline void finalize_cleanup(int result)
-    {
-        if (cleanfunc!=nullptr)
-            cleanfunc(mIndex,result);
-    }
+
+
 
 
 public:
-    explicit caThreadClient( size_t index = 0,cleanctor cc=nullptr);
+    explicit caThreadClient( int index = 0,cleanctor cc=nullptr);
     ~caThreadClient();
     bool InitThread(functor entry, void *param, const char *name);
     void SleepThread(unsigned int delay);
     void Resume();
     void ReqExit();
     void Reset();
-    void JoinThread();
-
+    inline void finalize_cleanup(int result)
+    {
+        if (cleanfunc!=nullptr)
+            cleanfunc(mIndex,result);
+    }
     inline caThreadStatus getStatus()
     {
         return mStatus;
@@ -86,12 +97,8 @@ public:
         mStatus = m;
     }
 
-    inline caThreadMode getMode()
-    {
-        return mMode;
-    }
 
-    inline pthread_t * getThreadId()
+    inline std::thread * getThreadId()
     {
         return mThid;
     }
@@ -113,14 +120,10 @@ public:
 
 public:
     static void * entry_point(void *param);
-    static void cleanup_point(void *param);
 
 };
 
-
-
 }
-
 
 #endif /* THREADCLIENT_H */
 

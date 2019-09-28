@@ -25,24 +25,26 @@ OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************/
 
 #include <stdio.h>
-#include <pthread.h>
-#include <caithread.h>
-#include <cathreadclient.h>
-#include <cathreadmanager.h>
 #include <errno.h>
 #include <unistd.h>
 #include <vector>
 #include <iostream>
 #include <set>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <cathreadclient.h>
+#include <cathreadmanager.h>
+
 
 namespace CA
 {
+
 
 caThreadManager *caThreadManager::instance = nullptr;
 
 caThreadManager::caThreadManager()
 {
-    HERE1();
     max_running=1;
     clients.clear();
     running.clear();
@@ -51,97 +53,96 @@ caThreadManager::caThreadManager()
     {
         std::cerr << "caThreadManager::instance already set !!" << std::endl;
     }
-    errors=0;
-    mMtxClients = PTHREAD_MUTEX_INITIALIZER;
-    mMtxRun = PTHREAD_MUTEX_INITIALIZER;
-    mMtxStop = PTHREAD_MUTEX_INITIALIZER;
-    mMtxEnd = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_init(&mMtxClients,nullptr);
-    pthread_mutex_init(&mMtxRun,nullptr);
-    pthread_mutex_init(&mMtxStop,nullptr);
-    pthread_mutex_init(&mMtxEnd,nullptr);
-    pthread_cond_init(&mCond, NULL);
     instance = this;
+    errors=0;
 }
 
 caThreadManager::~caThreadManager()
 {
-    HERE1();
-    auto err=0;
-    StopClients();
-    lockClients();
     for(auto th: clients)
     {
-        err=0;
-        while(th->getStatus()!=EXITED && err<1000)
-        {
-            usleep(10000);
-            err++;
-        }
+        th->ReqExit();
         delete th;
     }
-    clients.clear();
-    errors=0;
-    unlockClients();
-    lockRunning();
+    mMtxRun.lock();
     running.clear();
-    unlockRunning();
-    lockStopped();
+    mMtxRun.unlock();
+    mMtxStop.lock();
     stopped.clear();
-    unlockStopped();
-    pthread_mutex_destroy(&mMtxClients);
-    pthread_mutex_destroy(&mMtxRun);
-    pthread_mutex_destroy(&mMtxStop);
-    pthread_mutex_destroy(&mMtxEnd);
-    pthread_cond_destroy(&mCond);
-    instance = nullptr;
+    mMtxStop.unlock();
+    instance=nullptr;
 }
 
-bool caThreadManager::AddClient(functor func, void *param,  size_t index, const char *name)
+
+
+bool caThreadManager::AddClient(functor func, void *param,  int index, const char *name)
 {
-    HERE1();
-    bool result = true;
-    caThreadClient *client = new caThreadClient(index,caThreadManager::finalize_client);
-    if (client != nullptr)
+    auto client = new caThreadClient(index,caThreadManager::finalize_client);
+    client->InitThread(func, param, name);
+    clients.push_back(client);
+    return true;
+}
+
+
+void caThreadManager::pushRunning(int index)
+{
+    std::unique_lock<std::mutex> lck(mMtxRun);
+    running.push_back(index);
+}
+
+
+void caThreadManager::pushStopped(int index)
+{
+
+    std::unique_lock<std::mutex> lck(mMtxStop);
+    stopped.push_back(index);
+}
+
+
+int caThreadManager::GetRunningSize()
+{
+    auto size = 0;
+    std::unique_lock<std::mutex> lck(mMtxRun);
+    size = (int) running.size();
+    return size;
+}
+
+
+int caThreadManager::GetStoppedSize()
+{
+    int size = 0;
+    std::unique_lock<std::mutex> lck(mMtxStop);
+    size = (int) stopped.size();
+    return size;
+}
+
+
+void caThreadManager::GetStatus(statusThreads &st)
+{
+    st.clients=clients.size();
+    st.running=GetRunningSize();
+    st.stopped=GetStoppedSize();
+    st.errors=errors;
+}
+
+
+bool caThreadManager::Run(int index)
+{
+    auto result = false;
+    if(index<clients.size())
     {
-        lockClients();
-        clients.push_back(client);
-        unlockClients();
-        client->InitThread(func, param, name);
-        while (client->getStatus() != caThreadStatus::WAIT_SIGNAL)
+        auto clientThread =clients.at(index);;
+        if(clientThread!=nullptr &&  clientThread->getStatus() == caThreadStatus::WAIT_SIGNAL )
         {
-            usleep(100);
+            clientThread->Resume();
+            pushRunning(index);
+            result=true;
         }
-        result = false;
     }
     return result;
 }
 
-bool caThreadManager::Run(size_t index)
-{
-    HERE1();
-    bool result = false;
-    caThreadClient * clientThread =nullptr;
-    //auto num_clients=GetClientsSize();
-    //auto num_running=GetRunningSize();
-    //if(num_running<num_clients)
-    //{
-    lockClients();
-    clientThread = clients.at(index);
-    unlockClients();
-    lockRunning();
-    running.push_back(clientThread);
-    unlockRunning();
-    //}
-    if(clientThread!=nullptr &&  clientThread->getStatus() == caThreadStatus::WAIT_SIGNAL )
-    {
-        clientThread->Resume();
-        result=true;
-    }
-    return result;
-}
-
-void  caThreadManager::finalize_client(size_t index,int error)
+void  caThreadManager::finalize_client(int index,int error)
 {
     caThreadManager *manager=caThreadManager::getInstance();
     if(manager!=nullptr)
@@ -150,33 +151,17 @@ void  caThreadManager::finalize_client(size_t index,int error)
     }
 }
 
-void  caThreadManager::finalize( size_t index, int result)
+void  caThreadManager::finalize( int index, int result)
 {
-    caThreadClient * clientThread =nullptr;
-    // save error
-    // save to stopped thread
-    lockRunning();
-    if(result!=0)
-    {
-        errors++;
-    }
-    if(index<running.size())
-        clientThread =running.at(index);
-    unlockRunning();
-    if(clientThread!=nullptr)
-    {
-        lockStopped();
-        stopped.push_back(clientThread);
-        unlockStopped();
-    }
-    //std::cerr<<"FINALIZE CLIENT = "<<index<<" "<<stopped.size()<<":"<<running.size()<<std::endl;
-    // check more thread
+    pushStopped(index);
+    if(result!=0)errors++;
     auto crun=GetRunningSize();
-    auto cclient=GetClientsSize();
+    auto cclient=clients.size();
     auto cstop=GetStoppedSize();
-    if(crun<cclient)
     {
-        Run(crun);
+        std::unique_lock<std::mutex> lck(mMtxGo);
+        if(crun<cclient)
+            Run(crun);
     }
     if(cstop==cclient)
     {
@@ -185,96 +170,30 @@ void  caThreadManager::finalize( size_t index, int result)
 }
 
 
-void caThreadManager::StopClients(void)
+
+
+void  caThreadManager::Reset()
 {
-    lockRunning();
-    thArray::iterator it = running.begin();
-    thArray::iterator _end = running.end();
-    while (it != _end)
+    for(auto th: clients)
     {
-        if (*it != nullptr)
-        {
-            if((*it)->getStatus()!=EXITED)
-                (*it)->ReqExit();
-            *it = nullptr;
-        }
-        it++;
+        th->Reset();
     }
-    unlockRunning();
+    mMtxRun.lock();
+    running.clear();
+    mMtxRun.unlock();
+    mMtxStop.lock();
+    stopped.clear();
+    mMtxStop.unlock();
 }
 
 
-bool caThreadManager::Reset(void)
+
+
+
+
+
+void caThreadManager::StartClients(int max_run)
 {
-    auto res=false;
-    statusThreads st;
-    GetStatus(st);
-    if(st.running==st.clients && st.stopped==st.clients)
-    {
-        lockClients();
-        lockRunning();
-        lockStopped();
-        running.clear();
-        errors=0;
-        stopped.clear();
-        for(auto th: clients)
-        {
-            th->Reset();
-        }
-        unlockStopped();
-        unlockRunning();
-        unlockClients();
-        res=true;
-    }
-    return res;
-}
-
-
-size_t caThreadManager::GetClientsSize(void)
-{
-    HERE1();
-    int size = 0;
-    lockClients();
-    size = (int) clients.size();
-    unlockClients();
-    return size;
-}
-
-
-size_t caThreadManager::GetRunningSize(void)
-{
-    HERE1();
-    int size = 0;
-    lockRunning();
-    size = (int) running.size();
-    unlockRunning();
-    return size;
-}
-
-
-size_t caThreadManager::GetStoppedSize(void)
-{
-    HERE1();
-    int size = 0;
-    lockStopped();
-    size = (int) stopped.size();
-    unlockStopped();
-    return size;
-}
-
-
-void caThreadManager::GetStatus(statusThreads &st)
-{
-    st.clients=GetClientsSize();
-    st.running=GetRunningSize();
-    st.stopped=GetStoppedSize();
-    st.errors=errors;
-}
-
-
-void caThreadManager::StartClients(size_t max_run)
-{
-    HERE1();
     max_running=max_run;
     do
     {
@@ -292,144 +211,23 @@ void caThreadManager::StartClients(size_t max_run)
         }
 
     }
-    while(1);
+    while(true);
 }
 
 
-void  caThreadManager::lockRunning(void)
+
+
+
+void caThreadManager::ClientsTerminateSignal()
 {
-    auto res=-1;
-    do
-    {
-        res=pthread_mutex_lock(&mMtxRun);
-        if(res)
-        {
-            std::cerr<<"LOCK RUNNING ERROR"<<std::endl;
-            break;
-        }
-    }
-    while(res!=0);
+    mCondEnd.notify_one();
 }
 
 
-void  caThreadManager::unlockRunning(void)
+void caThreadManager::WaitTerminateClients()
 {
-    auto res=-1;
-    auto fail=0;
-    do
-    {
-        res=pthread_mutex_unlock(&mMtxRun);
-        if(res)
-        {
-            std::cerr<<"UNLOCK RUNNING ERROR"<<std::endl;
-            fail++;
-            if(fail>20)break;
-            usleep(50000);
-        }
-    }
-    while(res!=0);
-}
-
-
-void  caThreadManager::lockStopped(void)
-{
-    auto res=-1;
-    auto fail=0;
-    do
-    {
-        res=pthread_mutex_lock(&mMtxStop);
-        if(res)
-        {
-            std::cerr<<"LOCK STOPPED ERROR"<<std::endl;
-            fail++;
-            if(fail>20)break;
-            usleep(50000);
-        }
-    }
-    while(res!=0);
-}
-
-
-void  caThreadManager::unlockStopped(void)
-{
-    auto res=-1;
-    do
-    {
-        res=pthread_mutex_unlock(&mMtxStop);
-        if(res)
-        {
-            std::cerr<<"UNLOCK STOPPED ERROR"<<std::endl;
-            break;
-        }
-    }
-    while(res!=0);
-}
-
-
-void  caThreadManager::lockClients(void)
-{
-    auto res=-1;
-    auto fail=0;
-    do
-    {
-        res=pthread_mutex_lock(&mMtxClients);
-        if(res)
-        {
-            std::cerr<<"LOCK CLIENTS ERROR"<<std::endl;
-            fail++;
-            if(fail>20)break;
-            usleep(50000);
-        }
-    }
-    while(res!=0);
-}
-
-
-void  caThreadManager::unlockClients(void)
-{
-    auto res=-1;
-
-    do
-    {
-        res=pthread_mutex_unlock(&mMtxClients);
-        if(res)
-        {
-            std::cerr<<"UNLOCK CLIENTS ERROR"<<std::endl;
-            break;
-        }
-    }
-    while(res!=0);
-}
-
-
-int caThreadManager::ClientsTerminateSignal(void)
-{
-    int ret = pthread_cond_signal(&mCond);
-    if (ret != 0)
-    {
-        std::cerr << "Cannot signalling condition" << std::endl;
-    }
-    return ret;
-}
-
-
-int caThreadManager::WaitTerminateClients(void)
-{
-    int ret = pthread_cond_wait(&mCond, &mMtxEnd);
-    if (ret != 0)
-    {
-        std::cerr << "Cannot waiting condition" << std::endl;
-    }
-    return ret;
-}
-
-void caThreadManager::JoinAll()
-{
-    for (auto & th : stopped)
-    {
-        th->JoinThread();
-    }
+    std::unique_lock<std::mutex> lck(mMtxEnd);
+    mCondEnd.wait(lck);
 }
 
 }
-
