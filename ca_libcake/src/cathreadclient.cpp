@@ -116,35 +116,21 @@ void * caThreadClient::entry_point(void *param)
 
 
 
-void caThreadClient::CondWait()
-{
-
-    std::unique_lock<std::mutex> lck(mMtx);
-    mCond.wait(lck);
-}
-
-
-void  caThreadClient::CondSignal()
-{
-    std::unique_lock<std::mutex> lck(mMtx);
-    mCond.notify_one();
-}
-
-
-
 void caThreadClient::WaitForSignal()
 {
 
+    std::unique_lock<std::mutex> lck(mMtx);
     mStatus = WAIT_SIGNAL;
-    CondWait();
+    //std::cerr<<"Wait for signal : "<<mName<<"  STATUS= "<<mStatus<<std::endl;
+    mCond.wait(lck);
     mTickCount++;
+
 }
 
 
 
 int caThreadClient::ExecuteClient()
 {
-
     int res=-1;
     if (reqFunc != nullptr)
     {
@@ -156,11 +142,18 @@ int caThreadClient::ExecuteClient()
 }
 
 
-void caThreadClient::Resume()
+void caThreadClient::ToRun()
 {
-
-    CondSignal();
-    mStatus = RESUME;
+    std::unique_lock<std::mutex> lck(mMtx);
+    if(mStatus==WAIT_SIGNAL)
+    {
+        mCond.notify_one();
+        mStatus = TORUN;
+    }
+    else
+    {
+        std::cerr<<"Signal : Invalid on bad status"<<mName<<"  STATUS= "<<mStatus<<std::endl;
+    }
 }
 
 

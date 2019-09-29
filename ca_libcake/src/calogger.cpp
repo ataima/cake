@@ -218,7 +218,7 @@ void DefaultPrinter::out( int level, std::string & msg)
 {
     const char * colors[]=
     {
-        RED,CYAN_LIGHT,RED,
+        RED,CYAN_LIGHT,YELLOW,
         RED,BLUE_LIGHT,CYAN,WHITE,GRAY_DARK,nullptr
     };
     if(level<0)level=0;
@@ -242,7 +242,7 @@ void FilePrinter::out( int level, std::string & msg)
 
     const char * colors[]=
     {
-        RED,CYAN_LIGHT,RED,
+        RED,CYAN_LIGHT,YELLOW,
         RED,BLUE_LIGHT,CYAN,WHITE,GRAY_DARK,nullptr
     };
     if(level<0)level=0;

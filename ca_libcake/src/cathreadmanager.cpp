@@ -35,6 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <condition_variable>
 #include <cathreadclient.h>
 #include <cathreadmanager.h>
+#include <calogiface.h>
 
 
 namespace CA
@@ -134,7 +135,7 @@ bool caThreadManager::Run(int index)
         auto clientThread =clients.at(index);;
         if(clientThread!=nullptr &&  clientThread->getStatus() == caThreadStatus::WAIT_SIGNAL )
         {
-            clientThread->Resume();
+            clientThread->ToRun();
             pushRunning(index);
             result=true;
         }
@@ -220,7 +221,9 @@ void caThreadManager::StartClients(int max_run)
 
 void caThreadManager::ClientsTerminateSignal()
 {
+    std::unique_lock<std::mutex> lck(mMtxEnd);
     mCondEnd.notify_one();
+    //LogCritical("SCHEDULER : TERMINATE ALL JOBS SIGNAL")
 }
 
 
@@ -228,6 +231,7 @@ void caThreadManager::WaitTerminateClients()
 {
     std::unique_lock<std::mutex> lck(mMtxEnd);
     mCondEnd.wait(lck);
+    LogCritical("SCHEDULER : TERMINATE ALL JOBS")
 }
 
 }

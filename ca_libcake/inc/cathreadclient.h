@@ -38,8 +38,8 @@ typedef enum tag_thread_status
 {
     STOPPED,
     WAIT_SIGNAL,
+    TORUN,
     RUNNING,
-    RESUME,
     TRY_EXIT,
     EXITED
 } caThreadStatus;
@@ -67,8 +67,6 @@ protected:
     bool CreateThread();
     void WaitForSignal();
     int ExecuteClient();
-    void CondWait();
-    void CondSignal();
 
 
 
@@ -79,7 +77,7 @@ public:
     ~caThreadClient();
     bool InitThread(functor entry, void *param, const char *name);
     void SleepThread(unsigned int delay);
-    void Resume();
+    void ToRun();
     void ReqExit();
     void Reset();
     inline void finalize_cleanup(int result)
