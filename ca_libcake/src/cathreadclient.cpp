@@ -118,13 +118,10 @@ void * caThreadClient::entry_point(void *param)
 
 void caThreadClient::WaitForSignal()
 {
-
     std::unique_lock<std::mutex> lck(mMtx);
     mStatus = WAIT_SIGNAL;
-    //std::cerr<<"Wait for signal : "<<mName<<"  STATUS= "<<mStatus<<std::endl;
     mCond.wait(lck);
     mTickCount++;
-
 }
 
 

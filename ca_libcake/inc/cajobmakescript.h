@@ -49,6 +49,9 @@ public:
     static bool createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst,
                                   const funcCreateScript funcs[], size_t off);
     static void createScriptHeader(std::ofstream &of,IGetConfEnv  * env);
+    static bool checkExistCustomScript(ICAjob_layer *layer ,IGetConfEnv  * env,
+                                       IPrjStatus *pst,std::string & scriptToCreate);
+
 };
 
 

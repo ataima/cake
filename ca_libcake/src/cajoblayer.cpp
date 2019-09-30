@@ -107,6 +107,7 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
             std::pair<std::string,IPrjStatus *> pv(prj,ns);
             projects_status.insert(pv);
             ICAjob_make_script *generator=nullptr;
+            //leggere xml conf assegnarlo a generator
             while(1)
             {
                 caPrjStatusUtils::setCurrentScript(ns);
@@ -154,6 +155,7 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
                 }
                 caPrjStatusUtils::setNextStep(ns);
             }
+            //delete xml conf : dopo generazione non serve più
         }
     }
 }

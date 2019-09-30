@@ -82,6 +82,7 @@ bool caThreadManager::AddClient(functor func, void *param,  int index, const cha
     client->InitThread(func, param, name);
     clients.push_back(client);
     return true;
+
 }
 
 
