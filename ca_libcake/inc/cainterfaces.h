@@ -254,6 +254,7 @@ public:
 
 
 typedef std::map<std::string ,std::string > envMap;
+typedef std::set<std::string> envSet;
 
 
 class IGetConfEnv
@@ -266,7 +267,7 @@ public:
     virtual void dump(const char *envinfo)=0;
     virtual void append( IGetConfEnv * root)=0;
     virtual envMap & getMap()=0;
-    virtual void addEnvToScript(std::ofstream & of)=0;
+    virtual void addEnvToScript(std::ofstream & of,envSet & substr)=0;
 };
 
 

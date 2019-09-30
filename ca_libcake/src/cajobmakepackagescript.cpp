@@ -64,7 +64,8 @@ bool        caJobMakePackageScript::createPrePackage(IGetConfEnv  * env, IPrjSta
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -76,7 +77,8 @@ bool        caJobMakePackageScript::createPackage(IGetConfEnv  * env, IPrjStatus
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -88,7 +90,9 @@ bool        caJobMakePackageScript::createPostPackage(IGetConfEnv  * env, IPrjSt
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);

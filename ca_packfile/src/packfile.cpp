@@ -44,6 +44,7 @@ void dumpfile(std::ofstream & ss, std::string & filebuff)
         }
         ss<<std::endl;
     }
+    ss<<"0"<<std::endl;
 }
 
 
@@ -96,10 +97,10 @@ void create_array_from_file(std::string & in,std::string & out,
             arrayname[p]='_';
         std::string aname=std::string("array_")+arrayname;
         ss<<"/// from file : "<<in<<std::endl;
-        ss<<"static const char "<<aname<<"["<<lenght<<"]={"<<std::endl;
+        ss<<"static const char "<<aname<<"["<<lenght+1<<"]={"<<std::endl;
         dumpfile(ss,filebuff);
         ss<<"};"<<std::endl<<std::endl;
-        ss<<"static const unsigned int "<<aname<<"_size="<<lenght<<";"<<std::endl;
+        ss<<"static const unsigned int "<<aname<<"_size="<<lenght+1<<";"<<std::endl;
         std::string oname=in;
         std::string::size_type s=oname.rfind('/');
         if(s!=-1)

@@ -106,11 +106,24 @@ bool caGetConfEnv::getValue(const char * key,std::string & out)
     return result;
 }
 
-void caGetConfEnv::addEnvToScript(std::ofstream & of)
+void caGetConfEnv::addEnvToScript(std::ofstream & of,envSet & subset)
 {
-    for(auto & n: keyVal)
+    if(subset.empty())
     {
-        of<<n.first<<"="<<n.second<<std::endl;
+        for(auto & n: keyVal)
+        {
+
+            of<<n.first<<"="<<n.second<<std::endl;
+        }
+    }
+    else
+    {
+        for(auto & s: subset)
+        {
+            auto it=keyVal.find(s);
+            if(it!=keyVal.end())
+                of<<it->first<<"="<<it->second<<std::endl;
+        }
     }
 }
 

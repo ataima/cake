@@ -143,19 +143,10 @@ bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env,
     return res;
 }
 
-void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env)
+void caJobMakeBase::createScriptHeader(std::ofstream &of,IGetConfEnv  * env,envSet &subset)
 {
-    of<<"#!/bin/sh  ";
-    IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
-    if (argvObj && argvObj->getOption(f_debug)->isSelect())
-    {
-        of<<" -x";
-    }
-    of<<std::endl;
-    env->addEnvToScript(of);
-    //auto w=rand()&7;
-    //of<<"sleep "<<w<<std::endl;
-    of<<"exit 0 "<<std::endl;
+
+    env->addEnvToScript(of,subset);
     of.flush();
     sync();
 }

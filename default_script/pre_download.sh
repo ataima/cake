@@ -1,4 +1,4 @@
-#default pre_download.sh : system set env -> default create the source path  and log 
+#default pre_download.sh : create the source path 
 #check ENV SOURCE is SET
 if [ $SOURCE == "" ]
 then
@@ -10,7 +10,6 @@ then
     exit 2
 fi
 
-#Go
 #test exist SOURCE DIR
 if [ ! -e $SOURCE ]
 then 

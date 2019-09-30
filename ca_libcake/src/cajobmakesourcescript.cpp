@@ -35,6 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <cstdlib>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "capackedfile.h"
 
 
 namespace CA
@@ -68,9 +69,32 @@ bool caJobMakeSourceScript::createPreDownload(IGetConfEnv  * env, IPrjStatus *ps
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        of<<"#!/bin/sh  ";
+        IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
+        if (argvObj && argvObj->getOption(f_debug)->isSelect())
+        {
+            of<<" -x";
+        }
+        of<<std::endl;
+        std::string sources;
+        env->getValue("SOURCES",sources);
+        caUtils::appendPath(sources,pst->getName());
+        of<<"#path where stored sources files"<<std::endl;
+        of<<"export SOURCE="<<sources<<std::endl<<std::endl;
+        sources="";
+        env->getValue("LOGS",sources);
+        std::string logname=sources;
+        sources=pst->getLayer()+"_"+pst->getName()+"_pre_download.log";
+        caUtils::appendPath(logname,sources);
+        of<<"#log of this script file"<<std::endl;
+        of<<"export LOG="<<logname<<std::endl<<std::endl;
     }
+    unsigned int len;
+    const char * script=packManager::getFile_pre_download_sh(&len);
+    of<<script;
+    of.flush();
     of.close();
+    sync();
     return caUtils::checkFileExist(scriptname);
 }
 
@@ -80,7 +104,8 @@ bool caJobMakeSourceScript::createDownload(IGetConfEnv  * env, IPrjStatus *pst,s
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -92,7 +117,8 @@ bool caJobMakeSourceScript::createPostDownload(IGetConfEnv  * env, IPrjStatus *p
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -103,7 +129,8 @@ bool caJobMakeSourceScript::createPrePatch(IGetConfEnv  * env, IPrjStatus *pst,s
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -115,7 +142,8 @@ bool caJobMakeSourceScript::createPatch(IGetConfEnv  * env, IPrjStatus *pst,std:
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -127,7 +155,8 @@ bool caJobMakeSourceScript::createPostPatch(IGetConfEnv  * env, IPrjStatus *pst,
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -139,7 +168,8 @@ bool caJobMakeSourceScript::createPreSource(IGetConfEnv  * env, IPrjStatus *pst,
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -151,7 +181,8 @@ bool caJobMakeSourceScript::createSource(IGetConfEnv  * env, IPrjStatus *pst,std
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
@@ -163,7 +194,8 @@ bool caJobMakeSourceScript::createPostSource(IGetConfEnv  * env, IPrjStatus *pst
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        caJobMakeBase::createScriptHeader(of,env);
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
     }
     of.close();
     return caUtils::checkFileExist(scriptname);
