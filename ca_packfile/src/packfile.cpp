@@ -2,7 +2,10 @@
 #include <fstream>
 #include <iomanip>
 #include <list>
-
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <string.h>
 
 /**************************************************************
 Copyright(c) 2019 Angelo Coppi
@@ -112,6 +115,82 @@ void create_array_from_file(std::string & in,std::string & out,
     }
 }
 
+static bool addsinglefile(std::string & name,std::string & fileout,bool & first_file)
+{
+    std::string filebuff;
+    bool res=false;
+    FILE *in = fopen(name.c_str(), "rb");
+    if (in != nullptr)
+    {
+        std::cout<<"Packing file : "<<name<<std::endl;
+        fseek(in, 0L, SEEK_END);
+        size_t lenght = ftell(in);
+        fseek(in, 0L, SEEK_SET);
+        if (lenght > 0)
+        {
+            char *buff = new char[lenght];
+            size_t max_size = fread(buff, sizeof(char), lenght, in);
+            if (max_size > 0)
+            {
+                filebuff.assign((const char *) buff,
+                                (std::string::size_type) max_size / sizeof(char));
+                create_array_from_file(name, fileout, filebuff,lenght,first_file);
+                if(!first_file)first_file=true;
+                res=true;
+            }
+        }
+        fclose(in);
+    }
+    return res;
+}
+
+static bool isDir(std::string path)
+{
+    struct stat stat_path, stat_entry;
+    stat(path.c_str(), &stat_path);
+    return   ( S_ISDIR(stat_path.st_mode) != 0);
+}
+
+static bool getDirContent( std::string &path, std::list<std::string> &lsdir)
+{
+    size_t path_len;
+    char *full_path;
+    DIR *dir;
+    struct dirent *entry;
+    // if path does not exists
+    if (isDir(path))
+    {
+        // if not possible to read the directory for this user
+        if ((dir = opendir(path.c_str())) == NULL)
+        {
+            return false;
+        }
+        // iteration through entries in the directory
+        while ((entry = readdir(dir)) != NULL)
+        {
+            // skip entries "." and ".."
+            if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+                continue;
+
+            // determinate a full path of an entry
+            std::string full_path=path;
+            std::string relpath=entry->d_name;
+            full_path.append("/");
+            full_path.append(relpath);
+            if(!isDir(full_path))
+            {
+                // no recurse
+                lsdir.push_back(full_path);
+            }
+        }
+        closedir(dir);
+        return true;
+    }
+    return false;
+}
+
+
+
 
 static void usage(void)
 {
@@ -126,7 +205,7 @@ int main ( int argc , const char *argv[])
     bool first_file=false;
     if(argc==1)
     {
-        usage;
+        usage();
     }
     else
     {
@@ -153,29 +232,27 @@ int main ( int argc , const char *argv[])
             while (i < argc)
             {
                 std::string name = argv[i];
-                std::string filebuff;
-                FILE *in = fopen(name.c_str(), "rb");
-                if (in != nullptr)
+                std::string::size_type pos=name.rfind('*');
+                if(pos!=std::string::npos || isDir(name))
                 {
-                    std::cout<<"Packing file : "<<name<<std::endl;
-                    fseek(in, 0L, SEEK_END);
-                    size_t lenght = ftell(in);
-                    fseek(in, 0L, SEEK_SET);
-                    if (lenght > 0)
+                    std::list<std::string> alldir;
+                    if(getDirContent(name,alldir))
                     {
-                        char *buff = new char[lenght];
-                        size_t max_size = fread(buff, sizeof(char), lenght, in);
-                        if (max_size > 0)
+                        for(auto nfile :alldir)
                         {
-                            filebuff.assign((const char *) buff,
-                                            (std::string::size_type) max_size / sizeof(char));
-                            create_array_from_file(name, fileout, filebuff,lenght,first_file);
-                            if(!first_file)first_file=true;
-                            allfiles.push_back(name);
-
+                            if(addsinglefile(nfile,fileout,first_file))
+                            {
+                                allfiles.push_back(nfile);
+                            }
                         }
                     }
-                    fclose(in);
+                }
+                else
+                {
+                    if(addsinglefile(name,fileout,first_file))
+                    {
+                        allfiles.push_back(name);
+                    }
                 }
                 i++;
             }
@@ -186,8 +263,8 @@ int main ( int argc , const char *argv[])
                 std::ofstream ss;
                 std::string fout=fileout+".h";
                 ss.open(fout,std::ios_base::out);
-                ss<<"#ifndef PACK_MANAGER_HEADER_"<<fileout<<std::endl;
-                ss<<"#define PACK_MANAGER_HEADER_"<<fileout<<std::endl<<std::endl<<std::endl;
+                ss<<"#ifndef PACK_MANAGER_HEADER_GENERATED"<<std::endl;
+                ss<<"#define PACK_MANAGER_HEADER_GENERATED"<<std::endl<<std::endl<<std::endl;
                 ss<<"class packManager"<<std::endl;
                 ss<<"{"<<std::endl;
                 ss<<"public:"<<std::endl;

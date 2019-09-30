@@ -5,9 +5,7 @@ cmake_minimum_required (VERSION 2.8.11)
 
 
 
-project (ca_qxmlc)
-
-include_directories(./inc)
+project (ca_cake)
 
 
  
@@ -30,8 +28,7 @@ add_custom_command (
 
 add_custom_target( pack_files
     DEPENDS  ca_packfile
-    COMMAND  ${CMAKE_INSTALL_PREFIX}/ca_packfile  --out ca_libxmlca/src/capackedfiles.cpp ca_libxmlca/src/caminiXml.cpp ca_libxmlca/inc/caminiXml.h 
-    WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
-    COMMENT "run packfile on minixml "
+    COMMAND  ${CMAKE_INSTALL_PREFIX}/ca_packfile  --out ${CMAKE_SOURCE_DIR}/ca_packfile/generated/capackedfiles ${CMAKE_SOURCE_DIR}/default_script/*
+    COMMENT "run packfile on default scripts"
 )
 
