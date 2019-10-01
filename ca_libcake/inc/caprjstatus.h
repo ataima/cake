@@ -43,6 +43,7 @@ private:
     std::string layer;
     std::string name;
     std::string scriptpath;
+    std::string logpath;
     void * st;
     std::string next_exec;
     prjPhase phase;
@@ -81,6 +82,7 @@ public:
         pSource=_v;
     }
     inline std::string & getPathScript()final {return scriptpath;}
+    inline std::string & getPathLog() final { return logpath;}
     inline void incPhaseSource() final
     {
         auto v=(unsigned int )pSource;
@@ -134,6 +136,10 @@ public:
     inline void setPathScript(std::string & p) final
     {
         scriptpath=p;
+    }
+    inline void setPathLog(std::string & p) final
+    {
+        logpath=p;
     }
     void clearAllStatus() final
     {

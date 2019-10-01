@@ -40,7 +40,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 namespace CA
 {
 
-void caJobMakeDeployScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
+void caJobMakeDeployScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
 {
     funcCreateScript funcs[]=
     {
@@ -50,10 +50,10 @@ void caJobMakeDeployScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrj
         caJobMakeDeployScript::createPostDeploy,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->getPhaseDeploy());
+    caJobMakeBase::createScriptPhase(prj,layer,env,pst,funcs,pst->getPhaseDeploy());
 }
 
-bool caJobMakeDeployScript::createPreDeploy(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeDeployScript::createPreDeploy(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -66,7 +66,7 @@ bool caJobMakeDeployScript::createPreDeploy(IGetConfEnv  * env, IPrjStatus *pst,
 }
 
 
-bool caJobMakeDeployScript::createImage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeDeployScript::createImage(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -79,7 +79,7 @@ bool caJobMakeDeployScript::createImage(IGetConfEnv  * env, IPrjStatus *pst,std:
 }
 
 
-bool caJobMakeDeployScript::createPostDeploy(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeDeployScript::createPostDeploy(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())

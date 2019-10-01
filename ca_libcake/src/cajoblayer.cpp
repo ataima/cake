@@ -33,6 +33,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include "cautils.h"
 #include "castatusconf.h"
 #include <caprjstatus.h>
+#include <caprojectconf.h>
 #include <unistd.h>
 
 namespace CA
@@ -108,6 +109,8 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
             projects_status.insert(pv);
             ICAjob_make_script *generator=nullptr;
             //leggere xml conf assegnarlo a generator
+            CAXml_Project *curproject=new CAXml_Project();
+            curproject->loadFromXml(projconf);
             while(1)
             {
                 caPrjStatusUtils::setCurrentScript(ns);
@@ -149,13 +152,14 @@ void caJobLayer::prepareProjectScripts(std::string &repo)
                 if(ns->getMainPhase()==ST_COMPLETE)break;
                 if(generator)
                 {
-                    generator->create(this,jobstep->getEnv(),ns);
+                    generator->create(curproject,this,jobstep->getEnv(),ns);
                     delete generator;
                     generator=nullptr;
                 }
                 caPrjStatusUtils::setNextStep(ns);
             }
             //delete xml conf : dopo generazione non serve più
+            delete curproject;
         }
     }
 }

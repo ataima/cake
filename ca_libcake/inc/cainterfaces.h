@@ -300,6 +300,8 @@ public:
     virtual void clearAllStatus()=0;
     virtual std::string & getPathScript()=0;
     virtual void setPathScript(std::string & p)=0;
+    virtual std::string & getPathLog()=0;
+    virtual void setPathLog(std::string & p)=0;
     virtual int  getExecResult()=0;
     virtual void setExecResult(int n)=0;
 };

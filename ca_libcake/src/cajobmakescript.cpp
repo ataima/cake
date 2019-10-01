@@ -44,18 +44,28 @@ namespace CA
 bool caJobMakeBase::checkStatusScript(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     auto res=false;
-    std::string replaced;
-    env->getValue("SCRIPTS",replaced);
-    caUtils::appendPath(replaced,layer->getName());
-    caUtils::checkDirExistOrCreate(replaced);
-    caUtils::appendPath(replaced,pst->getName());
-    caUtils::checkDirExistOrCreate(replaced);
-    if(pst->getPathScript()!=replaced)
+    std::string nMscript;
+    std::string nMlog;
+    env->getValue("SCRIPTS",nMscript);
+    env->getValue("LOGS",nMlog);
+    caUtils::appendPath(nMscript,layer->getName());
+    caUtils::appendPath(nMlog,layer->getName());
+    caUtils::checkDirExistOrCreate(nMscript);
+    caUtils::checkDirExistOrCreate(nMlog);
+    caUtils::appendPath(nMscript,pst->getName());
+    caUtils::appendPath(nMlog,pst->getName());
+    caUtils::checkDirExistOrCreate(nMscript);
+    caUtils::checkDirExistOrCreate(nMlog);
+    if(pst->getPathScript()!=nMscript)
     {
-        pst->setPathScript(replaced);
+        pst->setPathScript(nMscript);
     }
-    caUtils::appendPath(replaced,pst->getNextExec());
-    scriptname=replaced;
+    if(pst->getPathLog()!=nMlog)
+    {
+        pst->setPathLog(nMlog);
+    }
+    caUtils::appendPath(nMscript,pst->getNextExec());
+    scriptname=nMscript;
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
     if (argvObj && argvObj->getOption(f_force_generate)->isSelect())
     {
@@ -107,7 +117,7 @@ bool caJobMakeBase::checkExistCustomScript(ICAjob_layer *layer ,IGetConfEnv  * e
 
 
 
-bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env,
+bool caJobMakeBase::createScriptPhase(ICAXml_Project *prj,ICAjob_layer *layer ,IGetConfEnv  * env,
                                       IPrjStatus *pst,const funcCreateScript funcs[],size_t off)
 {
     auto res=false;
@@ -126,7 +136,7 @@ bool caJobMakeBase::createScriptPhase(ICAjob_layer *layer ,IGetConfEnv  * env,
             funcCreateScript funcToCreate=funcs[off];
             if(funcToCreate!=nullptr)
             {
-                res=funcToCreate(env,pst,scriptToCreate);
+                res=funcToCreate(prj,env,pst,scriptToCreate);
                 if(res)
                 {
                     sync();

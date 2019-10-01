@@ -6,7 +6,13 @@ class packManager
 {
 public:
 //
+static const char *getFile_download_svn_sh(unsigned int  * len);
+//
+static const char *getFile_download_git_sh(unsigned int  * len);
+//
 static const char *getFile_pre_download_sh(unsigned int  * len);
+//
+static const char *getFile_download_wget_sh(unsigned int  * len);
 };
 
 

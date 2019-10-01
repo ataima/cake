@@ -44,7 +44,7 @@ namespace CA
 
 
 
-void caJobMakeSourceScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
+void caJobMakeSourceScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
 {
     funcCreateScript funcs[]=
     {
@@ -60,34 +60,46 @@ void caJobMakeSourceScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrj
         caJobMakeSourceScript::createPostSource,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->getPhaseSource());
+    caJobMakeBase::createScriptPhase(prj,layer,env,pst,funcs,pst->getPhaseSource());
 }
 
 
-bool caJobMakeSourceScript::createPreDownload(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+void caJobMakeSourceScript::createDefaultSourceHeader(std::ofstream & of,IGetConfEnv  * env,
+        IPrjStatus *pst)
+{
+    of<<"#!/bin/sh  ";
+    IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
+    if (argvObj && argvObj->getOption(f_debug)->isSelect())
+    {
+        of<<" -x";
+    }
+    of<<std::endl;
+    std::string sources;
+    env->getValue("SOURCES",sources);
+    caUtils::appendPath(sources,pst->getName());
+    of<<"#path where stored sources files"<<std::endl;
+    of<<"export SOURCE="<<sources<<std::endl<<std::endl;
+    env->getValue("STORE",sources);
+    caUtils::appendPath(sources,pst->getName());
+    of<<"#path where stored cpy of sources files"<<std::endl;
+    of<<"export STORE="<<sources<<std::endl<<std::endl;
+    sources=pst->getPathLog();
+    caUtils::appendPath(sources,pst->getNextExec());
+    caUtils::changeExt(sources,"log");
+    of<<"#log of this script file"<<std::endl;
+    of<<"export LOG="<<sources<<std::endl<<std::endl;
+    of<<"#name of proeject"<<std::endl;
+    of<<"export PROJECT="<<pst->getName()<<std::endl;
+    of<<"# RESULT of operation brek on ok "<<std::endl;
+    of<<"export RESULT=0"<<std::endl<<std::endl;
+}
+
+bool caJobMakeSourceScript::createPreDownload(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        of<<"#!/bin/sh  ";
-        IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
-        if (argvObj && argvObj->getOption(f_debug)->isSelect())
-        {
-            of<<" -x";
-        }
-        of<<std::endl;
-        std::string sources;
-        env->getValue("SOURCES",sources);
-        caUtils::appendPath(sources,pst->getName());
-        of<<"#path where stored sources files"<<std::endl;
-        of<<"export SOURCE="<<sources<<std::endl<<std::endl;
-        sources="";
-        env->getValue("LOGS",sources);
-        std::string logname=sources;
-        sources=pst->getLayer()+"_"+pst->getName()+"_pre_download.log";
-        caUtils::appendPath(logname,sources);
-        of<<"#log of this script file"<<std::endl;
-        of<<"export LOG="<<logname<<std::endl<<std::endl;
+        createDefaultSourceHeader(of,env,pst);
     }
     unsigned int len;
     const char * script=packManager::getFile_pre_download_sh(&len);
@@ -99,7 +111,88 @@ bool caJobMakeSourceScript::createPreDownload(IGetConfEnv  * env, IPrjStatus *ps
 }
 
 
-bool caJobMakeSourceScript::createDownload(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+{
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        createDefaultSourceHeader(of,env,pst);
+    }
+    CAXml_Project *conf=dynamic_cast<CAXml_Project *>(prj);
+    if(conf!=nullptr)
+    {
+        for (auto ptrR : conf->remote)
+        {
+            CAXml_Project_Remote * remote = dynamic_cast<CAXml_Project_Remote *>(ptrR);
+            std::string method;
+            caUtils::toUpperAlpha(remote->method,method);
+            if(!remote->url.empty())
+            {
+                of<<"# Download request url"<<std::endl;
+                of<<"export URL="<<remote->url<<std::endl<<std::endl;
+            }
+            else
+            {
+                std::string msg="Unknow remote url on conf file : "+ pst->getFullProjConf();
+                sys_throw(msg);
+            }
+            if(!remote->file.empty())
+            {
+                of<<"# Download request file"<<std::endl;
+                of<<"export FILE="<<remote->file<<std::endl<<std::endl;
+            }
+            else
+            {
+                std::string msg="Unknow remote file on conf file : "+ pst->getFullProjConf();
+                sys_throw(msg);
+            }
+            unsigned int len;
+            if(method=="GIT")
+            {
+                of<<"# Download request branch"<<std::endl;
+                of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
+                of<<"# Download request branch"<<std::endl;
+                of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
+
+                of<<packManager::getFile_download_git_sh(&len)<<std::endl;
+            }
+            else if(method=="SVN")
+            {
+                of<<"# Download request revision"<<std::endl;
+                of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
+                of<<packManager::getFile_download_svn_sh(&len)<<std::endl;
+            }
+            else if(method=="WGET")
+            {
+                of<<packManager::getFile_download_wget_sh(&len)<<std::endl;
+            }
+            else
+            {
+                std::string msg=method + " not allowed on conf file :"+ pst->getFullProjConf();
+                sys_throw(msg);
+            }
+        }
+    }
+    of.flush();
+    of.close();
+    sync();
+    return caUtils::checkFileExist(scriptname);
+}
+
+
+bool caJobMakeSourceScript::createPostDownload(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+{
+    std::ofstream of(scriptname);
+    if(of.is_open())
+    {
+        envSet subset;
+        caJobMakeBase::createScriptHeader(of,env,subset);
+    }
+    of.close();
+    return caUtils::checkFileExist(scriptname);
+}
+
+bool caJobMakeSourceScript::createPrePatch(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -112,19 +205,7 @@ bool caJobMakeSourceScript::createDownload(IGetConfEnv  * env, IPrjStatus *pst,s
 }
 
 
-bool caJobMakeSourceScript::createPostDownload(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
-{
-    std::ofstream of(scriptname);
-    if(of.is_open())
-    {
-        envSet subset;
-        caJobMakeBase::createScriptHeader(of,env,subset);
-    }
-    of.close();
-    return caUtils::checkFileExist(scriptname);
-}
-
-bool caJobMakeSourceScript::createPrePatch(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeSourceScript::createPatch(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -137,7 +218,7 @@ bool caJobMakeSourceScript::createPrePatch(IGetConfEnv  * env, IPrjStatus *pst,s
 }
 
 
-bool caJobMakeSourceScript::createPatch(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeSourceScript::createPostPatch(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -150,7 +231,7 @@ bool caJobMakeSourceScript::createPatch(IGetConfEnv  * env, IPrjStatus *pst,std:
 }
 
 
-bool caJobMakeSourceScript::createPostPatch(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeSourceScript::createPreSource(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -163,7 +244,7 @@ bool caJobMakeSourceScript::createPostPatch(IGetConfEnv  * env, IPrjStatus *pst,
 }
 
 
-bool caJobMakeSourceScript::createPreSource(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeSourceScript::createSource(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -176,20 +257,7 @@ bool caJobMakeSourceScript::createPreSource(IGetConfEnv  * env, IPrjStatus *pst,
 }
 
 
-bool caJobMakeSourceScript::createSource(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
-{
-    std::ofstream of(scriptname);
-    if(of.is_open())
-    {
-        envSet subset;
-        caJobMakeBase::createScriptHeader(of,env,subset);
-    }
-    of.close();
-    return caUtils::checkFileExist(scriptname);
-}
-
-
-bool caJobMakeSourceScript::createPostSource(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeSourceScript::createPostSource(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())

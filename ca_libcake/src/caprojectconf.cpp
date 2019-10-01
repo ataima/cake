@@ -41,10 +41,11 @@ CAXml_Project_Remote_Key::CAXml_Project_Remote_Key()
 
 
 const CA::_cbt *ICAXml_Project_Remote::caKEY_BRANCH = "branch";
+const CA::_cbt *ICAXml_Project_Remote::caKEY_COMMIT = "commit";
 const CA::_cbt *ICAXml_Project_Remote::caKEY_FILE = "file";
 const CA::_cbt *ICAXml_Project_Remote::caKEY_KEY = "key";
 const CA::_cbt *ICAXml_Project_Remote::caKEY_METHOD = "method";
-const CA::_cbt *ICAXml_Project_Remote::caKEY_REVISIO = "revisio";
+const CA::_cbt *ICAXml_Project_Remote::caKEY_REVISION = "revision";
 const CA::_cbt *ICAXml_Project_Remote::caKEY_URL = "url";
 const CA::_cbt *ICAXml_Project_Remote::mName="remote";
 
@@ -52,10 +53,11 @@ const CA::_cbt *ICAXml_Project_Remote::mName="remote";
 CAXml_Project_Remote::CAXml_Project_Remote()
 {
     predef.push_back(CA::xmlNodeSpec( caKEY_BRANCH,"project.remote.branch",&branch));
+    predef.push_back(CA::xmlNodeSpec( caKEY_COMMIT,"project.remote.commit",&commit));
     predef.push_back(CA::xmlNodeSpec( caKEY_FILE,"project.remote.file",&file));
     predef.push_back(CA::xmlNodeSpec( caKEY_KEY,"project.remote.key",&key.node_internal_value,&key));
     predef.push_back(CA::xmlNodeSpec( caKEY_METHOD,"project.remote.method",&method));
-    predef.push_back(CA::xmlNodeSpec( caKEY_REVISIO,"project.remote.revisio",&revisio));
+    predef.push_back(CA::xmlNodeSpec( caKEY_REVISION,"project.remote.revision",&revision));
     predef.push_back(CA::xmlNodeSpec( caKEY_URL,"project.remote.url",&url));
 }
 
@@ -74,12 +76,13 @@ CAXml_Project_Patch_Key::CAXml_Project_Patch_Key()
 
 const CA::_cbt *ICAXml_Project_Patch::caKEY_APPLY = "apply";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_BRANCH = "branch";
+const CA::_cbt *ICAXml_Project_Patch::caKEY_COMMIT = "commit";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_DEST_DIR = "dest_dir";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_DIR = "dir";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_FILE = "file";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_KEY = "key";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_METHOD = "method";
-const CA::_cbt *ICAXml_Project_Patch::caKEY_REVISIO = "revisio";
+const CA::_cbt *ICAXml_Project_Patch::caKEY_REVISION = "revision";
 const CA::_cbt *ICAXml_Project_Patch::caKEY_URL = "url";
 const CA::_cbt *ICAXml_Project_Patch::mName="patch";
 
@@ -88,12 +91,13 @@ CAXml_Project_Patch::CAXml_Project_Patch()
 {
     predef.push_back(CA::xmlNodeSpec( caKEY_APPLY,"project.patch.apply",&apply));
     predef.push_back(CA::xmlNodeSpec( caKEY_BRANCH,"project.patch.branch",&branch));
+    predef.push_back(CA::xmlNodeSpec( caKEY_COMMIT,"project.patch.commit",&commit));
     predef.push_back(CA::xmlNodeSpec( caKEY_DEST_DIR,"project.patch.dest_dir",&dest_dir));
     predef.push_back(CA::xmlNodeSpec( caKEY_DIR,"project.patch.dir",&dir));
     predef.push_back(CA::xmlNodeSpec( caKEY_FILE,"project.patch.file",&file));
     predef.push_back(CA::xmlNodeSpec( caKEY_KEY,"project.patch.key",&key.node_internal_value,&key));
     predef.push_back(CA::xmlNodeSpec( caKEY_METHOD,"project.patch.method",&method));
-    predef.push_back(CA::xmlNodeSpec( caKEY_REVISIO,"project.patch.revisio",&revisio));
+    predef.push_back(CA::xmlNodeSpec( caKEY_REVISION,"project.patch.revision",&revision));
     predef.push_back(CA::xmlNodeSpec( caKEY_URL,"project.patch.url",&url));
 }
 

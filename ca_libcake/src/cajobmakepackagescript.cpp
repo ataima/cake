@@ -43,7 +43,7 @@ namespace CA
 
 
 
-void caJobMakePackageScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
+void caJobMakePackageScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
 {
 
     funcCreateScript funcs[]=
@@ -54,12 +54,12 @@ void caJobMakePackageScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPr
         caJobMakePackageScript::createPostPackage,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->getPhasePackage());
+    caJobMakeBase::createScriptPhase(prj,layer,env,pst,funcs,pst->getPhasePackage());
 }
 
 
 
-bool        caJobMakePackageScript::createPrePackage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakePackageScript::createPrePackage(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -72,7 +72,7 @@ bool        caJobMakePackageScript::createPrePackage(IGetConfEnv  * env, IPrjSta
 }
 
 
-bool        caJobMakePackageScript::createPackage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakePackageScript::createPackage(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -85,7 +85,7 @@ bool        caJobMakePackageScript::createPackage(IGetConfEnv  * env, IPrjStatus
 }
 
 
-bool        caJobMakePackageScript::createPostPackage(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakePackageScript::createPostPackage(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())

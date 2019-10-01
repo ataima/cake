@@ -299,7 +299,44 @@ bool caUtils::baseExt(std::string & file, std::string & ext)
     return !ext.empty();
 }
 
+bool caUtils::toUpperAlpha(std::string & src, std::string & dst)
+{
+    dst.clear();
+    for( auto c : src)
+    {
+        if(::isalpha(c))
+            dst.push_back(std::toupper(c));
+    }
+    return !dst.empty();
+}
 
+bool caUtils::toUpperAscii(std::string & src, std::string & dst)
+{
+    dst.clear();
+    for( auto c : src)
+    {
+        if(::isascii(c))
+            dst.push_back(std::toupper(c));
+    }
+    return !dst.empty();
+}
+
+bool caUtils::changeExt(std::string & name, const char *ext)
+{
+    auto res = false;
+    if(!name.empty())
+    {
+        std::string::size_type  s=name.find('.');
+        if(s!=std::string::npos)
+        {
+            s++;
+            name.erase(s,name.size()-s);
+            name+=ext;
+            res=true;
+        }
+    }
+    return res;
+}
 
 
 }

@@ -44,10 +44,11 @@ class ICAXml_Project_Remote
 {
 protected:
     static const CA::_cbt *  caKEY_BRANCH;
+    static const CA::_cbt *  caKEY_COMMIT;
     static const CA::_cbt *  caKEY_FILE;
     static const CA::_cbt *  caKEY_KEY;
     static const CA::_cbt *  caKEY_METHOD;
-    static const CA::_cbt *  caKEY_REVISIO;
+    static const CA::_cbt *  caKEY_REVISION;
     static const CA::_cbt *  caKEY_URL;
     static const CA::_cbt *   mName;
 
@@ -75,12 +76,13 @@ class ICAXml_Project_Patch
 protected:
     static const CA::_cbt *  caKEY_APPLY;
     static const CA::_cbt *  caKEY_BRANCH;
+    static const CA::_cbt *  caKEY_COMMIT;
     static const CA::_cbt *  caKEY_DEST_DIR;
     static const CA::_cbt *  caKEY_DIR;
     static const CA::_cbt *  caKEY_FILE;
     static const CA::_cbt *  caKEY_KEY;
     static const CA::_cbt *  caKEY_METHOD;
-    static const CA::_cbt *  caKEY_REVISIO;
+    static const CA::_cbt *  caKEY_REVISION;
     static const CA::_cbt *  caKEY_URL;
     static const CA::_cbt *   mName;
 
@@ -349,14 +351,16 @@ public:
     std::string node_internal_value;
 /// value of node : project.remote.branch
     std::string branch;
+/// value of node : project.remote.commit
+    std::string commit;
 /// value of node : project.remote.file
     std::string file;
 /// object for node : project.remote.key
     CAXml_Project_Remote_Key key;
 /// value of node : project.remote.method
     std::string method;
-/// value of node : project.remote.revisio
-    std::string revisio;
+/// value of node : project.remote.revision
+    std::string revision;
 /// value of node : project.remote.url
     std::string url;
 public:
@@ -462,6 +466,8 @@ public:
     std::vector<std::string> apply;
 /// value of node : project.patch.branch
     std::string branch;
+/// value of node : project.patch.commit
+    std::string commit;
 /// value of node : project.patch.dest_dir
     std::string dest_dir;
 /// value of node : project.patch.dir
@@ -472,8 +478,8 @@ public:
     CAXml_Project_Patch_Key key;
 /// value of node : project.patch.method
     std::string method;
-/// value of node : project.patch.revisio
-    std::string revisio;
+/// value of node : project.patch.revision
+    std::string revision;
 /// value of node : project.patch.url
     std::string url;
 public:

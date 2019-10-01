@@ -42,7 +42,7 @@ namespace CA
 
 
 
-void caJobMakeBuildScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
+void caJobMakeBuildScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
 {
     funcCreateScript funcs[]=
     {
@@ -58,10 +58,10 @@ void caJobMakeBuildScript::create(ICAjob_layer *layer ,IGetConfEnv  * env, IPrjS
         caJobMakeBuildScript::createPostInstall,
         nullptr,
     };
-    caJobMakeBase::createScriptPhase(layer,env,pst,funcs,pst->getPhaseBuild());
+    caJobMakeBase::createScriptPhase(prj,layer,env,pst,funcs,pst->getPhaseBuild());
 }
 
-bool caJobMakeBuildScript::createPreConfigure(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createPreConfigure(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -74,7 +74,7 @@ bool caJobMakeBuildScript::createPreConfigure(IGetConfEnv  * env, IPrjStatus *ps
 }
 
 
-bool caJobMakeBuildScript::createConfigure(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createConfigure(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -87,7 +87,7 @@ bool caJobMakeBuildScript::createConfigure(IGetConfEnv  * env, IPrjStatus *pst,s
 }
 
 
-bool caJobMakeBuildScript::createPostConfigure(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createPostConfigure(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -100,7 +100,7 @@ bool caJobMakeBuildScript::createPostConfigure(IGetConfEnv  * env, IPrjStatus *p
 }
 
 
-bool caJobMakeBuildScript::createPreBuild(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createPreBuild(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -113,7 +113,7 @@ bool caJobMakeBuildScript::createPreBuild(IGetConfEnv  * env, IPrjStatus *pst,st
 }
 
 
-bool caJobMakeBuildScript::createBuild(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createBuild(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -126,7 +126,7 @@ bool caJobMakeBuildScript::createBuild(IGetConfEnv  * env, IPrjStatus *pst,std::
 }
 
 
-bool caJobMakeBuildScript::createPostBuild(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createPostBuild(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -139,7 +139,7 @@ bool caJobMakeBuildScript::createPostBuild(IGetConfEnv  * env, IPrjStatus *pst,s
 }
 
 
-bool caJobMakeBuildScript::createPreInstall(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createPreInstall(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -152,7 +152,7 @@ bool caJobMakeBuildScript::createPreInstall(IGetConfEnv  * env, IPrjStatus *pst,
 }
 
 
-bool caJobMakeBuildScript::createInstall(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createInstall(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())
@@ -165,7 +165,7 @@ bool caJobMakeBuildScript::createInstall(IGetConfEnv  * env, IPrjStatus *pst,std
 }
 
 
-bool caJobMakeBuildScript::createPostInstall(IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
+bool caJobMakeBuildScript::createPostInstall(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
 {
     std::ofstream of(scriptname);
     if(of.is_open())

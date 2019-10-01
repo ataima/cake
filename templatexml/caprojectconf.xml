@@ -1,7 +1,7 @@
 <project>
     <name>binutils</name>
     <remote>
-        <method>1</method>
+        <method>wget</method>
         <url>2</url>
         <file>3</file>
         <key>
@@ -9,7 +9,8 @@
             <file>2</file>
         </key>
         <branch>1</branch>
-        <revisio>2</revisio>
+        <commit>1234</commit>
+        <revision>2</revision>
     </remote>
     <remote>
         <method>1</method>
@@ -20,7 +21,8 @@
             <file>2</file>
         </key>
         <branch>1</branch>
-        <revisio>2</revisio>
+        <commit>1234</commit>
+        <revision>2</revision>
     </remote>
     <patch>
         <method>1</method>
@@ -31,7 +33,8 @@
             <file>3</file>
         </key>
         <branch>1</branch>
-        <revisio>2</revisio>
+        <commit>1234</commit>
+        <revision>2</revision>
         <dir>3</dir>
         <dest_dir>4</dest_dir>
         <apply>1</apply>
@@ -47,7 +50,8 @@
             <file>3</file>
         </key>
         <branch>1</branch>
-        <revisio>2</revisio>
+        <commit>1234</commit>
+        <revision>2</revision>
         <dir>3</dir>
         <dest_dir>3</dest_dir>
         <apply>1</apply>
