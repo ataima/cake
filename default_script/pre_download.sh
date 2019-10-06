@@ -1,37 +1,25 @@
 #default pre_download.sh : create the source path 
-#check ENV SOURCE is SET
-if [ ${SOURCE} == "" ]
-then
-    exit 1
-fi
-#check ENV STORE is SET
-if [ ${STORE} == "" ]
-then
-    exit 1
-fi
-#check ENV LOG is SET
-if [ ${LOG} == "" ] 
-then 
-    exit 1
-fi
 
 #test exist SOURCE DIR
-if [ ! -e ${SOURCE} ]
+if [ ! -e ${SOURCE} ] || [ ${FORCE} == 'Y' ]
 then 
-    echo $(date) " : pre_download.sh : CREATE SOURCE PATH : ${SOURCE}" > $LOG  2>&1
+    local_log "CREATE SOURCE PATH : ${SOURCE}"
     mkdir -p ${SOURCE}
     RESULT=$?
+else
+    local_log   "SOURCE: ${SOURCE} PATH EXIST"    
 fi
 
-#test exist SOURCE DIR
-if [ ! -e ${STORE} ]
+#test exist STORE DIR
+if [ ! -e ${STORE} ] || [ ${FORCE} == 'Y' ]
 then 
-    echo $(date) " : pre_download.sh : CREATE STORE PATH : ${STORE}" >> $LOG  2>&1
+    local_log "CREATE STORE PATH : ${STORE}"
     mkdir -p ${STORE}
     RESULT=$?
+else
+    local_log   "STORE: ${STORE} PATH EXIST"
 fi
 
 #done 
-exit ${RESULT}
-
+local_log_close
 

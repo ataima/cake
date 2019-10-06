@@ -215,42 +215,42 @@ void caPrjStatusUtils::setCurrentScript(IPrjStatus *st)
     const char * source_script_name[]=
     {
         "",
-        "pre_download.sh",
-        "download.sh",
-        "post_download.sh",
-        "pre_patch.sh",
-        "patch.sh",
-        "post_patch.sh",
-        "pre_save.sh",
-        "save.sh",
-        "post_save.sh",
+        "1_1_pre_download.sh",
+        "1_2_download.sh",
+        "1_3_post_download.sh",
+        "1_4_pre_patch.sh",
+        "1_5_patch.sh",
+        "1_6_post_patch.sh",
+        "1_7_pre_save.sh",
+        "1_8_save.sh",
+        "1_9_post_save.sh",
     };
     const char * build_script_name[]=
     {
         "",
-        "pre_configure.sh",
-        "configure.sh",
-        "post_configure.sh",
-        "pre_build.sh",
-        "build.sh",
-        "post_build.sh",
-        "pre_install.sh",
-        "install.sh",
-        "post_install.sh",
+        "2_1_pre_configure.sh",
+        "2_2_configure.sh",
+        "2_3_post_configure.sh",
+        "2_4_pre_build.sh",
+        "2_5_build.sh",
+        "2_6_post_build.sh",
+        "2_7_pre_install.sh",
+        "2_8_install.sh",
+        "2_9_post_install.sh",
     };
     const char * package_script_name[]=
     {
         "",
-        "pre_package.sh",
-        "package.sh",
-        "post_package.sh",
+        "3_1_pre_package.sh",
+        "3_2_package.sh",
+        "3_3_post_package.sh",
     };
     const char * deploy_script_name[]=
     {
         "",
-        "pre_deploy.sh",
-        "deploy.sh",
-        "post_deploy.sh",
+        "4_1_pre_deploy.sh",
+        "4_2_deploy.sh",
+        "4_3_post_deploy.sh",
     };
     if (st)
     {

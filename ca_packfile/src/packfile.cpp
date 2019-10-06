@@ -109,7 +109,7 @@ void create_array_from_file(std::string & in,std::string & out,
         if(s!=std::string::npos)
             oname[s]='_';
         ss<<std::endl<<std::endl<<"const char * packManager::getFile_"<<oname<<"(unsigned int  * len){"<<std::endl;
-        ss<<"    *len="<<aname<<"_size;"<<std::endl;
+        ss<<"    if(len!=nullptr)*len="<<aname<<"_size;"<<std::endl;
         ss<<"    return "<<aname<<";"<<std::endl;
         ss<<"}"<<std::endl;
         ss.close();
@@ -282,7 +282,7 @@ int main ( int argc , const char *argv[])
                             arrayname[p] = '_';
                         ss << "//"<<std::endl;
                         ss << "static const char *getFile_" << arrayname
-                           << "(unsigned int  * len);" << std::endl;
+                           << "(unsigned int  * len=nullptr);" << std::endl;
                         it++;
 
                     }

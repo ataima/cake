@@ -42,8 +42,6 @@ namespace CA
 {
 
 
-
-
 void caJobMakeSourceScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGetConfEnv  * env, IPrjStatus *pst)
 {
     funcCreateScript funcs[]=
@@ -64,6 +62,8 @@ void caJobMakeSourceScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGet
 }
 
 
+
+
 void caJobMakeSourceScript::createDefaultSourceHeader(std::ofstream & of,IGetConfEnv  * env,
         IPrjStatus *pst)
 {
@@ -71,9 +71,10 @@ void caJobMakeSourceScript::createDefaultSourceHeader(std::ofstream & of,IGetCon
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
     if (argvObj && argvObj->getOption(f_debug)->isSelect())
     {
-        of<<" -x";
+        of<<" -x"<<std::endl<<std::endl;
+        of<<"# Debug mode on "<<std::endl;
+        of<<"export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]}: $(echo;echo \"->>\")'"<<std::endl<<std::endl;
     }
-    of<<std::endl;
     std::string sources;
     env->getValue("SOURCES",sources);
     caUtils::appendPath(sources,pst->getName());
@@ -89,9 +90,11 @@ void caJobMakeSourceScript::createDefaultSourceHeader(std::ofstream & of,IGetCon
     of<<"#log of this script file"<<std::endl;
     of<<"export LOG="<<sources<<std::endl<<std::endl;
     of<<"#name of proeject"<<std::endl;
-    of<<"export PROJECT="<<pst->getName()<<std::endl;
+    of<<"export PROJECT="<<pst->getName()<<std::endl<<std::endl;
     of<<"# RESULT of operation brek on ok "<<std::endl;
     of<<"export RESULT=0"<<std::endl<<std::endl;
+    of<<"#this script"<<std::endl;
+    of<<"export SCRIPTNAME="<<pst->getNextExec()<<std::endl<<std::endl;
 }
 
 bool caJobMakeSourceScript::createPreDownload(ICAXml_Project *prj,IGetConfEnv  * env, IPrjStatus *pst,std::string & scriptname)
@@ -100,14 +103,15 @@ bool caJobMakeSourceScript::createPreDownload(ICAXml_Project *prj,IGetConfEnv  *
     if(of.is_open())
     {
         createDefaultSourceHeader(of,env,pst);
+
+        of<<packManager::getFile_default_log_sh();
+        of<<packManager::getFile_pre_download_sh();
+        of.flush();
+        of.close();
+        sync();
+        return caUtils::checkFileExist(scriptname);
     }
-    unsigned int len;
-    const char * script=packManager::getFile_pre_download_sh(&len);
-    of<<script;
-    of.flush();
-    of.close();
-    sync();
-    return caUtils::checkFileExist(scriptname);
+    return false;
 }
 
 
@@ -116,67 +120,104 @@ bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * en
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        createDefaultSourceHeader(of,env,pst);
-    }
-    CAXml_Project *conf=dynamic_cast<CAXml_Project *>(prj);
-    if(conf!=nullptr)
-    {
-        for (auto ptrR : conf->remote)
-        {
-            CAXml_Project_Remote * remote = dynamic_cast<CAXml_Project_Remote *>(ptrR);
-            std::string method;
-            caUtils::toUpperAlpha(remote->method,method);
-            if(!remote->url.empty())
-            {
-                of<<"# Download request url"<<std::endl;
-                of<<"export URL="<<remote->url<<std::endl<<std::endl;
-            }
-            else
-            {
-                std::string msg="Unknow remote url on conf file : "+ pst->getFullProjConf();
-                sys_throw(msg);
-            }
-            if(!remote->file.empty())
-            {
-                of<<"# Download request file"<<std::endl;
-                of<<"export FILE="<<remote->file<<std::endl<<std::endl;
-            }
-            else
-            {
-                std::string msg="Unknow remote file on conf file : "+ pst->getFullProjConf();
-                sys_throw(msg);
-            }
-            unsigned int len;
-            if(method=="GIT")
-            {
-                of<<"# Download request branch"<<std::endl;
-                of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
-                of<<"# Download request branch"<<std::endl;
-                of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
 
-                of<<packManager::getFile_download_git_sh(&len)<<std::endl;
-            }
-            else if(method=="SVN")
+        CAXml_Project *conf=dynamic_cast<CAXml_Project *>(prj);
+        if(conf!=nullptr)
+        {
+            createDefaultSourceHeader(of,env,pst);
+            of<<packManager::getFile_verify_store_backup_sh();
+            for (auto ptrR : conf->remote)
             {
-                of<<"# Download request revision"<<std::endl;
-                of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
-                of<<packManager::getFile_download_svn_sh(&len)<<std::endl;
+                CAXml_Project_Remote * remote = dynamic_cast<CAXml_Project_Remote *>(ptrR);
+                std::string extfile;
+                caUtils::baseExt(remote->file,extfile);
+                if(!extfile.empty())
+                {
+                    if(extfile.find("tar")!=std::string::npos ||
+                            extfile.find("zip")!=std::string::npos)
+                    {
+                        of<<packManager::getFile_expand_to_sh();
+                    }
+                }
             }
-            else if(method=="WGET")
+            of<<packManager::getFile_default_log_sh();
+            for (auto ptrR : conf->remote)
             {
-                of<<packManager::getFile_download_wget_sh(&len)<<std::endl;
-            }
-            else
-            {
-                std::string msg=method + " not allowed on conf file :"+ pst->getFullProjConf();
-                sys_throw(msg);
+                CAXml_Project_Remote * remote = dynamic_cast<CAXml_Project_Remote *>(ptrR);
+                std::string method;
+                std::string extfile;
+                caUtils::toUpperAlpha(remote->method,method);
+                if(!remote->url.empty())
+                {
+                    of<<"# Download request url"<<std::endl;
+                    of<<"export URL="<<remote->url<<std::endl<<std::endl;
+                }
+                else
+                {
+                    std::string msg="Unknow remote url on conf file : "+ pst->getFullProjConf();
+                    sys_throw(msg);
+                }
+                if(!remote->file.empty())
+                {
+                    of<<"# Download request file"<<std::endl;
+                    of<<"export FILE="<<remote->file<<std::endl<<std::endl;
+                }
+                else
+                {
+                    std::string msg="Unknow remote file on conf file : "+ pst->getFullProjConf();
+                    sys_throw(msg);
+                }
+                extfile.clear();
+                caUtils::baseExt(remote->file,extfile);
+                if(extfile.find("tar")!=std::string::npos)
+                {
+                    of<<"# for file expansion "<<std::endl;
+                    of<<"export PACKEXT=tar"<<std::endl<<std::endl;
+                }
+                else if(extfile.find("zip")!=std::string::npos)
+                {
+                    of<<"# for file expansion "<<std::endl;
+                    of<<"export PACKEXT=zip"<<std::endl<<std::endl;
+                }
+                if(method=="GIT")
+                {
+                    of<<"# Download request branch"<<std::endl;
+                    of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
+                    of<<"# Download request branch"<<std::endl;
+                    of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
+                    of<<packManager::getFile_download_git_sh()<<std::endl;
+                }
+                else if(method=="SVN")
+                {
+                    of<<"# Download request revision"<<std::endl;
+                    of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
+                    of<<packManager::getFile_download_svn_sh()<<std::endl;
+                }
+                else if(method=="WGET")
+                {
+                    of<<packManager::getFile_download_wget_sh()<<std::endl;
+                }
+                else if(method=="RSYNC")
+                {
+                    of<<packManager::getFile_download_rsync_sh()<<std::endl;
+                }
+                else if(method=="APT")
+                {
+                    of<<packManager::getFile_download_apt_sh()<<std::endl;
+                }
+                else
+                {
+                    std::string msg=method + " not allowed on conf file :"+ pst->getFullProjConf();
+                    sys_throw(msg);
+                }
             }
         }
+        of.flush();
+        of.close();
+        sync();
+        return caUtils::checkFileExist(scriptname);
     }
-    of.flush();
-    of.close();
-    sync();
-    return caUtils::checkFileExist(scriptname);
+    return false;
 }
 
 
