@@ -26,18 +26,3 @@ then
     fi
 fi
 
-
-if [ ${RESULT} -eq 0 ] && [ -e "./src" ]
-then
-    cd src
-    verify_store_backup "${STORE}/${PROJECT}_RSYNC.tar.bz2"
-else
-    RESULT=1    
-fi
-#return main root
-popd 
-# if OK stop download phase and NOT continue script
-if [ ${RESULT} -eq  0 ]
-then 
-    local_log_close
-fi
