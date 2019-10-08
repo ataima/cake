@@ -35,6 +35,10 @@ then
         local_log " FAIL to DOWNLOAD GIT FILE : ${URL}/${FILE}"
     fi
 fi
+
+// check exist key sign to download
+download_key_sign
+
 popd 
 
 

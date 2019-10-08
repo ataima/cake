@@ -299,6 +299,24 @@ bool caUtils::baseExt(std::string & file, std::string & ext)
     return !ext.empty();
 }
 
+bool caUtils::baseRevExt(std::string & file, std::string & ext)
+{
+    ext.clear();
+    if(!file.empty())
+    {
+        std::string::size_type  s=file.rfind('.');
+        if(s!=std::string::npos)
+        {
+            s++;
+            while(s<file.size())
+            {
+                ext+=file[s++];
+            }
+        }
+    }
+    return !ext.empty();
+}
+
 bool caUtils::toUpperAlpha(std::string & src, std::string & dst)
 {
     dst.clear();

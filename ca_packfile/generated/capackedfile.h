@@ -26,6 +26,8 @@ static const char *getFile_default_log_sh(unsigned int  * len=nullptr);
 //
 static const char *getFile_pre_download_sh(unsigned int  * len=nullptr);
 //
+static const char *getFile_download_key_sign_sh(unsigned int  * len=nullptr);
+//
 static const char *getFile_download_apt_sh(unsigned int  * len=nullptr);
 //
 static const char *getFile_post_download_wget_sh(unsigned int  * len=nullptr);

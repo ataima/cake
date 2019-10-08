@@ -125,7 +125,7 @@ bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * en
         if(conf!=nullptr)
         {
             createDefaultSourceHeader(of,env,pst);
-            of<<packManager::getFile_verify_store_backup_sh();
+            of<<packManager::getFile_download_key_sign_sh();
             for (auto ptrR : conf->remote)
             {
                 CAXml_Project_Remote * remote = dynamic_cast<CAXml_Project_Remote *>(ptrR);
@@ -179,6 +179,23 @@ bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * en
                     of<<"# for file expansion "<<std::endl;
                     of<<"export PACKEXT=zip"<<std::endl<<std::endl;
                 }
+                CAXml_Project_Remote_Key keyValue=remote->key;
+                if(!keyValue.url.empty() && !keyValue.file.empty())
+                {
+                    of<<"# key sign verification url"<<std::endl;
+                    of<<"export KEYURL="<<keyValue.url<<"/"<<keyValue.file<<std::endl;
+                    extfile.clear();
+                    caUtils::baseRevExt(keyValue.file,extfile);
+                    of<<"# key sign ext"<<std::endl;
+                    of<<"export KEYEXT="<<extfile<<std::endl<<std::endl;
+                }
+                else
+                {
+                    of<<"# key sign verification url"<<std::endl;
+                    of<<"export KEYURL=N"<<std::endl;
+                    of<<"# key sign ext"<<std::endl;
+                    of<<"export KEYEXT=N"<<std::endl<<std::endl;
+                }
                 if(method=="GIT")
                 {
                     of<<"# Download request branch"<<std::endl;
@@ -226,7 +243,6 @@ bool caJobMakeSourceScript::createPostDownload(ICAXml_Project *prj,IGetConfEnv  
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-
         CAXml_Project *conf=dynamic_cast<CAXml_Project *>(prj);
         if(conf!=nullptr)
         {
@@ -270,6 +286,23 @@ bool caJobMakeSourceScript::createPostDownload(ICAXml_Project *prj,IGetConfEnv  
                 {
                     of<<"# for file expansion "<<std::endl;
                     of<<"export PACKEXT=zip"<<std::endl<<std::endl;
+                }
+                CAXml_Project_Remote_Key keyValue=remote->key;
+                if(!keyValue.url.empty() && !keyValue.file.empty())
+                {
+                    of<<"# key sign verification url"<<std::endl;
+                    of<<"export KEYURL="<<keyValue.url<<"/"<<keyValue.file<<std::endl;
+                    extfile.clear();
+                    caUtils::baseRevExt(keyValue.file,extfile);
+                    of<<"# key sign ext"<<std::endl;
+                    of<<"export KEYEXT="<<extfile<<std::endl<<std::endl;
+                }
+                else
+                {
+                    of<<"# key sign verification url"<<std::endl;
+                    of<<"export KEYURL=N"<<std::endl;
+                    of<<"# key sign ext"<<std::endl;
+                    of<<"export KEYEXT=N"<<std::endl<<std::endl;
                 }
                 if(method=="GIT")
                 {

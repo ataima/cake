@@ -26,3 +26,8 @@ then
     fi
 fi
 
+// check exist key sign to download
+download_key_sign
+
+
+popd 

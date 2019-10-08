@@ -46,6 +46,7 @@ public:
     static bool baseNameNoExt(std::string & path, std::string & filename);
     static bool dirName(std::string & path, std::string & dirname);
     static bool baseExt(std::string & file, std::string & ext);
+    static bool baseRevExt(std::string & file, std::string & ext);
     static bool toUpperAlpha(std::string & src, std::string & dst);
     static bool toUpperAscii(std::string & src, std::string & dst);
     static bool changeExt(std::string & src,const char *ext);
