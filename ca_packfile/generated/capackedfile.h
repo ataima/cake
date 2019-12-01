@@ -6,6 +6,8 @@ class packManager
 {
 public:
 //
+static const char *getFile_pre_patch_sh(unsigned int  * len=nullptr);
+//
 static const char *getFile_post_download_svn_sh(unsigned int  * len=nullptr);
 //
 static const char *getFile_download_svn_sh(unsigned int  * len=nullptr);

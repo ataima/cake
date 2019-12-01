@@ -1,3 +1,4 @@
+
 #
 # DEFAULT LOG 
 
@@ -25,7 +26,7 @@ function local_log(){
 }
 
 # limit max num line log to 1000
-function check_limit_log {
+function check_limit_log(){
 LOGSZ=$(wc -l ${LOG} | awk '{ print $1 }')
 if [ ${LOGSZ} -gt 1000 ]
 then

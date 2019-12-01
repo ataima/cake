@@ -1,1 +1,6 @@
-./do_distclean.sh && ./do_debug.sh 64 linux  
+./do_distclean.sh 
+./do_debug.sh 64 linux 
+cd ./ca_packfile 
+./dogenerate.sh 
+cd -
+./do_debug.sh 64 linux  

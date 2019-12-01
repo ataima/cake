@@ -1,9 +1,9 @@
 <project>
   <name>cloog</name>
   <remote>
-    <method>wget</method>
-    <url>ftp://gcc.gnu.org/pub/gcc/infrastructure</url>
-    <file>cloog-0.18.1.tar.gz</file>
+    <method>svn</method>
+    <url>https://svn.alfresco.com/repos/alfresco-open-mirror</url>
+    <file>alfresco</file>
     <key>
        <url>https://download.samba.org/pub/rsync</url>
        <file>rsync-3.1.3.tar.gz.asc</file>

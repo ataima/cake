@@ -6,7 +6,6 @@
 #go to sources file
 
 
-pushd ${SOURCE}
 
 if  [ -e "./src" ]
 then
@@ -31,6 +30,8 @@ then
 else
     RESULT=1    
 fi
-#return main root
-popd 
 
+
+
+# @cake
+#####################

@@ -2,7 +2,7 @@
 	<name>gcc></name>
 	<info>gcc projects ></info>
 	<maxtask>
-		<source>4</source>
+		<source>16</source>
 		<build>4</build>
 		<package>4</package>
 		<deploy>1</deploy>

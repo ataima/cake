@@ -5,9 +5,6 @@
 #default download_rsync.sh : populate source path via rsync
 #go to sources file
 
-
-pushd ${SOURCE}
-
 if [ -e "./src" ]
 then
     cd src
@@ -16,4 +13,5 @@ else
     RESULT=1    
 fi
 
-popd 
+# @cake
+#####################

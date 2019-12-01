@@ -5,9 +5,8 @@
 #default download.sh : populate source path via wget
 #go to sources file
 
-pushd ${SOURCE}
 
-# check exist .git
+# check exist .src or force from param input
 if [ ! -e "./src" ] || [ ${FORCE} == "Y" ]
 then 
     local_log "$SOURCE from ${URL}/${FILE}"
@@ -50,5 +49,6 @@ fi
 # check exist key sign to download
 download_key_sign
 
-popd 
 
+# @cake
+#####################

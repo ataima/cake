@@ -5,7 +5,7 @@
 #default download_git.sh : populate source path via git
 #go to sources file
 
-pushd ${SOURCE}
+
 
 # check exist .git
 if [ ! -e "./src" ] || [ ${FORCE} == "Y" ]
@@ -23,8 +23,8 @@ then
 
     if [ ${RESULT} -eq 0 ] 
     then
-        remove_store_backup "${STORE}/${PROJECT}_${COMMIT}.tar.bz2"    
-        if [ ${COMMIT} != "" ] 
+        remove_store_backup "${STORE}/${PROJECT}_${BRANCH}_${COMMIT}.tar.bz2"    
+        if [ ${COMMIT} != "none" ] 
         then
             cd src
             git checkout ${COMMIT} >> ${LOG} 2>&1
@@ -39,6 +39,7 @@ fi
 # check exist key sign to download
 download_key_sign
 
-popd 
+# @cake
+#####################
 
 

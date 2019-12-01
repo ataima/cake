@@ -1,16 +1,9 @@
 <project>
   <name>binutils</name>
   <remote>
-    <method>git</method>
-    <url>https://github.com/amiata</url>
-    <file>cake.git</file>
-    <branch>master</branch>
-    <commit>5e6ee5e37535e4d54727c49e6ee83361cc160bbf</commit>
-  </remote>
-  <remote>
-    <method>rsync</method>
-    <url>/home/angelo/workspace/cake</url>
-    <file>do</file>
+      <method>wget</method>
+      <url>ftp://ftp.gnu.org/gnu/binutils</url>
+      <file>binutils-2.28.tar.bz2</file>
   </remote>
   <build>
     <step id="0">

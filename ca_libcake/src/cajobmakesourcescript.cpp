@@ -196,18 +196,40 @@ bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * en
                     of<<"# key sign ext"<<std::endl;
                     of<<"export KEYEXT=N"<<std::endl<<std::endl;
                 }
+                of<<"pushd ${SOURCE}"<<std::endl<<std::endl;
                 if(method=="GIT")
                 {
                     of<<"# Download request branch"<<std::endl;
-                    of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
+                    if(!remote->branch.empty())
+                    {
+                        of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
+                    }
+                    else
+                    {
+                        of<<"export BRANCH=master"<<std::endl<<std::endl;
+                    }
                     of<<"# Download request branch"<<std::endl;
-                    of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
+                    if(!remote->commit.empty())
+                    {
+                        of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
+                    }
+                    else
+                    {
+                        of<<"export COMMIT=none"<<std::endl<<std::endl;
+                    }
                     of<<packManager::getFile_download_git_sh()<<std::endl;
                 }
                 else if(method=="SVN")
                 {
                     of<<"# Download request revision"<<std::endl;
-                    of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
+                    if(!remote->revision.empty())
+                    {
+                        of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
+                    }
+                    else
+                    {
+                        of<<"export REVISION=HEAD"<<std::endl<<std::endl;
+                    }
                     of<<packManager::getFile_download_svn_sh()<<std::endl;
                 }
                 else if(method=="WGET")
@@ -221,12 +243,16 @@ bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * en
                 else if(method=="APT")
                 {
                     of<<packManager::getFile_download_apt_sh()<<std::endl;
+
                 }
                 else
                 {
                     std::string msg=method + " not allowed on conf file :"+ pst->getFullProjConf();
                     sys_throw(msg);
                 }
+                of<<"popd"<<std::endl<<std::endl;
+                of<<"#done"<<std::endl;
+                of<<"local_log_close"<<std::endl<<std::endl;
             }
         }
         of.flush();
@@ -304,18 +330,40 @@ bool caJobMakeSourceScript::createPostDownload(ICAXml_Project *prj,IGetConfEnv  
                     of<<"# key sign ext"<<std::endl;
                     of<<"export KEYEXT=N"<<std::endl<<std::endl;
                 }
+                of<<"pushd ${SOURCE}"<<std::endl<<std::endl;
                 if(method=="GIT")
                 {
                     of<<"# Download request branch"<<std::endl;
-                    of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
+                    if(!remote->branch.empty())
+                    {
+                        of<<"export BRANCH="<<remote->branch<<std::endl<<std::endl;
+                    }
+                    else
+                    {
+                        of<<"export BRANCH=master"<<std::endl<<std::endl;
+                    }
                     of<<"# Download request branch"<<std::endl;
-                    of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
+                    if(!remote->commit.empty())
+                    {
+                        of<<"export COMMIT="<<remote->commit<<std::endl<<std::endl;
+                    }
+                    else
+                    {
+                        of<<"export COMMIT=none"<<std::endl<<std::endl;
+                    }
                     of<<packManager::getFile_post_download_git_sh()<<std::endl;
                 }
                 else if(method=="SVN")
                 {
                     of<<"# Download request revision"<<std::endl;
-                    of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
+                    if(!remote->revision.empty())
+                    {
+                        of<<"export REVISION="<<remote->revision<<std::endl<<std::endl;
+                    }
+                    else
+                    {
+                        of<<"export REVISION=HEAD"<<std::endl<<std::endl;
+                    }
                     of<<packManager::getFile_post_download_svn_sh()<<std::endl;
                 }
                 else if(method=="WGET")
@@ -335,6 +383,9 @@ bool caJobMakeSourceScript::createPostDownload(ICAXml_Project *prj,IGetConfEnv  
                     std::string msg=method + " not allowed on conf file :"+ pst->getFullProjConf();
                     sys_throw(msg);
                 }
+                of<<"popd"<<std::endl<<std::endl;
+                of<<"#done"<<std::endl;
+                of<<"local_log_close"<<std::endl<<std::endl;
             }
         }
         of.flush();

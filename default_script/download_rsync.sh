@@ -5,9 +5,9 @@
 #default download_rsync.sh : populate source path via rsync
 #go to sources file
 
-pushd ${SOURCE}
 
-# check exist .src
+
+# check exist .src or force from param input
 if [ ! -e "./src" ] || [ ${FORCE} == "Y" ]
 then 
     mkdir -p "./src"
@@ -30,4 +30,5 @@ fi
 download_key_sign
 
 
-popd 
+# @cake
+#####################
