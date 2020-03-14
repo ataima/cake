@@ -27,13 +27,16 @@ function local_log(){
 
 # limit max num line log to 1000
 function check_limit_log(){
-LOGSZ=$(wc -l ${LOG} | awk '{ print $1 }')
-if [ ${LOGSZ} -gt 1000 ]
+if [ -e ${LOG} ]
 then
-    tmplog=$(mktemp /tmp/cake_log.XXXXXX)
-    echo "-------- WARNING LOG TOO LONG ---> TRUNCATE TO 100 LINES --------" > ${tmplog}
-    tail -n 200 ${LOG} >>  ${tmplog}
-    mv ${tmplog} ${LOG}
+    LOGSZ=$(wc -l ${LOG} | awk '{ print $1 }')
+    if [ ${LOGSZ} -gt 1000 ]
+    then
+        tmplog=$(mktemp /tmp/cake_log.XXXXXX)
+        echo "-------- WARNING LOG TOO LONG ---> TRUNCATE TO 100 LINES --------" > ${tmplog}
+        tail -n 200 ${LOG} >>  ${tmplog}
+        mv ${tmplog} ${LOG}
+    fi
 fi
 }
 

@@ -9,7 +9,7 @@
 if [ ! -e "./src" ] || [ ${FORCE} == "Y" ]
 then 
     local_log "$SOURCE from ${FILE}"
-    pushd /tmp
+    pushd /tmp > /dev/null
     apt-get source "${FILE}" >> ${LOG} 2>&1
     RESULT=$?
     if [ ${RESULT} -ne 0 ]

@@ -11,14 +11,17 @@ if  [ -e "./src" ]
 then
     if [ ${PACKEXT} != "" ]
     then
-        if [ -f "${STORE}/${FILE}" ]
+        if [ -f "${FILE}" ] && [ -f "${STORE}/${FILE}" ]
         then 
             chmod 666 "${STORE}/${FILE}"
-            chmod 666 "${STORE}/${FILE}.md5"
             rm -rf "${STORE}/${FILE}"
+        fi
+        if [ -f "${STORE}/${FILE}.md5" ]
+        then 
+            chmod 666 "${STORE}/${FILE}.md5"
             rm -rf "${STORE}/${FILE}.md5"
         fi
-        mv "${FILE}" "${STORE}/${FILE}"
+        [ -f "${FILE}" ] && mv "${FILE}" "${STORE}/${FILE}"
         md5sum "${STORE}/${FILE}" > "${STORE}/${FILE}.md5"     
             chmod 444 "${STORE}/${FILE}"
             chmod 444 "${STORE}/${FILE}.md5"

@@ -67,7 +67,7 @@ void caJobMakeSourceScript::create(ICAXml_Project *prj,ICAjob_layer *layer ,IGet
 void caJobMakeSourceScript::createDefaultSourceHeader(std::ofstream & of,IGetConfEnv  * env,
         IPrjStatus *pst)
 {
-    of<<"#!/bin/sh  ";
+    of<<"#!/bin/sh  "<<std::endl<<std::endl;
     IOptionArgvManager *argvObj=IOptionArgvManager::getInstance();
     if (argvObj && argvObj->getOption(f_debug)->isSelect())
     {
@@ -196,7 +196,7 @@ bool caJobMakeSourceScript::createDownload(ICAXml_Project *prj,IGetConfEnv  * en
                     of<<"# key sign ext"<<std::endl;
                     of<<"export KEYEXT=N"<<std::endl<<std::endl;
                 }
-                of<<"pushd ${SOURCE}"<<std::endl<<std::endl;
+                of<<"pushd ${SOURCE} > /dev/null"<<std::endl<<std::endl;
                 if(method=="GIT")
                 {
                     of<<"# Download request branch"<<std::endl;
@@ -330,7 +330,7 @@ bool caJobMakeSourceScript::createPostDownload(ICAXml_Project *prj,IGetConfEnv  
                     of<<"# key sign ext"<<std::endl;
                     of<<"export KEYEXT=N"<<std::endl<<std::endl;
                 }
-                of<<"pushd ${SOURCE}"<<std::endl<<std::endl;
+                of<<"pushd ${SOURCE} > /dev/null"<<std::endl<<std::endl;
                 if(method=="GIT")
                 {
                     of<<"# Download request branch"<<std::endl;
@@ -401,11 +401,17 @@ bool caJobMakeSourceScript::createPrePatch(ICAXml_Project *prj,IGetConfEnv  * en
     std::ofstream of(scriptname);
     if(of.is_open())
     {
-        envSet subset;
-        caJobMakeBase::createScriptHeader(of,env,subset);
+        createDefaultSourceHeader(of,env,pst);
+        of<<packManager::getFile_default_log_sh();
+        of<<"export PATCH=${SOURCE}/patches"<<std::endl<<std::endl;
+        of<<packManager::getFile_pre_patch_sh();
+        of.flush();
+        of.close();
+        sync();
+        return caUtils::checkFileExist(scriptname);
     }
-    of.close();
-    return caUtils::checkFileExist(scriptname);
+
+    return false;
 }
 
 

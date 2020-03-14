@@ -4,6 +4,7 @@
 if [ ! -e ${PATCH} ] || [ ${FORCE} == 'Y' ]
 then 
     local_log "CREATE SOURCE PATCH PATH : ${PATCH}"
+    [ ${FORCE} == 'Y' ] && rm -rf ${PATCH}
     mkdir -p ${PATCH}
     RESULT=$?
 else
